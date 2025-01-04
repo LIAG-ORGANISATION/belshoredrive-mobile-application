@@ -31,5 +31,8 @@
     "enabled": true,
     "clientKind": "git",
     "useIgnoreFile": true
+  },
+  "javascript": {
+    "globals": ["React"]
   }
 }
