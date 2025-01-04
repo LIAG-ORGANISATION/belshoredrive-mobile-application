@@ -22,8 +22,8 @@ A React Native application built with Expo, featuring a robust UI component syst
 
 ## 🛠️ Prerequisites
 
-- Node.js (v18 or higher)
-- npm or yarn
+- Node.js (v22 or higher)
+- npm
 - Expo CLI
 - iOS Simulator (for iOS development)
 - Android Studio (for Android development)
@@ -43,20 +43,66 @@ A React Native application built with Expo, featuring a robust UI component syst
 
 3. Start the development server:
    ```bash
+   npx expo start
+   ```
+
+   or
+
+   ```bash
+   npm run start
+   ```
+
    # For iOS
+   ```bash
    npm run ios
+   ```
 
    # For Android
+   ```bash
    npm run android
+   ```
 
    # For web
+   ```bash
    npm run web
    ```
 
 4. To run Storybook:
-   ```bash
-   # The app will start in Storybook mode by default
-   # To disable Storybook, set isStoryBookEnabled to false in src/app/_layout.tsx
-   ```
+
+   * The app will start in Storybook mode by default
+   * To disable Storybook, set isStoryBookEnabled to false in src/app/_layout.tsx
 
 ## 📁 Project Structure
+
+- `src/app/`: Root navigation and layout components with expo-router
+- `src/components/`: Reusable UI components
+- `src/lib/`: Utility functions and types
+- `src/types/`: Type definitions
+- `src/hooks/`: Custom hooks
+- `src/contexts/`: Context providers
+- `/assets/`: Static assets (images, fonts, etc.)
+
+## Gluestack UI
+
+- `src/components/ui/`: Gluestack UI components
+
+## Components installation
+See https://gluestack.io/ui/docs/home/getting-started/installation
+```bash
+npx gluestack-ui add componentName from gluestack-ui
+```
+
+Note : You can install the component then ask Cursor to create the stories to see it in action. 
+Take a look at the generated stories because sometime it could lead to errors with HTML instead of React Native.
+
+## Storybook
+
+See https://storybook.js.org/docs/get-started/whats-a-story
+
+## Expo Router
+
+See https://docs.expo.dev/develop/file-based-routing/
+
+## Biome
+
+See https://biomejs.dev/
