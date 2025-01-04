@@ -1,20 +1,20 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { SearchIcon } from 'lucide-react';
-import { Text, View } from 'react-native';
-import { Input, InputField, InputIcon, InputSlot } from './index';
+import type { Meta, StoryObj } from "@storybook/react";
+import { SearchIcon } from "lucide-react";
+import { Text, View } from "react-native";
+import { Input, InputField, InputIcon, InputSlot } from "./index";
 
 const meta: Meta<typeof Input> = {
-  title: 'UI/Input',
+  title: "UI/Input",
   component: Input,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     variant: {
-      control: 'select',
-      options: ['outline', 'underlined', 'rounded'],
+      control: "select",
+      options: ["outline", "underlined", "rounded"],
     },
     size: {
-      control: 'select',
-      options: ['sm', 'md', 'lg', 'xl'],
+      control: "select",
+      options: ["sm", "md", "lg", "xl"],
     },
   },
 };
@@ -30,8 +30,8 @@ export const Basic: Story = {
     </Input>
   ),
   args: {
-    variant: 'outline',
-    size: 'md',
+    variant: "outline",
+    size: "md",
   },
 };
 
@@ -46,8 +46,8 @@ export const WithIcon: Story = {
     </Input>
   ),
   args: {
-    variant: 'outline',
-    size: 'md',
+    variant: "outline",
+    size: "md",
   },
 };
 
