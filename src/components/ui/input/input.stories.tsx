@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { SearchIcon } from 'lucide-react';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 import { Input, InputField, InputIcon, InputSlot } from './index';
 
 const meta: Meta<typeof Input> = {
@@ -115,7 +115,7 @@ export const WithIconAndSlot: Story = {
       </InputIcon>
       <InputField placeholder="Search with button..." />
       <InputSlot>
-          Search
+        <Text>Search</Text>
       </InputSlot>
     </Input>
   ),
