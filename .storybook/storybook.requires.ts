@@ -16,7 +16,7 @@ const normalizedStories = [
     req: require.context(
       "./stories",
       true,
-      /^\.(?:(?:^|\/|(?:(?:(?!(?:^|\/)\.).)*?)\/)(?!\.)(?=.)[^/]*?\.stories\.(?:ts|tsx|js|jsx)?)$/,
+      /^\.(?:(?:^|\/|(?:(?:(?!(?:^|\/)\.).)*?)\/)(?!\.)(?=.)[^/]*?\.stories\.(?:ts|tsx|js|jsx)?)$/
     ),
   },
   {
@@ -29,7 +29,7 @@ const normalizedStories = [
     req: require.context(
       "../src",
       true,
-      /^\.(?:(?:^|\/|(?:(?:(?!(?:^|\/)\.).)*?)\/)(?!\.)(?=.)[^/]*?\.stories\.(?:ts|tsx|js|jsx)?)$/,
+      /^\.(?:(?:^|\/|(?:(?:(?!(?:^|\/)\.).)*?)\/)(?!\.)(?=.)[^/]*?\.stories\.(?:ts|tsx|js|jsx)?)$/
     ),
   },
 ];
@@ -59,5 +59,4 @@ if (!global.view) {
   updateView(global.view, annotations, normalizedStories);
 }
 
-// biome-ignore lint/suspicious/noRedeclare: <explanation>
 export const view = global.view;
