@@ -1,13 +1,35 @@
 import cx from "classnames";
 import React from "react";
-import { Alert, Pressable, Text } from "react-native";
+import { Animated, Pressable, Text } from "react-native";
 
 type ButtonPropsType = {
   label: string;
   variant: "primary" | "secondary";
+  onPress: () => void;
 };
 
-export const Button = ({ label, variant }: ButtonPropsType) => {
+export const Button = ({ label, variant, onPress }: ButtonPropsType) => {
+  const backgroundColorRef = new Animated.Value(0);
+  const handlePress = () => {
+    Animated.timing(backgroundColorRef, {
+      toValue: 1,
+      duration: 100,
+      useNativeDriver: true,
+    }).start();
+  };
+  const handleRelease = () => {
+    Animated.timing(backgroundColorRef, {
+      toValue: 0,
+      duration: 100,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const backgroundColor = backgroundColorRef.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["#fff", "#000"],
+  });
+
   const classes = cx({
     "flex items-center justify-center w-full h-fit rounded-md px-6 py-3": true,
     "bg-gray-700 text-white": variant === "primary",
@@ -18,8 +40,15 @@ export const Button = ({ label, variant }: ButtonPropsType) => {
     "text-primary-500 text-md font-semibold": variant === "secondary",
   });
   return (
-    <Pressable onPress={() => Alert.alert("Action")} className={classes}>
-      <Text className={textClasses}>{label}</Text>
+    <Pressable
+      onPressIn={handlePress}
+      onPressOut={handleRelease}
+      onPress={onPress}
+      // className={classes}
+    >
+      <Animated.View className={classes} style={{ backgroundColor }}>
+        <Text className={textClasses}>{label}</Text>
+      </Animated.View>
     </Pressable>
   );
 };

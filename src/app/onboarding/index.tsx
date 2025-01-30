@@ -89,8 +89,20 @@ export default function OnboardingIntro() {
       >
         <CarouselNavigator currentIndex={currentIndex} totalItems={3} />
         <View className="flex-col w-full gap-4">
-          <Button variant="secondary" label="Créer un compte" />
-          <Button variant="primary" label="Se connecter" />
+          <Button
+            variant="secondary"
+            label="Créer un compte"
+            onPress={() => {
+              console.log("Créer un compte");
+            }}
+          />
+          <Button
+            variant="primary"
+            label="Se connecter"
+            onPress={() => {
+              console.log("Se connecter");
+            }}
+          />
         </View>
       </View>
     </View>
