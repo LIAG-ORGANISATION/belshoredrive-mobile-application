@@ -22,11 +22,6 @@
   "dependencies": {
     "@babel/runtime": "^7.26.7",
     "@expo/vector-icons": "^14.0.2",
-    "@gluestack-ui/icon": "^0.1.25",
-    "@gluestack-ui/input": "^0.1.32",
-    "@gluestack-ui/nativewind-utils": "^1.0.26",
-    "@gluestack-ui/overlay": "^0.1.16",
-    "@gluestack-ui/toast": "^1.0.8",
     "@react-navigation/native": "^7.0.14",
     "@react-navigation/stack": "^7.1.1",
     "babel-plugin-module-resolver": "^5.0.2",

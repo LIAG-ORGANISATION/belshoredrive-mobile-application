@@ -1,6 +1,3 @@
-import { Button } from "@/components/ui/button";
-import { CarouselNavigator } from "@/components/ui/carousel/carousel-navigator";
-import { Logo } from "@/components/vectors/logo";
 import { useState } from "react";
 import {
   FlatList,
@@ -10,6 +7,10 @@ import {
   View,
   type ViewToken,
 } from "react-native";
+
+import { Button } from "@/components/ui/button";
+import { CarouselNavigator } from "@/components/ui/carousel/carousel-navigator";
+import { Logo } from "@/components/vectors/logo";
 import { Dimensions } from "react-native";
 
 export default function OnboardingIntro() {

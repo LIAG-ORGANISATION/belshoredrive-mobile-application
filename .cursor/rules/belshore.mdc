@@ -1,0 +1,11 @@
+---
+description: 
+globs: 
+---
+
+# Your rule content
+
+- Supabase types are located here [supabase.ts](mdc:src/types/supabase.ts)
+- This project is only working using React Native with Expo and Expo Router
+- Tailwind with Nativewind Library
+- Everything should be typed using Typescript

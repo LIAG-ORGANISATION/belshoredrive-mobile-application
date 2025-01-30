@@ -1,13 +1,12 @@
 # Belshore App
 
-A React Native application built with Expo, featuring a robust UI component system with Gluestack UI, NativeWind (Tailwind CSS), and Storybook integration.
+A React Native application built with Expo, featuring a robust UI component library built with NativeWind (Tailwind CSS), and Storybook integration.
 
 ## 🚀 Tech Stack
 
 - [Expo](https://expo.dev/) - React Native framework
 - [React Navigation](https://reactnavigation.org/) - Navigation library
 - [NativeWind](https://www.nativewind.dev/) - Tailwind CSS for React Native
-- [Gluestack UI](https://gluestack.io/) - UI component library
 - [Storybook](https://storybook.js.org/) - UI component development environment
 - [Biome](https://biomejs.dev/) - Fast formatter and linter
 - [TypeScript](https://www.typescriptlang.org/) - Type safety
@@ -81,19 +80,6 @@ A React Native application built with Expo, featuring a robust UI component syst
 - `src/hooks/`: Custom hooks
 - `src/contexts/`: Context providers
 - `/assets/`: Static assets (images, fonts, etc.)
-
-## Gluestack UI
-
-- `src/components/ui/`: Gluestack UI components
-
-## Components installation
-See https://gluestack.io/ui/docs/home/getting-started/installation
-```bash
-npx gluestack-ui add componentName from gluestack-ui
-```
-
-Note : You can install the component then ask Cursor to create the stories to see it in action. 
-Take a look at the generated stories because sometime it could lead to errors with HTML instead of React Native.
 
 ## Storybook
 
