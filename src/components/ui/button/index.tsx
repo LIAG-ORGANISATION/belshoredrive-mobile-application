@@ -10,7 +10,7 @@ type ButtonPropsType = {
 export const Button = ({ label, variant }: ButtonPropsType) => {
   const classes = cx({
     "flex items-center justify-center w-full h-fit rounded-md px-6 py-3": true,
-    "bg-primary-500 text-white": variant === "primary",
+    "bg-gray-700 text-white": variant === "primary",
     "bg-white text-white": variant === "secondary",
   });
   const textClasses = cx({
