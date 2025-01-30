@@ -1,8 +1,6 @@
 import "@/global.css";
 import StorybookUIRoot from "../../.storybook";
 import "react-native-reanimated";
-
-import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 // import Constants from "expo-constants";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {
@@ -15,6 +13,7 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { useColorScheme } from "react-native";
+
 const isStoryBookEnabled = false;
 
 export {
@@ -52,9 +51,7 @@ export default function RootLayout() {
   }
 
   return (
-    <GluestackUIProvider mode="light">
-      <RootLayoutNav />
-    </GluestackUIProvider>
+    <RootLayoutNav />
   );
 }
 
@@ -63,24 +60,20 @@ function RootLayoutNav() {
 
   if (isStoryBookEnabled) {
     return (
-      <GluestackUIProvider mode="light">
-        <StorybookUIRoot />
-      </GluestackUIProvider>
+      <StorybookUIRoot />
     );
   }
 
   return (
-    <GluestackUIProvider mode="light">
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: "modal" }} />
-          <Stack.Screen
-            name="onboarding"
-            options={{ headerShown: false, presentation: "fullScreenModal" }}
-          />
-        </Stack>
-      </ThemeProvider>
-    </GluestackUIProvider>
+    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="modal" options={{ presentation: "modal" }} />
+        <Stack.Screen
+          name="onboarding"
+          options={{ headerShown: false, presentation: "fullScreenModal" }}
+        />
+      </Stack>
+    </ThemeProvider>
   );
 }
