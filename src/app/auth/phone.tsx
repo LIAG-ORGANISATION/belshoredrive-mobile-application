@@ -5,7 +5,6 @@ import { KeyboardAvoidingView, Platform, Text, View } from "react-native";
 import PhoneInput, { type ICountry } from 'react-native-international-phone-number';
 
 import { Button } from "@/components/ui/button";
-import { LogoB } from "@/components/vectors/logo-b";
 import Ionicons from "@expo/vector-icons/build/Ionicons";
 
 export default function Phone() {
@@ -94,8 +93,9 @@ export default function Phone() {
 
         <View className="w-full">
           <Button
-            variant="primary"
+            variant="secondary"
             label="Continuer"
+            disabled={inputValue.length === 0}
             onPress={() => {
               router.push("/auth/login");
             }}
