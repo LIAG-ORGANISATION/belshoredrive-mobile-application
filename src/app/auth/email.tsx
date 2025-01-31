@@ -4,7 +4,6 @@ import * as Linking from "expo-linking";
 import React, { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, Text, TextInput, View } from "react-native";
 
-
 import { Button } from "@/components/ui/button";
 
 import { supabase } from "@/lib/supabase";
@@ -19,16 +18,14 @@ const createSessionFromUrl = async (url: string) => {
 
   if (!access_token) return;
 
-  const { data, error } = await supabase.auth.setSession({
+  const { error } = await supabase.auth.setSession({
     access_token,
     refresh_token,
   });
 
   if (error) throw error;
 
-  console.log(data);
-
-  router.push("/onboarding");
+  router.push("/auth/verification");
 };
 
 export default function Email() {
@@ -41,6 +38,7 @@ export default function Email() {
   }, [url]);
 
   const sendMagicLink = async () => {
+    // Redirect to the email verification page and then redirect to the onboarding page
     const { error } = await supabase.auth.signInWithOtp({
       email: inputValue,
       options: {

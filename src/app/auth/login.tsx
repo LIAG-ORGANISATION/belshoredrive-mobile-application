@@ -1,4 +1,5 @@
-import { StatusBar, Text, View } from "react-native";
+import { router } from "expo-router";
+import { Text, View } from "react-native";
 
 import { Button } from "@/components/ui/button";
 import { IconApple } from "@/components/vectors/icon-apple";
@@ -7,7 +8,7 @@ import { IconGoogle } from "@/components/vectors/icon-google";
 import { IconPhone } from "@/components/vectors/icon-phone";
 import { IconX } from "@/components/vectors/icon-x";
 import { LogoB } from "@/components/vectors/logo-b";
-import { router } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function Login() {
   return (
@@ -30,6 +31,15 @@ export default function Login() {
             textPosition="left"
             icon={<IconPhone />}
             onPress={() => router.push("/auth/phone")}
+          />
+          <Button
+            variant="primary"
+            label="Avec une adresse email"
+            textPosition="left"
+            icon={<Ionicons name="mail-outline" size={24} color="white" />}
+            onPress={() => {
+              router.push("/auth/email");
+            }}
           />
           <Button
             variant="primary"

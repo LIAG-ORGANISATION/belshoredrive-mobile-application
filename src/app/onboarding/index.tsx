@@ -10,6 +10,7 @@ export default function Onboarding() {
   return (
     <View className="flex-1 bg-black">
       <Text>Available Services:</Text>
+
       <View className="flex-1 flex-row flex-wrap gap-2">
         {services.map((service: { name: string | null; service_id: string }) => (
           <Text key={service.service_id} className="text-white text-sm border border-white p-1 rounded-md bg-gray-900">
