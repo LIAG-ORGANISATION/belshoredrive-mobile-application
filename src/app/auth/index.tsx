@@ -7,6 +7,7 @@ import { IconGoogle } from "@/components/vectors/icon-google";
 import { IconPhone } from "@/components/vectors/icon-phone";
 import { IconX } from "@/components/vectors/icon-x";
 import { LogoB } from "@/components/vectors/logo-b";
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 
 export default function Auth() {
@@ -31,6 +32,15 @@ export default function Auth() {
             icon={<IconPhone />}
             onPress={() => {
               router.push("/auth/phone");
+            }}
+          />
+          <Button
+            variant="primary"
+            label="Avec une adresse email"
+            textPosition="left"
+            icon={<Ionicons name="mail-outline" size={24} color="white" />}
+            onPress={() => {
+              router.push("/auth/email");
             }}
           />
           <Button

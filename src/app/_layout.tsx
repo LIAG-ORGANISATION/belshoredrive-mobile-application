@@ -10,6 +10,7 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
 import { Stack, router } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -25,6 +26,8 @@ export {
 export const unstable_settings = {
   initialRouteName: "/index",
 };
+
+const queryClient = new QueryClient();
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -79,6 +82,7 @@ function RootLayoutNav() {
   });
 
   return (
+    <QueryClientProvider client={queryClient}>
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen
@@ -118,7 +122,31 @@ function RootLayoutNav() {
             ),
           }}
         />
+        <Stack.Screen
+          name="auth/verification"
+          options={{
+            headerShown: true,
+            headerStyle: { backgroundColor: "#000" },
+            headerTitle: "",
+            headerLeft: () => (
+              <Ionicons name="chevron-back" size={24} color="white" onPress={() => router.back()} />
+            ),
+          }}
+        />
+
+        <Stack.Screen
+          name="onboarding/index"
+          options={{
+            headerShown: true,
+            headerStyle: { backgroundColor: "#000" },
+            headerTitle: "",
+            headerLeft: () => (
+              <Ionicons name="chevron-back" size={24} color="white" onPress={() => router.back()} />
+            ),
+          }}
+        />
       </Stack>
     </ThemeProvider>
+    </QueryClientProvider>
   );
 }
