@@ -81,6 +81,22 @@ function RootLayoutNav() {
     }
   });
 
+  // Add session check
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (session) {
+        // User is signed in, redirect to main app
+        router.push("/onboarding");
+      } else {
+        // No session, stay on auth flow
+        router.push("/auth");
+      }
+    };
+
+    checkSession();
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
