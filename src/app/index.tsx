@@ -3,7 +3,6 @@ import { useState } from "react";
 import {
   FlatList,
   ImageBackground,
-  StatusBar,
   Text,
   View,
   type ViewToken,
@@ -19,17 +18,17 @@ export default function OnboardingIntro() {
   const [pageY, setPageY] = useState(0);
   const data = [
     {
-      image: require("../../../assets/images/login/intro-1.jpg"),
+      image: require("../../assets/images/login/intro-1.jpg"),
       title:
         "Partager votre passion sur un réseau dédié à l'auto-moto & vanlife",
     },
     {
-      image: require("../../../assets/images/login/intro-2.png"),
+      image: require("../../assets/images/login/intro-2.png"),
       title:
         "Obtenez du soutien pour vos projets de restauration et de customisation",
     },
     {
-      image: require("../../../assets/images/login/intro-3.jpg"),
+      image: require("../../assets/images/login/intro-3.jpg"),
       title: "Trouvez d'autres passionnés à proximité",
     },
   ];
@@ -55,7 +54,6 @@ export default function OnboardingIntro() {
 
   return (
     <View className="w-full flex-1 items-center justify-between h-screen p-safe-offset-6">
-      <StatusBar translucent backgroundColor="transparent" />
       <FlatList
         data={data}
         className="absolute w-screen h-screen"
