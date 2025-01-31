@@ -1,14 +1,16 @@
 import cx from "classnames";
-import React from "react";
+import type React from "react";
 import { Animated, Pressable, Text } from "react-native";
 
 type ButtonPropsType = {
   label: string;
   variant: "primary" | "secondary";
+  icon?: React.ReactNode;
+  textPosition?: "left" | "center" | "right";
   onPress: () => void;
 };
 
-export const Button = ({ label, variant, onPress }: ButtonPropsType) => {
+export const Button = ({ label, variant, onPress, textPosition = "center", icon }: ButtonPropsType) => {
   const backgroundColorRef = new Animated.Value(0);
   const handlePress = () => {
     Animated.timing(backgroundColorRef, {
@@ -27,13 +29,16 @@ export const Button = ({ label, variant, onPress }: ButtonPropsType) => {
 
   const backgroundColor = backgroundColorRef.interpolate({
     inputRange: [0, 1],
-    outputRange: variant === "secondary" ? ["#fff", "#000"] : ["#000", "#fff"],
+    outputRange: variant === "secondary" ? ["#fff", "#333"] : ["#333", "#fff"],
   });
 
   const classes = cx({
-    "flex items-center justify-center w-full h-fit rounded-md px-6 py-3": true,
+    "flex w-full h-fit rounded-md px-6 py-3": true,
     "bg-gray-700 text-white": variant === "primary",
     "bg-white text-white": variant === "secondary",
+    "flex-row items-center justify-center": textPosition === "center",
+    "flex-row items-start justify-start items-center gap-4": textPosition === "left",
+    "flex-row items-end justify-end": textPosition === "right",
   });
   const textClasses = cx({
     "text-white text-md font-semibold": variant === "primary",
@@ -46,6 +51,7 @@ export const Button = ({ label, variant, onPress }: ButtonPropsType) => {
       onPress={onPress}
     >
       <Animated.View className={classes} style={{ backgroundColor }}>
+        {icon && icon}
         <Text className={textClasses}>{label}</Text>
       </Animated.View>
     </Pressable>

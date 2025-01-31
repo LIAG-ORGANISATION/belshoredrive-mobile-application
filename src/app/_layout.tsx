@@ -1,6 +1,7 @@
 import "@/global.css";
 import StorybookUIRoot from "../../.storybook";
 import "react-native-reanimated";
+import { Ionicons } from "@expo/vector-icons";
 // import Constants from "expo-constants";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {
@@ -9,7 +10,7 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { Stack, router } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { useColorScheme } from "react-native";
@@ -72,6 +73,17 @@ function RootLayoutNav() {
         <Stack.Screen
           name="onboarding"
           options={{ headerShown: false, presentation: "fullScreenModal" }}
+        />
+        <Stack.Screen
+          name="auth/index"
+          options={{
+            headerShown: true,
+            headerStyle: { backgroundColor: "#000" },
+            headerTitle: "",
+            headerLeft: () => (
+              <Ionicons name="chevron-back" size={24} color="white" onPress={() => router.back()} />
+            ),
+          }}
         />
       </Stack>
     </ThemeProvider>
