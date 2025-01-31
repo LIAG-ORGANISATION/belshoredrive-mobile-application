@@ -8,14 +8,15 @@ export default function Onboarding() {
   if (error) return <Text>Error: {error.message}</Text>;
 
   return (
-    <View>
+    <View className="flex-1 bg-black">
       <Text>Available Services:</Text>
-
-      {services.map((service: { name: string | null; service_id: string }) => (
-        <Text key={service.service_id}>
-          {service.name || "Unnamed service"}
-        </Text>
-      ))}
+      <View className="flex-1 flex-row flex-wrap gap-2">
+        {services.map((service: { name: string | null; service_id: string }) => (
+          <Text key={service.service_id} className="text-white text-sm border border-white p-1 rounded-md bg-gray-900">
+            {service.name || "Unnamed service"}
+          </Text>
+        ))}
+      </View>
     </View>
   );
 }
