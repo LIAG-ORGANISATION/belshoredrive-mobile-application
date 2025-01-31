@@ -99,7 +99,7 @@ export default function OnboardingIntro() {
             variant="primary"
             label="Se connecter"
             onPress={() => {
-              console.log("Se connecter");
+              router.push("/auth/login");
             }}
           />
         </View>

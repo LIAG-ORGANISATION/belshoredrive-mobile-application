@@ -81,6 +81,17 @@ function RootLayoutNav() {
             ),
           }}
         />
+        <Stack.Screen
+          name="auth/login"
+          options={{
+            headerShown: true,
+            headerStyle: { backgroundColor: "#000" },
+            headerTitle: "",
+            headerLeft: () => (
+              <Ionicons name="chevron-back" size={24} color="white" onPress={() => router.back()} />
+            ),
+          }}
+        />
       </Stack>
     </ThemeProvider>
   );

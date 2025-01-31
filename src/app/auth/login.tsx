@@ -9,7 +9,7 @@ import { IconX } from "@/components/vectors/icon-x";
 import { LogoB } from "@/components/vectors/logo-b";
 import { router } from "expo-router";
 
-export default function Auth() {
+export default function Login() {
   return (
     <View className="w-full flex-1 items-center justify-between h-screen p-safe-offset-6 bg-black">
       <View
@@ -18,7 +18,7 @@ export default function Auth() {
         <View className="flex-col w-full gap-6 items-center">
           <LogoB className="mx-auto text-center" />
           <Text className="text-center text-white text-2xl font-bold">
-            Créer un compte
+            Se connecter
           </Text>
         </View>
 
@@ -63,13 +63,13 @@ export default function Auth() {
 
         <View className="flex-col w-full gap-4">
           <Text className="text-center text-white text-xs font-semibold uppercase">
-            Déjà membre ?
+            Pas encore membre ?
           </Text>
           <Button
             variant="primary"
-            label="Se connecter"
+            label="S'inscrire"
             onPress={() => {
-              router.push("/auth/login");
+              router.push("/auth");
             }}
           />
         </View>
