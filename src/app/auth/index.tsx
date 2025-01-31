@@ -29,7 +29,9 @@ export default function Auth() {
             label="Avec un numéro de téléphone"
             textPosition="left"
             icon={<IconPhone />}
-            onPress={() => {}}
+            onPress={() => {
+              router.push("/auth/phone");
+            }}
           />
           <Button
             variant="primary"
