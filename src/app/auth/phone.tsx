@@ -66,6 +66,7 @@ export default function Phone() {
                 },
                 searchInput: {
                   backgroundColor: "#1F1F1F",
+                  color: "#FFFFFF",
                 },
                 countryButton: {
                   backgroundColor: "#1F1F1F",
@@ -97,7 +98,7 @@ export default function Phone() {
             label="Continuer"
             disabled={inputValue.length === 0}
             onPress={() => {
-              router.push("/auth/login");
+              // TODO: Send code to phone
             }}
           />
         </View>
