@@ -27,7 +27,7 @@ export const Button = ({ label, variant, onPress }: ButtonPropsType) => {
 
   const backgroundColor = backgroundColorRef.interpolate({
     inputRange: [0, 1],
-    outputRange: ["#fff", "#000"],
+    outputRange: variant === "secondary" ? ["#fff", "#000"] : ["#000", "#fff"],
   });
 
   const classes = cx({
@@ -44,7 +44,6 @@ export const Button = ({ label, variant, onPress }: ButtonPropsType) => {
       onPressIn={handlePress}
       onPressOut={handleRelease}
       onPress={onPress}
-      // className={classes}
     >
       <Animated.View className={classes} style={{ backgroundColor }}>
         <Text className={textClasses}>{label}</Text>
