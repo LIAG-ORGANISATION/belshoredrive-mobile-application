@@ -1,6 +1,8 @@
 import "@/global.css";
 import StorybookUIRoot from "../../.storybook";
 import "react-native-reanimated";
+import { supabase } from "@/lib/supabase";
+import { Ionicons } from "@expo/vector-icons";
 // import Constants from "expo-constants";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {
@@ -8,31 +10,33 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { Stack, router } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-import { useColorScheme } from "react-native";
+import { AppState, useColorScheme } from "react-native";
 
 const isStoryBookEnabled = false;
 
 export {
-  // Catch any errors thrown by the Layout component.
   ErrorBoundary,
 } from "expo-router";
 
 export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: "(tabs)",
+  initialRouteName: "/index",
 };
+
+const queryClient = new QueryClient();
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
-    SpaceMono: require("../../assets/fonts/SpaceMono-Regular.ttf"),
     ...FontAwesome.font,
+    SpaceMono: require("../../assets/fonts/SpaceMono-Regular.ttf"),
+    // TwemojiMozilla: require("../../assets/fonts/TwemojiMozilla.woff2"),
   });
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
@@ -64,16 +68,85 @@ function RootLayoutNav() {
     );
   }
 
+  // Tells Supabase Auth to continuously refresh the session automatically
+  // if the app is in the foreground. When this is added, you will continue
+  // to receive `onAuthStateChange` events with the `TOKEN_REFRESHED` or
+  // `SIGNED_OUT` event if the user's session is terminated. This should
+  // only be registered once.
+  AppState.addEventListener("change", (state) => {
+    if (state === "active") {
+      supabase.auth.startAutoRefresh();
+    } else {
+      supabase.auth.stopAutoRefresh();
+    }
+  });
+
   return (
+    <QueryClientProvider client={queryClient}>
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: "modal" }} />
         <Stack.Screen
-          name="onboarding"
-          options={{ headerShown: false, presentation: "fullScreenModal" }}
+          name="index"
+          options={{ headerShown: false, headerTitle: "" }}
+        />
+        <Stack.Screen
+          name="auth/index"
+          options={{
+            headerShown: true,
+            headerStyle: { backgroundColor: "#000" },
+            headerTitle: "",
+            headerLeft: () => (
+              <Ionicons name="chevron-back" size={24} color="white" onPress={() => router.back()} />
+            ),
+          }}
+        />
+        <Stack.Screen
+          name="auth/login"
+          options={{
+            headerShown: true,
+            headerStyle: { backgroundColor: "#000" },
+            headerTitle: "",
+            headerLeft: () => (
+              <Ionicons name="chevron-back" size={24} color="white" onPress={() => router.back()} />
+            ),
+          }}
+        />
+        <Stack.Screen
+          name="auth/phone"
+          options={{
+            headerShown: true,
+            headerStyle: { backgroundColor: "#000" },
+            headerTitle: "",
+            headerLeft: () => (
+              <Ionicons name="chevron-back" size={24} color="white" onPress={() => router.back()} />
+            ),
+          }}
+        />
+        <Stack.Screen
+          name="auth/verification"
+          options={{
+            headerShown: true,
+            headerStyle: { backgroundColor: "#000" },
+            headerTitle: "",
+            headerLeft: () => (
+              <Ionicons name="chevron-back" size={24} color="white" onPress={() => router.back()} />
+            ),
+          }}
+        />
+
+        <Stack.Screen
+          name="onboarding/index"
+          options={{
+            headerShown: true,
+            headerStyle: { backgroundColor: "#000" },
+            headerTitle: "",
+            headerLeft: () => (
+              <Ionicons name="chevron-back" size={24} color="white" onPress={() => router.back()} />
+            ),
+          }}
         />
       </Stack>
     </ThemeProvider>
+    </QueryClientProvider>
   );
 }
