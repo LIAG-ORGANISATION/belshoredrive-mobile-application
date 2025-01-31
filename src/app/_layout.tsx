@@ -1,6 +1,7 @@
 import "@/global.css";
 import StorybookUIRoot from "../../.storybook";
 import "react-native-reanimated";
+import { supabase } from "@/lib/supabase";
 import { Ionicons } from "@expo/vector-icons";
 // import Constants from "expo-constants";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
@@ -13,7 +14,7 @@ import { useFonts } from "expo-font";
 import { Stack, router } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-import { useColorScheme } from "react-native";
+import { AppState, useColorScheme } from "react-native";
 
 const isStoryBookEnabled = false;
 
@@ -63,6 +64,19 @@ function RootLayoutNav() {
       <StorybookUIRoot />
     );
   }
+
+  // Tells Supabase Auth to continuously refresh the session automatically
+  // if the app is in the foreground. When this is added, you will continue
+  // to receive `onAuthStateChange` events with the `TOKEN_REFRESHED` or
+  // `SIGNED_OUT` event if the user's session is terminated. This should
+  // only be registered once.
+  AppState.addEventListener("change", (state) => {
+    if (state === "active") {
+      supabase.auth.startAutoRefresh();
+    } else {
+      supabase.auth.stopAutoRefresh();
+    }
+  });
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>

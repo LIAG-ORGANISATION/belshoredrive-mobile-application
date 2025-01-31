@@ -5,10 +5,10 @@ import { KeyboardAvoidingView, Platform, Text, View } from "react-native";
 import PhoneInput, { type ICountry } from 'react-native-international-phone-number';
 
 import { Button } from "@/components/ui/button";
-import { sendVerificationCode } from "@/utils/prelude";
+import { sendVerificationCode } from "@/lib/prelude";
 
 export default function Phone() {
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState<string>("");
   const [selectedCountry, setSelectedCountry] = useState<ICountry>();
 
   const handleVerification = async () => {
@@ -38,6 +38,7 @@ export default function Phone() {
 
           <View className="flex-col w-full gap-4 mt-6">
             <PhoneInput
+              defaultCountry="FR"
               value={inputValue}
               onChangePhoneNumber={setInputValue}
               selectedCountry={selectedCountry}
