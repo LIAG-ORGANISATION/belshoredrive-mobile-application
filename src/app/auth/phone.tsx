@@ -1,15 +1,25 @@
+import Ionicons from "@expo/vector-icons/build/Ionicons";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import { KeyboardAvoidingView, Platform, Text, View } from "react-native";
-
 import PhoneInput, { type ICountry } from 'react-native-international-phone-number';
 
 import { Button } from "@/components/ui/button";
-import Ionicons from "@expo/vector-icons/build/Ionicons";
+import { sendVerificationCode } from "@/utils/prelude";
 
 export default function Phone() {
   const [inputValue, setInputValue] = useState("");
   const [selectedCountry, setSelectedCountry] = useState<ICountry>();
+
+  const handleVerification = async () => {
+    const verificationId = await sendVerificationCode(selectedCountry?.callingCode + inputValue.trim());
+
+    if (!verificationId) {
+      return;
+    }
+
+    router.push("/auth/verification");
+  };
 
   return (
     <KeyboardAvoidingView 
@@ -97,9 +107,7 @@ export default function Phone() {
             variant="secondary"
             label="Continuer"
             disabled={inputValue.length === 0}
-            onPress={() => {
-              // TODO: Send code to phone
-            }}
+            onPress={handleVerification}
           />
         </View>
       </View>
