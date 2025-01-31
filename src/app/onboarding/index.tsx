@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { useState } from "react";
 import {
   FlatList,
@@ -29,7 +30,7 @@ export default function OnboardingIntro() {
     },
     {
       image: require("../../../assets/images/login/intro-3.jpg"),
-      title: "Trouvez d’autres passionnés à proximité",
+      title: "Trouvez d'autres passionnés à proximité",
     },
   ];
 
@@ -93,7 +94,7 @@ export default function OnboardingIntro() {
             variant="secondary"
             label="Créer un compte"
             onPress={() => {
-              console.log("Créer un compte");
+              router.push("/auth");
             }}
           />
           <Button
