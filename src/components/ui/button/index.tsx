@@ -4,14 +4,19 @@ import { Animated, Pressable, Text } from "react-native";
 
 type ButtonPropsType = {
   label: string;
-  variant: "primary" | "secondary";
+  variant: "primary" | "secondary" | "with-icon";
   icon?: React.ReactNode;
-  textPosition?: "left" | "center" | "right";
   disabled?: boolean;
   onPress: () => void;
 };
 
-export const Button = ({ label, variant, onPress, textPosition = "center", icon, disabled = false }: ButtonPropsType) => {
+export const Button = ({
+  label,
+  variant,
+  onPress,
+  icon,
+  disabled = false,
+}: ButtonPropsType) => {
   const backgroundColorRef = new Animated.Value(0);
   const handlePress = () => {
     Animated.timing(backgroundColorRef, {
@@ -33,22 +38,23 @@ export const Button = ({ label, variant, onPress, textPosition = "center", icon,
     outputRange: disabled
       ? ["#1F1F1F", "#1F1F1F"] // gray-600 for disabled state
       : variant === "secondary"
-      ? ["#fff", "#333"]
-      : ["#333", "#fff"],
+      ? ["#fff", "#a6a6a6"]
+      : ["#333", "#404040"],
   });
 
   const classes = cx({
-    "flex w-full h-fit rounded-md px-6 py-3": true,
+    "flex w-full h-fit rounded-md flex-row items-center": true,
     "bg-gray-700 text-white": variant === "primary",
     "bg-white text-white": variant === "secondary",
-    "flex-row items-center justify-center": textPosition === "center",
-    "flex-row items-start justify-start items-center gap-4": textPosition === "left",
-    "flex-row items-end justify-end": textPosition === "right",
+    "px-6 py-3 justify-center": variant !== "with-icon",
+    "gap-4 p-4 justify-start": variant === "with-icon",
     "bg-gray-800": disabled,
   });
   const textClasses = cx({
-    "text-white text-md font-semibold": variant === "primary",
+    "text-white text-md font-semibold":
+      variant === "primary" || variant === "with-icon",
     "text-primary-500 text-md font-semibold": variant === "secondary",
+    "text-lg": variant === "with-icon",
     "text-gray-500": disabled,
   });
   return (
