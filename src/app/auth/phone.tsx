@@ -2,21 +2,29 @@ import Ionicons from "@expo/vector-icons/build/Ionicons";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import { KeyboardAvoidingView, Platform, Text, View } from "react-native";
-import PhoneInput, { type ICountry } from 'react-native-international-phone-number';
+import PhoneInput, {
+  type ICountry,
+} from "react-native-international-phone-number";
+import phone from "phone";
 
 import { Button } from "@/components/ui/button";
-import { sendVerificationCode } from "@/lib/prelude";
+// import { sendVerificationCode } from "@/lib/prelude";
 
 export default function Phone() {
   const [inputValue, setInputValue] = useState<string>("");
   const [selectedCountry, setSelectedCountry] = useState<ICountry>();
+  const [isValid, setIsValid] = useState<boolean>(false);
+
+  const handleValueChange = (value: string) => {
+    setInputValue(value);
+    const isValid = phone(selectedCountry?.callingCode + value.trim()).isValid;
+    setIsValid(isValid);
+  };
 
   const handleVerification = async () => {
-    const verificationId = await sendVerificationCode(selectedCountry?.callingCode + inputValue.trim());
-
-    if (!verificationId) {
-      return;
-    }
+    // const verificationId = await sendVerificationCode(
+    //   selectedCountry?.callingCode + inputValue.trim()
+    // );
 
     router.push("/auth/verification");
   };
@@ -26,24 +34,32 @@ export default function Phone() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       className="flex-1"
     >
-      <View className="w-full flex-1 items-center justify-between h-screen py-safe-offset-20 px-safe-offset-6 bg-black">
+      <View className="w-full flex-1 items-center justify-between h-screen py-safe-offset-4 px-safe-offset-6 bg-black">
         <View className="w-full flex-1 gap-2">
           <Text className="text-white text-2xl font-bold">
             Quel est votre numéro de téléphone ?
           </Text>
 
-          <Text className="text-white text-sm">
-            Uniquement utilisé pour confirmer votre identité.  Ce numéro restera confidentiel, ne sera ni vendu, ni utilisé pour de la publicité.
+          <Text className="text-white/70 text-sm">
+            Uniquement utilisé pour confirmer votre identité. Ce numéro restera
+            confidentiel, ne sera ni vendu, ni utilisé pour de la publicité.
           </Text>
 
           <View className="flex-col w-full gap-4 mt-6">
             <PhoneInput
               defaultCountry="FR"
               value={inputValue}
-              onChangePhoneNumber={setInputValue}
+              onChangePhoneNumber={handleValueChange}
               selectedCountry={selectedCountry}
               onChangeSelectedCountry={setSelectedCountry}
-              customCaret={<Ionicons name="chevron-down" size={16} color="white" onPress={() => router.back()} />}
+              customCaret={
+                <Ionicons
+                  name="chevron-down"
+                  size={16}
+                  color="white"
+                  onPress={() => router.back()}
+                />
+              }
               phoneInputStyles={{
                 container: {
                   backgroundColor: "#1F1F1F",
@@ -52,8 +68,7 @@ export default function Phone() {
                 flagContainer: {
                   backgroundColor: "#1F1F1F",
                 },
-                caret: {
-                },
+                caret: {},
                 input: {
                   backgroundColor: "#1F1F1F",
                   color: "#FFFFFF",
@@ -107,7 +122,7 @@ export default function Phone() {
           <Button
             variant="secondary"
             label="Continuer"
-            disabled={inputValue.length === 0}
+            disabled={!isValid}
             onPress={handleVerification}
           />
         </View>

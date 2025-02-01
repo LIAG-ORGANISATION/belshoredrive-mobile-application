@@ -19,9 +19,7 @@ import { AppState, useColorScheme } from "react-native";
 
 const isStoryBookEnabled = false;
 
-export {
-  ErrorBoundary,
-} from "expo-router";
+export { ErrorBoundary } from "expo-router";
 
 export const unstable_settings = {
   initialRouteName: "/index",
@@ -54,18 +52,14 @@ export default function RootLayout() {
     return null;
   }
 
-  return (
-    <RootLayoutNav />
-  );
+  return <RootLayoutNav />;
 }
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   if (isStoryBookEnabled) {
-    return (
-      <StorybookUIRoot />
-    );
+    return <StorybookUIRoot />;
   }
 
   // Tells Supabase Auth to continuously refresh the session automatically
@@ -84,7 +78,10 @@ function RootLayoutNav() {
   // Add session check
   useEffect(() => {
     const checkSession = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession();
       if (session) {
         // User is signed in, redirect to main app
         router.push("/onboarding");
@@ -99,70 +96,95 @@ function RootLayoutNav() {
 
   return (
     <QueryClientProvider client={queryClient}>
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen
-          name="index"
-          options={{ headerShown: false, headerTitle: "" }}
-        />
-        <Stack.Screen
-          name="auth/index"
-          options={{
-            headerShown: true,
-            headerStyle: { backgroundColor: "#000" },
-            headerTitle: "",
-            headerLeft: () => (
-              <Ionicons name="chevron-back" size={24} color="white" onPress={() => router.back()} />
-            ),
-          }}
-        />
-        <Stack.Screen
-          name="auth/login"
-          options={{
-            headerShown: true,
-            headerStyle: { backgroundColor: "#000" },
-            headerTitle: "",
-            headerLeft: () => (
-              <Ionicons name="chevron-back" size={24} color="white" onPress={() => router.back()} />
-            ),
-          }}
-        />
-        <Stack.Screen
-          name="auth/phone"
-          options={{
-            headerShown: true,
-            headerStyle: { backgroundColor: "#000" },
-            headerTitle: "",
-            headerLeft: () => (
-              <Ionicons name="chevron-back" size={24} color="white" onPress={() => router.back()} />
-            ),
-          }}
-        />
-        <Stack.Screen
-          name="auth/verification"
-          options={{
-            headerShown: true,
-            headerStyle: { backgroundColor: "#000" },
-            headerTitle: "",
-            headerLeft: () => (
-              <Ionicons name="chevron-back" size={24} color="white" onPress={() => router.back()} />
-            ),
-          }}
-        />
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <Stack>
+          <Stack.Screen
+            name="index"
+            options={{ headerShown: false, headerTitle: "" }}
+          />
+          <Stack.Screen
+            name="auth/index"
+            options={{
+              headerShown: true,
+              headerStyle: { backgroundColor: "#000" },
+              headerTitle: "",
+              headerLeft: () => (
+                <Ionicons
+                  name="chevron-back"
+                  size={24}
+                  color="white"
+                  onPress={() => router.back()}
+                />
+              ),
+            }}
+          />
+          <Stack.Screen
+            name="auth/login"
+            options={{
+              headerShown: true,
+              headerStyle: { backgroundColor: "#000" },
+              headerTitle: "",
+              headerLeft: () => (
+                <Ionicons
+                  name="chevron-back"
+                  size={24}
+                  color="white"
+                  onPress={() => router.back()}
+                />
+              ),
+            }}
+          />
+          <Stack.Screen
+            name="auth/phone"
+            options={{
+              headerShown: true,
+              headerStyle: { backgroundColor: "#000" },
+              headerTitle: "",
+              headerLeft: () => (
+                <Ionicons
+                  name="chevron-back"
+                  size={24}
+                  color="white"
+                  onPress={() => router.back()}
+                />
+              ),
+            }}
+          />
+          <Stack.Screen
+            name="auth/verification"
+            options={{
+              headerShown: true,
+              headerStyle: { backgroundColor: "#000" },
+              headerTitle: "",
+              headerLeft: () => (
+                <Ionicons
+                  name="chevron-back"
+                  size={24}
+                  color="white"
+                  onPress={() => router.back()}
+                />
+              ),
+            }}
+          />
 
-        <Stack.Screen
-          name="onboarding/index"
-          options={{
-            headerShown: true,
-            headerStyle: { backgroundColor: "#000" },
-            headerTitle: "",
-            headerLeft: () => (
-              <Ionicons name="chevron-back" size={24} color="white" onPress={() => router.back()} />
-            ),
-          }}
-        />
-      </Stack>
-    </ThemeProvider>
+          <Stack.Screen
+            name="onboarding/index"
+            options={{
+              headerShown: true,
+              headerStyle: { backgroundColor: "#000" },
+              headerTitle: "",
+              headerLeft: () => (
+                <Ionicons
+                  name="chevron-back"
+                  size={24}
+                  color="white"
+                  onPress={() => router.back()}
+                />
+              ),
+            }}
+          />
+        </Stack>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

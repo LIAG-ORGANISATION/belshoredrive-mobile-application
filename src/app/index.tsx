@@ -1,4 +1,4 @@
-import { router } from 'expo-router';
+import { router } from "expo-router";
 import { useState } from "react";
 import {
   FlatList,
@@ -37,7 +37,7 @@ export default function OnboardingIntro() {
     value: ViewToken<{
       image: number;
       title: string;
-    }>[],
+    }>[]
   ) => {
     if (value.length === 1) {
       setCurrentIndex(value[0].index || 0);
