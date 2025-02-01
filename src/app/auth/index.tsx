@@ -12,10 +12,9 @@ import { router } from "expo-router";
 
 export default function Auth() {
   return (
-    <View className="w-full flex-1 items-center justify-between h-screen p-safe-offset-6 bg-black">
-      <View
-        className="w-full flex flex-col gap-6"
-      >
+    <View className="w-full flex-1 items-center justify-between h-screen px-safe-offset-6 bg-black">
+      <StatusBar barStyle="light-content" />
+      <View className="w-full h-full flex flex-col gap-6 justify-between">
         <View className="flex-col w-full gap-6 items-center">
           <LogoB className="mx-auto text-center" />
           <Text className="text-center text-white text-2xl font-bold">
@@ -26,48 +25,42 @@ export default function Auth() {
         {/* TODO : Display all BTN for each social media / */}
         <View className="flex-col w-full gap-4">
           <Button
-            variant="primary"
+            variant="with-icon"
             label="Avec un numéro de téléphone"
-            textPosition="left"
             icon={<IconPhone />}
             onPress={() => {
               router.push("/auth/phone");
             }}
           />
           <Button
-            variant="primary"
+            variant="with-icon"
             label="Avec une adresse email"
-            textPosition="left"
             icon={<Ionicons name="mail-outline" size={24} color="white" />}
             onPress={() => {
               router.push("/auth/email");
             }}
           />
           <Button
-            variant="primary"
+            variant="with-icon"
             label="Avec Google"
-            textPosition="left"
             icon={<IconGoogle />}
             onPress={() => {}}
           />
           <Button
-            variant="primary"
+            variant="with-icon"
             label="Avec Apple"
-            textPosition="left"
             icon={<IconApple />}
             onPress={() => {}}
           />
           <Button
-            variant="primary"
+            variant="with-icon"
             label="Avec Facebook"
-            textPosition="left"
             icon={<IconFacebook />}
             onPress={() => {}}
           />
           <Button
-            variant="primary"
+            variant="with-icon"
             label="Avec X"
-            textPosition="left"
             icon={<IconX />}
             onPress={() => {}}
           />
@@ -81,10 +74,11 @@ export default function Auth() {
             variant="primary"
             label="Se connecter"
             onPress={() => {
-              router.push("/auth/login");
+              router.replace("/auth/login");
             }}
           />
         </View>
+        <View className="h-0" />
       </View>
     </View>
   );
