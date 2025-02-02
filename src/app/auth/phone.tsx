@@ -22,9 +22,11 @@ export default function Phone() {
   };
 
   const handleVerification = async () => {
-    // const verificationId = await sendVerificationCode(
-    //   selectedCountry?.callingCode + inputValue.trim()
-    // );
+    // const verificationId = await sendVerificationCode(selectedCountry?.callingCode + inputValue.trim());
+
+    // if (!verificationId) {
+    //   return;
+    // }
 
     router.push("/auth/verification");
   };
@@ -34,7 +36,7 @@ export default function Phone() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       className="flex-1"
     >
-      <View className="w-full flex-1 items-center justify-between h-screen py-safe-offset-4 px-safe-offset-6 bg-black">
+      <View className="w-full flex-1 items-center justify-between h-screen  pt-safe-offset-4 pb-safe-offset-20 px-safe-offset-6 bg-black">
         <View className="w-full flex-1 gap-2">
           <Text className="text-white text-2xl font-bold">
             Quel est votre numéro de téléphone ?
