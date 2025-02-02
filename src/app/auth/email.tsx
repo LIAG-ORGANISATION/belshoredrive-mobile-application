@@ -2,12 +2,13 @@ import { makeRedirectUri } from "expo-auth-session";
 import * as QueryParams from "expo-auth-session/build/QueryParams";
 import * as Linking from "expo-linking";
 import React, { useEffect, useState } from "react";
-import { KeyboardAvoidingView, Platform, Text, TextInput, View } from "react-native";
+import { KeyboardAvoidingView, Platform, Text, View } from "react-native";
 
 import { Button } from "@/components/ui/button";
 
 import { supabase } from "@/lib/supabase";
 import { router } from "expo-router";
+import { Input } from "@/components/ui/text-input";
 
 const createSessionFromUrl = async (url: string) => {
   const { params, errorCode } = QueryParams.getQueryParams(url);
@@ -54,18 +55,17 @@ export default function Email() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       className="flex-1"
     >
-      <View className="w-full flex-1 items-center justify-between h-screen py-safe-offset-20 px-safe-offset-6 bg-black">
+      <View className="w-full flex-1 items-center justify-between h-screen pt-safe-offset-4 pb-safe-offset-20 px-safe-offset-6 bg-black">
         <View className="w-full flex-1 gap-2">
           <Text className="text-white text-2xl font-bold">
-            Quel est votre adresse email ?
+            Quel est votre adresse s email ?
           </Text>
 
           <View className="flex-col w-full gap-4 mt-6">
-            <TextInput
+            <Input
               placeholder="Email"
               value={inputValue}
               onChangeText={setInputValue}
-              className="text-white text-sm"
               placeholderTextColor="white"
             />
           </View>
