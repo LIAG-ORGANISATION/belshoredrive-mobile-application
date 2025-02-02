@@ -58,7 +58,7 @@ export default function Email() {
       <View className="w-full flex-1 items-center justify-between h-screen pt-safe-offset-4 pb-safe-offset-20 px-safe-offset-6 bg-black">
         <View className="w-full flex-1 gap-2">
           <Text className="text-white text-2xl font-bold">
-            Quel est votre adresse s email ?
+            Quel est votre adresse email ?
           </Text>
 
           <View className="flex-col w-full gap-4 mt-6">
