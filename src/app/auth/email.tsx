@@ -9,6 +9,9 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 import { router } from "expo-router";
 import { Input } from "@/components/ui/text-input";
+import { EmailLoginType, emailLoginSchema } from "@/lib/schemas/auth";
+import { Controller, useForm } from "react-hook-form";
+import { valibotResolver } from "@hookform/resolvers/valibot";
 
 const createSessionFromUrl = async (url: string) => {
   const { params, errorCode } = QueryParams.getQueryParams(url);
@@ -32,16 +35,29 @@ const createSessionFromUrl = async (url: string) => {
 export default function Email() {
   const redirectTo = makeRedirectUri();
   const url = Linking.useURL();
-  const [inputValue, setInputValue] = useState<string>("");
+
+  const {
+    control,
+    handleSubmit,
+    formState: { isValid, isSubmitting, errors },
+  } = useForm<EmailLoginType>({
+    resolver: valibotResolver(emailLoginSchema),
+    defaultValues: {
+      email: "",
+    },
+    mode: "onBlur",
+    criteriaMode: "firstError",
+    shouldFocusError: true,
+  });
 
   useEffect(() => {
     if (url) createSessionFromUrl(url);
   }, [url]);
 
-  const sendMagicLink = async () => {
+  const sendMagicLink = async (values: EmailLoginType) => {
     // Redirect to the email verification page and then redirect to the onboarding page
     const { error } = await supabase.auth.signInWithOtp({
-      email: inputValue,
+      email: values.email,
       options: {
         emailRedirectTo: `${redirectTo}/auth/email`,
       },
@@ -62,11 +78,20 @@ export default function Email() {
           </Text>
 
           <View className="flex-col w-full gap-4 mt-6">
-            <Input
-              placeholder="Email"
-              value={inputValue}
-              onChangeText={setInputValue}
-              placeholderTextColor="white"
+            <Controller<EmailLoginType>
+              control={control}
+              name="email"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <Input
+                  placeholder="Email"
+                  name="email"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  placeholderTextColor="white"
+                  error={errors.email}
+                />
+              )}
             />
           </View>
         </View>
@@ -75,8 +100,8 @@ export default function Email() {
           <Button
             variant="secondary"
             label="Continuer"
-            disabled={inputValue.length === 0}
-            onPress={sendMagicLink}
+            disabled={!isValid || isSubmitting}
+            onPress={handleSubmit(sendMagicLink)}
           />
         </View>
       </View>
