@@ -6,28 +6,54 @@ import PhoneInput, {
   type ICountry,
 } from "react-native-international-phone-number";
 import phone from "phone";
-
+import { Controller, useForm } from "react-hook-form";
+import { valibotResolver } from "@hookform/resolvers/valibot";
+import { phoneLoginSchema, PhoneLoginType } from "@/lib/schemas/auth";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 // import { sendVerificationCode } from "@/lib/prelude";
 
 export default function Phone() {
-  const [inputValue, setInputValue] = useState<string>("");
   const [selectedCountry, setSelectedCountry] = useState<ICountry>();
+  const [fullNumber, setFullNumber] = useState<string>("");
   const [isValid, setIsValid] = useState<boolean>(false);
 
-  const handleValueChange = (value: string) => {
-    setInputValue(value);
-    const isValid = phone(selectedCountry?.callingCode + value.trim()).isValid;
-    setIsValid(isValid);
-  };
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    setValue,
+    watch,
+  } = useForm<PhoneLoginType>({
+    resolver: valibotResolver(phoneLoginSchema),
+    criteriaMode: "all",
+    defaultValues: {
+      countryCode: "+33",
+      phoneNumber: "",
+    },
+    mode: "onChange",
+  });
 
-  const handleVerification = async () => {
-    // const verificationId = await sendVerificationCode(selectedCountry?.callingCode + inputValue.trim());
+  const phoneNumber = watch("phoneNumber");
+  const countryCode = watch("countryCode");
 
+  useEffect(() => {
+    const result = phone(`${countryCode}${phoneNumber}`);
+
+    if (result.isValid) {
+      setIsValid(true);
+      setFullNumber(result.phoneNumber);
+    } else {
+      setIsValid(false);
+    }
+  }, [countryCode, phoneNumber]);
+
+  const handleVerification = async (values: PhoneLoginType) => {
+    const check = phone(fullNumber);
+    // const verificationId = await sendVerificationCode(check);
     // if (!verificationId) {
     //   return;
     // }
-
     router.push("/auth/verification");
   };
 
@@ -48,75 +74,88 @@ export default function Phone() {
           </Text>
 
           <View className="flex-col w-full gap-4 mt-6">
-            <PhoneInput
-              defaultCountry="FR"
-              value={inputValue}
-              onChangePhoneNumber={handleValueChange}
-              selectedCountry={selectedCountry}
-              onChangeSelectedCountry={setSelectedCountry}
-              customCaret={
-                <Ionicons
-                  name="chevron-down"
-                  size={16}
-                  color="white"
-                  onPress={() => router.back()}
+            <Controller
+              control={control}
+              name="phoneNumber"
+              render={({ field: { value, onChange, onBlur } }) => (
+                <PhoneInput
+                  defaultCountry="FR"
+                  value={value}
+                  onBlur={onBlur}
+                  onChangePhoneNumber={(v) => setValue("phoneNumber", v)}
+                  selectedCountry={selectedCountry}
+                  onChangeSelectedCountry={(country) => {
+                    setSelectedCountry(country);
+                    setValue("countryCode", country.callingCode);
+                  }}
+                  customCaret={
+                    <Ionicons
+                      name="chevron-down"
+                      size={16}
+                      color="white"
+                      onPress={() => router.back()}
+                    />
+                  }
+                  phoneInputStyles={{
+                    container: {
+                      backgroundColor: "#1F1F1F",
+                      borderColor: "#545454",
+                    },
+                    flagContainer: {
+                      backgroundColor: "#1F1F1F",
+                    },
+                    caret: {},
+                    input: {
+                      backgroundColor: "#1F1F1F",
+                      color: "#FFFFFF",
+                    },
+                    divider: {
+                      backgroundColor: "#545454",
+                    },
+                    callingCode: {
+                      color: "#FFFFFF",
+                    },
+                  }}
+                  modalStyles={{
+                    modal: {
+                      backgroundColor: "#1F1F1F",
+                    },
+                    divider: {
+                      backgroundColor: "#545454",
+                    },
+                    countriesList: {
+                      backgroundColor: "#1F1F1F",
+                    },
+                    searchInput: {
+                      backgroundColor: "#1F1F1F",
+                      color: "#FFFFFF",
+                    },
+                    countryButton: {
+                      backgroundColor: "#1F1F1F",
+                    },
+                    noCountryText: {
+                      backgroundColor: "#1F1F1F",
+                    },
+                    noCountryContainer: {
+                      backgroundColor: "#1F1F1F",
+                    },
+                    flag: {
+                      backgroundColor: "#1F1F1F",
+                    },
+                    callingCode: {
+                      color: "#FFFFFF",
+                    },
+                    countryName: {
+                      backgroundColor: "#1F1F1F",
+                      color: "#FFFFFF",
+                    },
+                  }}
                 />
-              }
-              phoneInputStyles={{
-                container: {
-                  backgroundColor: "#1F1F1F",
-                  borderColor: "#545454",
-                },
-                flagContainer: {
-                  backgroundColor: "#1F1F1F",
-                },
-                caret: {},
-                input: {
-                  backgroundColor: "#1F1F1F",
-                  color: "#FFFFFF",
-                },
-                divider: {
-                  backgroundColor: "#545454",
-                },
-                callingCode: {
-                  color: "#FFFFFF",
-                },
-              }}
-              modalStyles={{
-                modal: {
-                  backgroundColor: "#1F1F1F",
-                },
-                divider: {
-                  backgroundColor: "#545454",
-                },
-                countriesList: {
-                  backgroundColor: "#1F1F1F",
-                },
-                searchInput: {
-                  backgroundColor: "#1F1F1F",
-                  color: "#FFFFFF",
-                },
-                countryButton: {
-                  backgroundColor: "#1F1F1F",
-                },
-                noCountryText: {
-                  backgroundColor: "#1F1F1F",
-                },
-                noCountryContainer: {
-                  backgroundColor: "#1F1F1F",
-                },
-                flag: {
-                  backgroundColor: "#1F1F1F",
-                },
-                callingCode: {
-                  color: "#FFFFFF",
-                },
-                countryName: {
-                  backgroundColor: "#1F1F1F",
-                  color: "#FFFFFF",
-                },
-              }}
+              )}
             />
+            <Text className="text-red-500 text-sm">
+              {errors.countryCode?.message || errors.phoneNumber?.message}
+            </Text>
           </View>
         </View>
 
@@ -124,8 +163,8 @@ export default function Phone() {
           <Button
             variant="secondary"
             label="Continuer"
-            disabled={!isValid}
-            onPress={handleVerification}
+            disabled={!isValid || isSubmitting}
+            onPress={handleSubmit(handleVerification)}
           />
         </View>
       </View>

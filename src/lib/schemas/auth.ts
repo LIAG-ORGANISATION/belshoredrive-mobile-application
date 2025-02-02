@@ -1,5 +1,4 @@
-import phone from "phone";
-import { object, string, email, pipe, InferOutput, check } from "valibot";
+import { object, string, email, pipe, InferOutput } from "valibot";
 
 export const emailLoginSchema = object({
   email: pipe(string(), email()),
@@ -8,10 +7,8 @@ export const emailLoginSchema = object({
 export type EmailLoginType = InferOutput<typeof emailLoginSchema>;
 
 export const phoneLoginSchema = object({
-  phone: pipe(
-    string(),
-    check((value: string) => phone(value).isValid, "Invalid phone number")
-  ),
+  countryCode: string(),
+  phoneNumber: string(),
 });
 
 export type PhoneLoginType = InferOutput<typeof phoneLoginSchema>;
