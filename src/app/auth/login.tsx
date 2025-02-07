@@ -3,10 +3,8 @@ import { StatusBar, Text, View } from "react-native";
 
 import { Button } from "@/components/ui/button";
 import { IconApple } from "@/components/vectors/icon-apple";
-import { IconFacebook } from "@/components/vectors/icon-facebook";
 import { IconGoogle } from "@/components/vectors/icon-google";
 import { IconPhone } from "@/components/vectors/icon-phone";
-import { IconX } from "@/components/vectors/icon-x";
 import { LogoB } from "@/components/vectors/logo-b";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -48,18 +46,6 @@ export default function Login() {
             variant="with-icon"
             label="Avec Apple"
             icon={<IconApple />}
-            onPress={() => {}}
-          />
-          <Button
-            variant="with-icon"
-            label="Avec Facebook"
-            icon={<IconFacebook />}
-            onPress={() => {}}
-          />
-          <Button
-            variant="with-icon"
-            label="Avec X"
-            icon={<IconX />}
             onPress={() => {}}
           />
         </View>

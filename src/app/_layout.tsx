@@ -1,6 +1,7 @@
 import "@/global.css";
 import StorybookUIRoot from "../../.storybook";
 import "react-native-reanimated";
+import { ProgressBar } from "@/components/ui/progress-bar";
 import { supabase } from "@/lib/supabase";
 import { Ionicons } from "@expo/vector-icons";
 // import Constants from "expo-constants";
@@ -16,7 +17,6 @@ import { Stack, router } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { AppState, useColorScheme } from "react-native";
-import { ProgressBar } from "@/components/ui/progress-bar";
 
 const isStoryBookEnabled = false;
 
@@ -189,7 +189,7 @@ function RootLayoutNav() {
             options={{
               headerShown: true,
               headerStyle: { backgroundColor: "#000" },
-              headerTitle: "",
+              headerTitle: () => <ProgressBar currentStep={1} totalSteps={4} />,
               headerLeft: () => (
                 <Ionicons
                   name="chevron-back"
