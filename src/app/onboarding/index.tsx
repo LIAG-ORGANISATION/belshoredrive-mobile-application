@@ -47,23 +47,21 @@ export default function Onboarding() {
 
         <FlatList
           data={departments}
+          columnWrapperClassName="flex flex-wrap gap-2 mb-2"
           numColumns={3}
-          horizontal={false}
-          contentContainerStyle={{ gap: 8, padding: 8, paddingBottom: 80 }}
-          columnWrapperStyle={{ gap: 8 }}
           renderItem={({ item: department }) => (
             <Pressable
               key={department.department_id}
               onPress={() => toggleDepartment(department.department_id)}
             >
-              <Text 
+              <Text
                 className={`text-sm border border-white p-1 px-2 rounded-md ${
                   selectedDepartments.includes(department.department_id) 
                     ? "bg-white text-black" 
                     : "bg-gray-900 text-white"
                 }`}
               >
-                {department.name || "Unnamed department"}
+                {department.department_number} - {department.name || "Unnamed department"}
               </Text>
             </Pressable>
           )}

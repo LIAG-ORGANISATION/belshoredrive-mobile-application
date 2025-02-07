@@ -44,10 +44,8 @@ export default function Onboarding() {
 
         <FlatList
           data={brands}
-          numColumns={5}
-          horizontal={false}
-          contentContainerStyle={{ gap: 8, padding: 8, paddingBottom: 80 }}
-          columnWrapperStyle={{ gap: 8 }}
+          columnWrapperClassName="flex flex-wrap gap-2 mb-2"
+          numColumns={4}
           renderItem={({ item: brand }) => (
             <Pressable
               key={brand.brand_id}
