@@ -40,8 +40,8 @@ export default function Onboarding() {
 
   return (
     <View className="flex-1 bg-black">
-      <View className="flex-1">
-        <Text className="text-white text-2xl font-bold p-4">Dans quelle(s) région(s) peut-on vous croiser ? </Text>
+      <View className="flex-1 px-safe-offset-6">
+        <Text className="text-white text-2xl font-bold py-4">Dans quelle(s) région(s) peut-on vous croiser ? </Text>
 
         <FlatList
           data={departments}
@@ -67,7 +67,7 @@ export default function Onboarding() {
         />
       </View>
 
-      <View className="absolute bottom-0 w-full px-4 pb-10 pt-4 bg-black z-10">
+      <View className="absolute bottom-0 w-full px-4 pb-10 pt-4 bg-black z-10 inset-x-0">
         <Button
           variant="secondary"
           label="Continuer" 

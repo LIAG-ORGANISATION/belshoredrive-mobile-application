@@ -40,8 +40,8 @@ export default function Onboarding() {
 
   return (
     <View className="flex-1 bg-black">
-      <View className="flex-1">
-        <Text className="text-white text-2xl font-bold p-4">Quelles sont tes marques préférées ?</Text>
+      <View className="flex-1 px-safe-offset-6">
+        <Text className="text-white text-2xl font-bold py-4">Quelles sont tes marques préférées ?</Text>
 
         <FlatList
           data={brands}

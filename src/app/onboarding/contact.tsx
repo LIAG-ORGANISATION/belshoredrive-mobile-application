@@ -28,10 +28,10 @@ export default function Contact() {
   };
 
   return (
-    <View className="flex-1 bg-black px-2">
-      <View className="flex-1">
-        <Text className="text-white text-2xl font-bold p-4">Trouvez et invitez des connaissances </Text>
-        <Text className="text-white text-sm p-4">
+    <View className="flex-1 bg-black">
+      <View className="flex-1 px-safe-offset-6">
+        <Text className="text-white text-2xl font-bold py-4">Trouvez et invitez des connaissances </Text>
+        <Text className="text-white text-sm py-4">
           En autorisant l'accès à votre répertoire, nous listerons vos contacts et vous pourrez les inviter plus facilement.Vos contacts ne seront pas contacté sans votre consentement.
         </Text>
 
@@ -39,7 +39,7 @@ export default function Contact() {
           <FlatList
             data={contacts}
             renderItem={({ item }) => (
-              <View className="flex-row items-center gap-2 p-3">
+              <View className="flex-row items-center gap-2 p-3 border-b border-gray-400">
                 <View className="w-12 h-12 rounded-full bg-gray-700">
                   <Image
                     className="w-full h-full rounded-full"

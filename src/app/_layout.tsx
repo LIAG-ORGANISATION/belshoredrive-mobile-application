@@ -4,10 +4,8 @@ import "react-native-reanimated";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import { supabase } from "@/lib/supabase";
 import { Ionicons } from "@expo/vector-icons";
-// import Constants from "expo-constants";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {
-  DarkTheme,
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
