@@ -7,6 +7,7 @@ type ButtonPropsType = {
   variant: "primary" | "secondary" | "with-icon";
   icon?: React.ReactNode;
   disabled?: boolean;
+  className?: string;
   onPress: () => void;
 };
 
@@ -16,6 +17,7 @@ export const Button = ({
   onPress,
   icon,
   disabled = false,
+  className,
 }: ButtonPropsType) => {
   const backgroundColorRef = new Animated.Value(0);
   const handlePress = () => {
@@ -43,7 +45,7 @@ export const Button = ({
   });
 
   const classes = cx({
-    "flex w-full h-fit rounded-md flex-row items-center": true,
+    "flex rounded-md flex-row items-center": true,
     "bg-gray-700 text-white": variant === "primary",
     "bg-white text-white": variant === "secondary",
     "px-6 py-3 justify-center": variant !== "with-icon",
@@ -64,9 +66,9 @@ export const Button = ({
       onPress={onPress}
       disabled={disabled}
     >
-      <Animated.View className={classes} style={{ backgroundColor }}>
+      <Animated.View className={cx(classes, className)} style={{ backgroundColor }}>
         {icon && icon}
-        <Text className={textClasses}>{label}</Text>
+        {label && <Text className={textClasses}>{label}</Text>}
       </Animated.View>
     </Pressable>
   );

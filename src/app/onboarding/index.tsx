@@ -1,8 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/lib/supabase";
 import { useFetchDepartments } from "@/network/departments";
 import { useFetchUserProfile, useUpdateUserProfile } from "@/network/user-profile";
-import type { Tables } from "@/types/supabase";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { FlatList, Pressable, Text, View } from "react-native";

@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useFetchBrands } from "@/network/brands";
 import { useFetchUserProfile, useUpdateUserProfile } from "@/network/user-profile";
+import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { FlatList, Pressable, Text, View } from "react-native";
 
@@ -71,7 +72,7 @@ export default function Onboarding() {
           variant="secondary"
           label="Continuer" 
           disabled={selectedBrands.length === 0}
-          onPress={() => {}}
+          onPress={() => router.push("/onboarding/contact")}
         />
       </View>
     </View>
