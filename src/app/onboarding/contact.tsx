@@ -48,9 +48,8 @@ export default function Contact() {
                     transition={1000}
                   />
                 </View>
-                <View className="flex flex-row items-center justify-between">
+                <View className="flex-1 flex-row items-center justify-between">
                   <Text className="text-white text-sm">{item.name}</Text>
-
                   <Button className="" variant="secondary" label="" icon={<Ionicons name="add" size={16} color="black" />} onPress={() => {}} />
                 </View>
               </View>
