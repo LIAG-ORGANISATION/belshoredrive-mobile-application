@@ -39,7 +39,7 @@ export default function Contact() {
           <FlatList
             data={contacts}
             renderItem={({ item }) => (
-              <View className="flex-row items-center gap-2 p-3 border-b border-gray-400">
+              <View className="flex-row items-center gap-2 py-3 border-b border-gray-700">
                 <View className="w-12 h-12 rounded-full bg-gray-700">
                   <Image
                     className="w-full h-full rounded-full"
