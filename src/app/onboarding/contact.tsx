@@ -11,6 +11,7 @@ export default function Contact() {
   const blurhash =
   '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
   const [contacts, setContacts] = useState<Contacts.Contact[]>([]);
+  const [selectedContacts, setSelectedContacts] = useState<Contacts.Contact[]>([]);
 
   const handleContactPermission = async () => {
     const { status } = await Contacts.requestPermissionsAsync();
@@ -22,9 +23,19 @@ export default function Contact() {
 
       if (data.length > 0) {
         setContacts(data);
-        // You can handle the contacts data here
-        console.log('Contacts:', data);
       }
+    }
+  };
+
+  const isContactSelected = (contact: Contacts.Contact) => {
+    return selectedContacts.some(c => c.id === contact.id);
+  };
+
+  const handleAddContact = (contact: Contacts.Contact) => {
+    if (isContactSelected(contact)) {
+      setSelectedContacts(selectedContacts.filter(c => c.id !== contact.id));
+    } else {
+      setSelectedContacts([...selectedContacts, contact]);
     }
   };
 
@@ -32,9 +43,12 @@ export default function Contact() {
     <View className="flex-1 bg-black">
       <View className="flex-1 px-safe-offset-6">
         <Text className="text-white text-2xl font-bold py-4">Trouvez et invitez des connaissances </Text>
-        <Text className="text-white text-sm py-4">
-          En autorisant l'accès à votre répertoire, nous listerons vos contacts et vous pourrez les inviter plus facilement.Vos contacts ne seront pas contacté sans votre consentement.
-        </Text>
+
+        {contacts.length === 0 && (
+          <Text className="text-white text-sm py-4">
+            En autorisant l'accès à votre répertoire, nous listerons vos contacts et vous pourrez les inviter plus facilement.Vos contacts ne seront pas contacté sans votre consentement.
+          </Text>
+        )}
 
         {contacts.length > 0 && (
           <FlatList
@@ -50,8 +64,16 @@ export default function Contact() {
                   />
                 </View>
                 <View className="flex-1 flex-row items-center justify-between">
-                  <Text className="text-white text-sm">{item.name}</Text>
-                  <Button className="" variant="secondary" label="" icon={<Ionicons name="add" size={16} color="black" />} onPress={() => {}} />
+                  <Text className="text-white text-sm font-semibold">{item.name}</Text>
+                  <Button
+                    className={isContactSelected(item) ? "!bg-[#4aa8ba]" : ""}
+                    variant="secondary"
+                    label=""
+                    icon={<Ionicons name={isContactSelected(item) ? "remove" : "add"}
+                    size={16}
+                    color={isContactSelected(item) ? "white" : "black"} />}
+                    onPress={() => handleAddContact(item)}
+                  />
                 </View>
               </View>
               )}
