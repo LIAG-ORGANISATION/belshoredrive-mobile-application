@@ -1,98 +1,73 @@
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
-import { useFetchBrands } from "@/network/brands";
+import { useFetchDepartments } from "@/network/departments";
+import { useFetchUserProfile, useUpdateUserProfile } from "@/network/user-profile";
 import type { Tables } from "@/types/supabase";
+import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { FlatList, Pressable, Text, View } from "react-native";
 
 export default function Onboarding() {
-  const { data: brands = [], isLoading, error } = useFetchBrands();
-  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
-  const [userProfile, setUserProfile] = useState<Tables<"user_profiles"> | null>(null);
+  const { data: departments = [], isLoading: loadingDepts, error: deptsError } = useFetchDepartments();
+  const { data: profile, isLoading: loadingProfile } = useFetchUserProfile();
+  const { mutate: updateProfile } = useUpdateUserProfile();
+  const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
 
-  // Fetch user profile on mount
+  // Initialize selected departments from profile
   useEffect(() => {
-    async function fetchUserProfile() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("*")
-        .eq("user_id", user.id)
-        .single();
-
-        console.log("PROFILE --->", profile);
-
-      if (profile) {
-        setUserProfile(profile);
-        setSelectedBrands(profile.favorite_vehicle_brands || []);
-      }
+    if (profile?.viewable_departments) {
+      setSelectedDepartments(profile.viewable_departments);
     }
-    fetchUserProfile();
-  }, []);
+  }, [profile]);
 
-  // Handle brand selection
-  const toggleBrand = async (brandId: string) => {
-    const newSelection = selectedBrands.includes(brandId)
-      ? selectedBrands.filter(id => id !== brandId)
-      : [...selectedBrands, brandId];
+  // Handle department selection
+  const toggleDepartment = async (departmentId: string) => {
+    const newSelection = selectedDepartments.includes(departmentId)
+      ? selectedDepartments.filter(id => id !== departmentId)
+      : [...selectedDepartments, departmentId];
 
-    setSelectedBrands(newSelection);
-
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-
-    console.log(newSelection);
+    setSelectedDepartments(newSelection);
 
     try {
-      const res = await supabase
-        .from("user_profiles")
-        .update({ favorite_vehicle_brands: newSelection })
-        .eq("user_id", user.id);
-
-      console.log("RESPONSE --->", res);
-
-      return res;
+      await updateProfile({ viewable_departments: newSelection });
     } catch (error) {
       // Revert selection if update fails
-      setSelectedBrands(selectedBrands);
-
-      console.error('Failed to update favorite brands:', error);
+      setSelectedDepartments(selectedDepartments);
+      console.error('Failed to update viewable departments:', error);
     }
   };
 
-  if (isLoading) return <Text>Loading...</Text>;
-  if (error) return <Text>Error: {error.message}</Text>;
+  if (loadingDepts || loadingProfile) return <Text>Loading...</Text>;
+  if (deptsError) return <Text>Error: {deptsError.message}</Text>;
 
   return (
     <View className="flex-1 bg-black">
       <View className="flex-1">
-        <Text className="text-white text-2xl font-bold p-4">Quelles sont tes marques préférées ?</Text>
+        <Text className="text-white text-2xl font-bold p-4">Dans quelle(s) région(s) peut-on vous croiser ? </Text>
 
         <FlatList
-          data={brands}
-          numColumns={5}
+          data={departments}
+          numColumns={3}
           horizontal={false}
           contentContainerStyle={{ gap: 8, padding: 8, paddingBottom: 80 }}
           columnWrapperStyle={{ gap: 8 }}
-          renderItem={({ item: brand }) => (
+          renderItem={({ item: department }) => (
             <Pressable
-              key={brand.brand_id}
-              onPress={() => toggleBrand(brand.brand_id)}
+              key={department.department_id}
+              onPress={() => toggleDepartment(department.department_id)}
             >
               <Text 
                 className={`text-sm border border-white p-1 px-2 rounded-md ${
-                  selectedBrands.includes(brand.brand_id) 
+                  selectedDepartments.includes(department.department_id) 
                     ? "bg-white text-black" 
                     : "bg-gray-900 text-white"
                 }`}
               >
-                {brand.name || "Unnamed brand"}
+                {department.name || "Unnamed department"}
               </Text>
             </Pressable>
           )}
-          keyExtractor={(brand) => brand.brand_id}
+          keyExtractor={(department) => department.department_id}
         />
       </View>
 
@@ -100,8 +75,8 @@ export default function Onboarding() {
         <Button
           variant="secondary"
           label="Continuer" 
-          disabled={selectedBrands.length === 0}
-          onPress={() => {}}
+          disabled={selectedDepartments.length === 0}
+          onPress={() => router.push("/onboarding/brands")}
         />
       </View>
     </View>

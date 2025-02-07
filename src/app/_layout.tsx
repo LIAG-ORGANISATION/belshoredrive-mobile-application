@@ -200,6 +200,23 @@ function RootLayoutNav() {
               ),
             }}
           />
+
+          <Stack.Screen
+            name="onboarding/brands"
+            options={{
+              headerShown: true,
+              headerStyle: { backgroundColor: "#000" },
+              headerTitle: () => <ProgressBar currentStep={2} totalSteps={4} />,
+              headerLeft: () => (
+                <Ionicons
+                  name="chevron-back"
+                  size={24}
+                  color="white"
+                  onPress={() => router.back()}
+                />
+              ),
+            }}
+          />
         </Stack>
       </ThemeProvider>
     </QueryClientProvider>
