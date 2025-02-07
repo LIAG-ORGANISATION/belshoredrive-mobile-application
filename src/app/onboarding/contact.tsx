@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Ionicons } from "@expo/vector-icons";
 import * as Contacts from 'expo-contacts';
 import { Image } from 'expo-image';
+import { Link } from "expo-router";
 
 import { useState } from 'react';
 import { FlatList, Text, View } from "react-native";
@@ -58,18 +59,17 @@ export default function Contact() {
           )}
       </View>
 
-      <View className="absolute bottom-0 w-full px-4 pb-10 pt-4 bg-black z-10 flex flex-col gap-2">
+      <View className="absolute bottom-0 w-full px-4 pb-10 pt-4 bg-black z-10 flex flex-col gap-4">
         <Button
           variant="secondary"
           label="Continuer"
           onPress={handleContactPermission}
         />
 
-        <Button
-          variant="primary"
-          label="Passer cette étape"
-          onPress={() => {}}
-        />
+        {/* TODO : Add a link to the next step */}
+        <Link href="/onboarding/brands" asChild>
+          <Text className="text-white text-sm text-center font-semibold">Passer cette étape</Text>
+        </Link>
       </View>
     </View>
   );
