@@ -59,7 +59,7 @@ export default function Onboarding() {
 
   return (
     <View className="flex-1 bg-black">
-      <View className="flex-1 px-safe-offset-6 pb-safe-offset-8">
+      <View className="flex-1 px-safe-offset-6">
         <Text className="text-white text-2xl font-bold py-4">
           Dans quelle(s) région(s) peut-on vous croiser ?{" "}
         </Text>
@@ -71,10 +71,11 @@ export default function Onboarding() {
           name="viewable_departments"
           control={control}
           items={mapToId(departments, "department_id")}
+          haveSearch={true}
         />
       </View>
 
-      <View className="bottom-0 w-full px-4 pb-10 pt-4 bg-black z-10 inset-x-0">
+      <View className="w-full px-4 pb-10 pt-4 bg-black z-10 inset-x-0">
         <Button
           variant="secondary"
           label="Continuer"

@@ -57,7 +57,7 @@ export default function Onboarding() {
 
   return (
     <View className="flex-1 bg-black">
-      <View className="flex-1 px-safe-offset-6 mb-safe-offset-20">
+      <View className="flex-1 px-safe-offset-6">
         <Text className="text-white text-2xl font-bold py-4">
           Quelles sont tes marques préférées ?
         </Text>
@@ -66,6 +66,7 @@ export default function Onboarding() {
           name="favorite_vehicle_brands"
           control={control}
           items={mapToId(brands, "brand_id")}
+          haveSearch={true}
         />
       </View>
 
