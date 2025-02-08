@@ -18,3 +18,9 @@ export const favoriteBrands = object({
 });
 
 export type FavoriteBrandsType = InferInput<typeof favoriteBrands>;
+
+export const favoriteInterests = object({
+  interests: pipe(array(string()), minLength(1)),
+});
+
+export type FavoriteInterestsType = InferInput<typeof favoriteInterests>;

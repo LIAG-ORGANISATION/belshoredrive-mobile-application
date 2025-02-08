@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Pressable, Text } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -6,34 +7,36 @@ import Animated, {
   withTiming,
   useSharedValue,
   interpolateColor,
-  withDelay,
 } from "react-native-reanimated";
 
 interface ChipProps {
   label: string;
   isSelected: boolean;
   onPress: () => void;
+  isFilter?: boolean;
 }
 
-export function Chip({ label, isSelected, onPress }: ChipProps) {
+export function Chip({
+  label,
+  isSelected,
+  onPress,
+  isFilter = false,
+}: ChipProps) {
   const scale = useSharedValue(1);
-  const colorProgress = useSharedValue(0);
+  const colorProgress = useSharedValue(isSelected ? 1 : 0);
 
-  const triggerHeartbeat = () => {
+  useEffect(() => {
+    colorProgress.set(isSelected ? 1 : 0);
+  }, [isSelected]);
+
+  const triggerHeartbeat = (): void => {
+    onPress();
     scale.value = withSequence(
       withTiming(1.05, { duration: 100 }),
       withTiming(0.95, { duration: 100 }),
       withTiming(1, { duration: 100 }),
     );
-    onPress();
   };
-
-  // Animate color transition when isSelected changes
-  if (isSelected) {
-    colorProgress.value = withSpring(1);
-  } else {
-    colorProgress.value = withSpring(0);
-  }
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
@@ -52,11 +55,27 @@ export function Chip({ label, isSelected, onPress }: ChipProps) {
     padding: 4,
     paddingHorizontal: 8,
     borderRadius: 6,
+    fontSize: 14,
+  }));
+
+  const animatedStyleFilter = useAnimatedStyle(() => ({
+    backgroundColor: interpolateColor(
+      colorProgress.value,
+      [0, 1],
+      ["rgba(255, 255, 255, 0.2)", "rgb(74, 168, 186)"],
+    ),
+    color: "rgb(255, 255, 255)",
+    fontWeight: "bold",
+    padding: 8,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+    fontSize: 16,
+    lineHeight: 24,
   }));
 
   return (
     <Pressable onPress={triggerHeartbeat}>
-      <Animated.Text style={[animatedStyle, { fontSize: 14 }]}>
+      <Animated.Text style={[isFilter ? animatedStyleFilter : animatedStyle]}>
         {label}
       </Animated.Text>
     </Pressable>

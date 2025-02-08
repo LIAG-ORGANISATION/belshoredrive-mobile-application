@@ -9,13 +9,11 @@ import { Button } from "@/components/ui/button";
 import type { ExtractId } from "@/lib/helpers/extract-id";
 import { mapToId } from "@/lib/helpers/map-to-id";
 import {
-  type RegionAndDepartmentsType,
-  regionsAndDepartments,
+  type FavoriteInterestsType,
+  RegionAndDepartmentsType,
+  favoriteInterests,
 } from "@/lib/schemas/onboarding";
-import {
-  type DepartmentType,
-  useFetchDepartments,
-} from "@/network/departments";
+import { type InterestsType, useFetchInterests } from "@/network/interests";
 import {
   useFetchUserProfile,
   useUpdateUserProfile,
@@ -23,10 +21,11 @@ import {
 
 export default function Onboarding() {
   const {
-    data: departments = [],
-    isLoading: loadingDepts,
-    error: deptsError,
-  } = useFetchDepartments();
+    data: interests = [],
+    isLoading: loadingInterests,
+    error: interestsError,
+  } = useFetchInterests();
+
   const { data: profile, isLoading: loadingProfile } = useFetchUserProfile();
   const { mutate: updateProfile } = useUpdateUserProfile();
 
@@ -35,18 +34,18 @@ export default function Onboarding() {
     handleSubmit,
     reset,
     formState: { isValid, isSubmitting },
-  } = useForm<RegionAndDepartmentsType>({
-    resolver: valibotResolver(regionsAndDepartments),
+  } = useForm<FavoriteInterestsType>({
+    resolver: valibotResolver(favoriteInterests),
   });
 
   // // Initialize selected departments from profile
 
-  const onSubmit = async (data: RegionAndDepartmentsType) => {
+  const onSubmit = async (data: FavoriteInterestsType) => {
     try {
       await updateProfile(data);
-      router.push("/onboarding/brands");
+      router.push("/onboarding/contact");
     } catch (error) {
-      console.error("Failed to update viewable departments:", error);
+      console.error("Failed to update interests:", error);
     }
   };
 
@@ -54,23 +53,23 @@ export default function Onboarding() {
     reset(profile || {});
   }, [profile]);
 
-  if (loadingDepts || loadingProfile) return <Text>Loading...</Text>;
-  if (deptsError) return <Text>Error: {deptsError.message}</Text>;
+  if (loadingInterests || loadingProfile) return <Text>Loading...</Text>;
+  if (interestsError) return <Text>Error: {interestsError.message}</Text>;
 
   return (
     <View className="flex-1 bg-black">
-      <View className="flex-1 px-safe-offset-6 pb-safe-offset-8">
+      <View className="flex-1 px-safe-offset-6 ">
         <Text className="text-white text-2xl font-bold py-4">
-          Dans quelle(s) région(s) peut-on vous croiser ?{" "}
+          Quel(s) intérêt(s) partagez-vous ?{" "}
         </Text>
 
         <ChipSelector<
-          RegionAndDepartmentsType,
-          ExtractId<DepartmentType, "department_id">
+          FavoriteInterestsType,
+          ExtractId<InterestsType, "interest_id">
         >
-          name="viewable_departments"
+          name="interests"
           control={control}
-          items={mapToId(departments, "department_id")}
+          items={mapToId(interests, "interest_id")}
         />
       </View>
 

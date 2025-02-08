@@ -17,7 +17,7 @@ import {
   useFetchUserProfile,
   useUpdateUserProfile,
 } from "@/network/user-profile";
-
+import { router } from "expo-router";
 export default function Onboarding() {
   const {
     data: brands = [],
@@ -41,6 +41,7 @@ export default function Onboarding() {
       await updateProfile({
         favorite_vehicle_brands: data.favorite_vehicle_brands,
       });
+      router.push("/onboarding/interests");
     } catch (error) {
       // Revert selection if update fails
       console.error("Failed to update favorite brands:", error);
@@ -56,7 +57,7 @@ export default function Onboarding() {
 
   return (
     <View className="flex-1 bg-black">
-      <View className="flex-1 px-safe-offset-6">
+      <View className="flex-1 px-safe-offset-6 mb-safe-offset-20">
         <Text className="text-white text-2xl font-bold py-4">
           Quelles sont tes marques préférées ?
         </Text>
@@ -68,7 +69,7 @@ export default function Onboarding() {
         />
       </View>
 
-      <View className="absolute bottom-0 w-full px-4 pb-10 pt-4 bg-black z-10">
+      <View className="bottom-0 w-full px-4 pb-10 pt-4 bg-black z-10 inset-x-0">
         <Button
           variant="secondary"
           label="Continuer"

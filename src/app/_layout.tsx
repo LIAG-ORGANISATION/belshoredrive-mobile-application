@@ -5,10 +5,7 @@ import { ProgressBar } from "@/components/ui/progress-bar";
 import { supabase } from "@/lib/supabase";
 import { Ionicons } from "@expo/vector-icons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import {
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
+import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
 import { Stack, router } from "expo-router";
@@ -222,6 +219,23 @@ function RootLayoutNav() {
               headerShown: true,
               headerStyle: { backgroundColor: "#000" },
               headerTitle: () => <ProgressBar currentStep={3} totalSteps={4} />,
+              headerLeft: () => (
+                <Ionicons
+                  name="chevron-back"
+                  size={24}
+                  color="white"
+                  onPress={() => router.back()}
+                />
+              ),
+            }}
+          />
+
+          <Stack.Screen
+            name="onboarding/interests"
+            options={{
+              headerShown: true,
+              headerStyle: { backgroundColor: "#000" },
+              headerTitle: () => <ProgressBar currentStep={4} totalSteps={4} />,
               headerLeft: () => (
                 <Ionicons
                   name="chevron-back"
