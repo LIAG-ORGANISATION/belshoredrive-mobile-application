@@ -1,39 +1,55 @@
+import { useEffect } from "react";
+import { Text, View } from "react-native";
+
+import { valibotResolver } from "@hookform/resolvers/valibot";
+import { useForm } from "react-hook-form";
+
+import { ChipSelector } from "@/components/chip-selector";
 import { Button } from "@/components/ui/button";
-import { useFetchBrands } from "@/network/brands";
-import { useFetchUserProfile, useUpdateUserProfile } from "@/network/user-profile";
-import { router } from "expo-router";
-import { useEffect, useState } from "react";
-import { FlatList, Pressable, Text, View } from "react-native";
+import type { ExtractId } from "@/lib/helpers/extract-id";
+import { mapToId } from "@/lib/helpers/map-to-id";
+import {
+  type FavoriteBrandsType,
+  favoriteBrands,
+} from "@/lib/schemas/onboarding";
+import { type BrandsType, useFetchBrands } from "@/network/brands";
+import {
+  useFetchUserProfile,
+  useUpdateUserProfile,
+} from "@/network/user-profile";
 
 export default function Onboarding() {
-  const { data: brands = [], isLoading: loadingBrands, error: brandsError } = useFetchBrands();
+  const {
+    data: brands = [],
+    isLoading: loadingBrands,
+    error: brandsError,
+  } = useFetchBrands();
   const { data: profile, isLoading: loadingProfile } = useFetchUserProfile();
   const { mutate: updateProfile } = useUpdateUserProfile();
-  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
 
-  // Initialize selected brands from profile
-  useEffect(() => {
-    if (profile?.favorite_vehicle_brands) {
-      setSelectedBrands(profile.favorite_vehicle_brands);
-    }
-  }, [profile]);
+  const {
+    control,
+    reset,
+    handleSubmit,
+    formState: { isValid, isSubmitting },
+  } = useForm<FavoriteBrandsType>({
+    resolver: valibotResolver(favoriteBrands),
+  });
 
-  // Handle brand selection
-  const toggleBrand = async (brandId: string) => {
-    const newSelection = selectedBrands.includes(brandId)
-      ? selectedBrands.filter(id => id !== brandId)
-      : [...selectedBrands, brandId];
-
-    setSelectedBrands(newSelection);
-
+  const onSubmit = async (data: FavoriteBrandsType) => {
     try {
-      await updateProfile({ favorite_vehicle_brands: newSelection });
+      await updateProfile({
+        favorite_vehicle_brands: data.favorite_vehicle_brands,
+      });
     } catch (error) {
       // Revert selection if update fails
-      setSelectedBrands(selectedBrands);
-      console.error('Failed to update favorite brands:', error);
+      console.error("Failed to update favorite brands:", error);
     }
   };
+
+  useEffect(() => {
+    reset(profile || {});
+  }, [profile]);
 
   if (loadingBrands || loadingProfile) return <Text>Loading...</Text>;
   if (brandsError) return <Text>Error: {brandsError.message}</Text>;
@@ -41,38 +57,23 @@ export default function Onboarding() {
   return (
     <View className="flex-1 bg-black">
       <View className="flex-1 px-safe-offset-6">
-        <Text className="text-white text-2xl font-bold py-4">Quelles sont tes marques préférées ?</Text>
+        <Text className="text-white text-2xl font-bold py-4">
+          Quelles sont tes marques préférées ?
+        </Text>
 
-        <FlatList
-          data={brands}
-          columnWrapperClassName="flex flex-wrap gap-2 mb-2"
-          numColumns={4}
-          renderItem={({ item: brand }) => (
-            <Pressable
-              key={brand.brand_id}
-              onPress={() => toggleBrand(brand.brand_id)}
-            >
-              <Text 
-                className={`text-sm border border-white p-1 px-2 rounded-md ${
-                  selectedBrands.includes(brand.brand_id) 
-                    ? "bg-white text-black" 
-                    : "bg-gray-900 text-white"
-                }`}
-              >
-                {brand.name || "Unnamed brand"}
-              </Text>
-            </Pressable>
-          )}
-          keyExtractor={(brand) => brand.brand_id}
+        <ChipSelector<FavoriteBrandsType, ExtractId<BrandsType, "brand_id">>
+          name="favorite_vehicle_brands"
+          control={control}
+          items={mapToId(brands, "brand_id")}
         />
       </View>
 
       <View className="absolute bottom-0 w-full px-4 pb-10 pt-4 bg-black z-10">
         <Button
           variant="secondary"
-          label="Continuer" 
-          disabled={selectedBrands.length === 0}
-          onPress={() => router.push("/onboarding/contact")}
+          label="Continuer"
+          disabled={!isValid || isSubmitting}
+          onPress={handleSubmit(onSubmit)}
         />
       </View>
     </View>

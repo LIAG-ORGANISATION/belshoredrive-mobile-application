@@ -1,78 +1,85 @@
-import { Button } from "@/components/ui/button";
-import { useFetchDepartments } from "@/network/departments";
-import { useFetchUserProfile, useUpdateUserProfile } from "@/network/user-profile";
+import { valibotResolver } from "@hookform/resolvers/valibot";
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
-import { FlatList, Pressable, Text, View } from "react-native";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { Text, View } from "react-native";
+
+import { ChipSelector } from "@/components/chip-selector";
+import { Button } from "@/components/ui/button";
+import type { ExtractId } from "@/lib/helpers/extract-id";
+import { mapToId } from "@/lib/helpers/map-to-id";
+import {
+  type RegionAndDepartmentsType,
+  regionsAndDepartments,
+} from "@/lib/schemas/onboarding";
+import {
+  type DepartmentType,
+  useFetchDepartments,
+} from "@/network/departments";
+import {
+  useFetchUserProfile,
+  useUpdateUserProfile,
+} from "@/network/user-profile";
 
 export default function Onboarding() {
-  const { data: departments = [], isLoading: loadingDepts, error: deptsError } = useFetchDepartments();
+  const {
+    data: departments = [],
+    isLoading: loadingDepts,
+    error: deptsError,
+  } = useFetchDepartments();
   const { data: profile, isLoading: loadingProfile } = useFetchUserProfile();
   const { mutate: updateProfile } = useUpdateUserProfile();
-  const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
 
-  // Initialize selected departments from profile
-  useEffect(() => {
-    if (profile?.viewable_departments) {
-      setSelectedDepartments(profile.viewable_departments);
-    }
-  }, [profile]);
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { isValid, isSubmitting },
+  } = useForm<RegionAndDepartmentsType>({
+    resolver: valibotResolver(regionsAndDepartments),
+  });
 
-  // Handle department selection
-  const toggleDepartment = async (departmentId: string) => {
-    const newSelection = selectedDepartments.includes(departmentId)
-      ? selectedDepartments.filter(id => id !== departmentId)
-      : [...selectedDepartments, departmentId];
+  // // Initialize selected departments from profile
 
-    setSelectedDepartments(newSelection);
-
+  const onSubmit = async (data: RegionAndDepartmentsType) => {
     try {
-      await updateProfile({ viewable_departments: newSelection });
+      await updateProfile(data);
+      router.push("/onboarding/brands");
     } catch (error) {
-      // Revert selection if update fails
-      setSelectedDepartments(selectedDepartments);
-      console.error('Failed to update viewable departments:', error);
+      console.error("Failed to update viewable departments:", error);
     }
   };
+
+  useEffect(() => {
+    reset(profile || {});
+  }, [profile]);
 
   if (loadingDepts || loadingProfile) return <Text>Loading...</Text>;
   if (deptsError) return <Text>Error: {deptsError.message}</Text>;
 
   return (
     <View className="flex-1 bg-black">
-      <View className="flex-1 px-safe-offset-6">
-        <Text className="text-white text-2xl font-bold py-4">Dans quelle(s) région(s) peut-on vous croiser ? </Text>
+      <View className="flex-1 px-safe-offset-6 pb-safe-offset-16">
+        <Text className="text-white text-2xl font-bold py-4">
+          Dans quelle(s) région(s) peut-on vous croiser ?{" "}
+        </Text>
 
-        <FlatList
-          data={departments}
-          columnWrapperClassName="flex flex-wrap gap-2 mb-2"
-          numColumns={3}
-          renderItem={({ item: department }) => (
-            <Pressable
-              key={department.department_id}
-              onPress={() => toggleDepartment(department.department_id)}
-            >
-              <Text
-                className={`text-sm border border-white p-1 px-2 rounded-md ${
-                  selectedDepartments.includes(department.department_id) 
-                    ? "bg-white text-black" 
-                    : "bg-gray-900 text-white"
-                }`}
-              >
-                {department.department_number} - {department.name || "Unnamed department"}
-              </Text>
-            </Pressable>
-          )}
-          keyExtractor={(department) => department.department_id}
+        <ChipSelector<
+          RegionAndDepartmentsType,
+          ExtractId<DepartmentType, "department_id">
+        >
+          name="viewable_departments"
+          control={control}
+          items={mapToId(departments, "department_id")}
         />
       </View>
 
       <View className="absolute bottom-0 w-full px-4 pb-10 pt-4 bg-black z-10 inset-x-0">
         <Button
           variant="secondary"
-          label="Continuer" 
-          disabled={selectedDepartments.length === 0}
-          onPress={() => router.push("/onboarding/brands")}
+          label="Continuer"
+          disabled={!isValid || isSubmitting}
+          onPress={handleSubmit(onSubmit)}
         />
       </View>
     </View>

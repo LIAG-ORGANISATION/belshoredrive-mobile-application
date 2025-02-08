@@ -10,7 +10,13 @@ export const useFetchDepartments = () => {
   return { data, isLoading, error };
 };
 
-const fetchDepartments = async () => {
+export type DepartmentType = {
+  department_id: string;
+  department_number: string;
+  name: string;
+};
+
+const fetchDepartments = async (): Promise<DepartmentType[]> => {
   const { data, error } = await supabase.from("departments").select("*");
 
   if (error) throw error;

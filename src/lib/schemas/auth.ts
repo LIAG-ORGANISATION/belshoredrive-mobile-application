@@ -1,4 +1,4 @@
-import { object, string, email, pipe, InferOutput } from "valibot";
+import { type InferOutput, email, object, pipe, string } from "valibot";
 
 export const emailLoginSchema = object({
   email: pipe(string(), email()),
