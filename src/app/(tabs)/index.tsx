@@ -1,14 +1,14 @@
-import { Link } from "expo-router";
+import { CompleteProfileCta } from "@/components/ui/complete-profile-cta";
+import { useLocalSearchParams } from "expo-router";
 import React from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 
 export default function TabOneScreen() {
+  const { isProfileComplete } = useLocalSearchParams();
+  console.log(isProfileComplete);
   return (
-    <View className="flex-1 items-center justify-center">
-      {/* <Link replace href="/onboarding"> */}
-      <Text className="text-2xl font-bold"> Go to Onboarding</Text>
-      {/* </Link> */}
-      <View className="h-1 w-full bg-gray-200" />
+    <View className="flex-1 items-center justify-start bg-black text-white mt-5">
+      {isProfileComplete === "false" && <CompleteProfileCta />}
     </View>
   );
 }

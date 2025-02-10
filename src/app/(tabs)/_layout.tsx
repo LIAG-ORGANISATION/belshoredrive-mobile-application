@@ -1,7 +1,16 @@
+import { AddIcon } from "@/components/vectors/add-icon";
+import { DirectMessageIcon } from "@/components/vectors/direct-message-icon";
+import { IconCalendar } from "@/components/vectors/icon-calendar";
+import { IconHome } from "@/components/vectors/icon-home";
+import { NotificationIcon } from "@/components/vectors/notification-icon";
+import { OptionsIcon } from "@/components/vectors/options-icon";
+import { SearchIcon } from "@/components/vectors/search";
+import { checkIfProfileComplete } from "@/lib/helpers/check-if-profile-complete";
+import { useFetchUserProfile } from "@/network/user-profile";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Link, Tabs } from "expo-router";
 import type React from "react";
-import { Pressable, useColorScheme } from "react-native";
+import { Image, Pressable, View, useColorScheme } from "react-native";
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
@@ -14,10 +23,29 @@ function TabBarIcon(props: {
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
+  const { data: profile, isLoading: loadingProfile } = useFetchUserProfile();
+
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#000",
+        headerShown: false,
+        headerStyle: {
+          backgroundColor: "#000",
+        },
+        headerTitleContainerStyle: {
+          height: "auto",
+        },
+        tabBarActiveTintColor: "#fff",
+        tabBarInactiveTintColor: "#757575",
+        tabBarStyle: {
+          backgroundColor: "#1F1F1F",
+          borderTopWidth: 1,
+          borderTopColor: "#2F2F2F",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          paddingHorizontal: 20,
+        },
         // Disable the static render of the header on web
         // to prevent a hydration error in React Navigation v6.
         // headerShown: useClientOnlyValue(false, true),
@@ -26,36 +54,112 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Tab One",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          headerShown: true,
+          title: "Feed",
+          sceneStyle: {
+            backgroundColor: "#000",
+          },
+          headerTitleAlign: "left",
+          headerTitleStyle: {
+            color: "#fff",
+            textAlign: "left",
+            fontSize: 18,
+            fontWeight: "800",
+          },
+          tabBarShowLabel: false,
+          tabBarIcon: ({ color }) => (
+            <View className="flex-1 items-center justify-center">
+              <IconHome color={color} fill={color} />
+            </View>
+          ),
           headerRight: () => (
-            <Link href="/chats" asChild>
-              <Pressable>
-                {({ pressed }) => (
-                  <FontAwesome
-                    name="comment"
-                    size={25}
-                    color="#000"
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
+            <View className="flex-row items-center gap-2">
+              <Link href="/onboarding" asChild>
+                <Pressable>
+                  {({ pressed }) => (
+                    <OptionsIcon
+                      fill="#fff"
+                      style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
+                    />
+                  )}
+                </Pressable>
+              </Link>
+
+              <Link href="/onboarding" asChild>
+                <Pressable>
+                  {({ pressed }) => (
+                    <NotificationIcon
+                      fill="#fff"
+                      style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
+                    />
+                  )}
+                </Pressable>
+              </Link>
+
+              <Link href="/chats" asChild>
+                <Pressable>
+                  {({ pressed }) => (
+                    <DirectMessageIcon
+                      fill="#fff"
+                      style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
+                    />
+                  )}
+                </Pressable>
+              </Link>
+            </View>
+          ),
+        }}
+        initialParams={{ isProfileComplete: checkIfProfileComplete(profile) }}
+      />
+      <Tabs.Screen
+        name="discover"
+        options={{
+          tabBarIcon: ({ color }) => (
+            <View className="flex-1 items-center justify-center">
+              <SearchIcon color={color} fill={color} />
+            </View>
+          ),
+          tabBarShowLabel: false,
+        }}
+      />
+      <Tabs.Screen
+        name="add"
+        options={{
+          tabBarShowLabel: false,
+          tabBarIcon: (props) => (
+            <View className="relative w-16">
+              <View className="absolute w-16 h-16 bottom-1/2 right-0 left-0 mx-auto bg-[#4AA8BA] rounded-full flex items-center justify-center">
+                <AddIcon />
+              </View>
+            </View>
           ),
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="calendar"
         options={{
-          title: "Tab Two",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          tabBarIcon: ({ color }) => (
+            <View className="flex-1 items-center justify-center">
+              <IconCalendar color={color} fill={color} />
+            </View>
+          ),
+          tabBarShowLabel: false,
         }}
       />
       <Tabs.Screen
-        name="chat"
+        name="profile"
         options={{
-          title: "Chat",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          tabBarIcon: ({ focused }) => (
+            <View className="flex-1 items-center justify-center">
+              <Image
+                source={{ uri: profile?.profile_picture_url }}
+                className={`w-6 h-6 rounded-full bg-cover ${
+                  focused ? "border-2 border-white" : ""
+                }`}
+              />
+            </View>
+          ),
+          tabBarShowLabel: false,
         }}
       />
     </Tabs>
