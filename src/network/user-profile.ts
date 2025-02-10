@@ -1,8 +1,13 @@
 import { supabase } from "@/lib/supabase";
 import type { Tables } from "@/types/supabase";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  type UseQueryResult,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 
-export function useFetchUserProfile() {
+export function useFetchUserProfile(): UseQueryResult<Tables<"user_profiles">> {
   return useQuery({
     queryKey: ["userProfile"],
     queryFn: async () => {
@@ -18,6 +23,7 @@ export function useFetchUserProfile() {
         .single();
 
       if (error) throw error;
+
       return profile;
     },
   });

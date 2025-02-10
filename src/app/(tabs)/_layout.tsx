@@ -29,11 +29,11 @@ export default function TabLayout() {
           title: "Tab One",
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
           headerRight: () => (
-            <Link href="/onboarding" asChild>
+            <Link href="/chats" asChild>
               <Pressable>
                 {({ pressed }) => (
                   <FontAwesome
-                    name="info-circle"
+                    name="comment"
                     size={25}
                     color="#000"
                     style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
