@@ -9,12 +9,12 @@ const createPubNubClient = (userId: string) => new PubNub({
 });
 
 interface PubNubWrapperProps {
-  userId: string;
+  userId: string | null;
   children: React.ReactNode;
 }
 
 export const PubNubWrapper = ({ children, userId }: PubNubWrapperProps) => (
-  <PubNubProvider client={createPubNubClient(userId)}>
+  <PubNubProvider client={createPubNubClient(userId as string)}>
     {children}
   </PubNubProvider>
 );
