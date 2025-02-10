@@ -46,8 +46,6 @@
     "lucide-react": "^0.469.0",
     "nativewind": "^4.1.23",
     "phone": "^3.1.58",
-    "pubnub": "^8.8.1",
-    "pubnub-react": "^3.0.2",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-hook-form": "^7.54.2",

@@ -1,52 +1,31 @@
-import { useQuery } from '@tanstack/react-query';
+import { useFetchConversations } from '@/network/chat';
 import { Link } from 'expo-router';
 import React from 'react';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 
-import { supabase } from '@/lib/supabase';
-
 const ChatListComponent = () => {
-  const { data: chats, isLoading, error } = useQuery({
-    queryKey: ['chats'],
-    queryFn: async () => {
-      const { data: userProfile } = await supabase
-        .from('user_profile')
-        .select('id')
-        .single();
+  const { data: conversations, isLoading } = useFetchConversations();
 
-      const { data, error } = await supabase
-        .from('chats')
-        .select('*')
-        .contains('participants', [userProfile?.id]);
-
-      if (error) throw error;
-
-      return data;
-    },
-  });
-
-  if (isLoading) return <Text>Loading chats...</Text>;
-  if (error) return <Text>Error loading chats: {error.message}</Text>;
-
-  const renderChatItem = ({ item }: { item: any }) => (
-    <Link href={`/chats/${item.id}`} asChild>
-      <TouchableOpacity>
-        <Text className='text-white'>{item.name}</Text>
-        <Text className='text-white'>{item.participants.length} participants</Text>
-      </TouchableOpacity>
-    </Link>
-  );
+  if (isLoading) {
+    return <Text className="text-white">Loading...</Text>;
+  }
 
   return (
-    <View>
+    <View className="flex-1">
       <FlatList
-        data={chats}
-        renderItem={renderChatItem}
-        keyExtractor={item => item.id.toString()}
+        data={conversations}
+        renderItem={({ item }) => (
+          <Link href={`/chats/${item.id}`} asChild>
+            <TouchableOpacity className="p-4 border-b border-gray-800">
+              <Text className="text-white text-lg">{item.title || 'Chat'}</Text>
+            </TouchableOpacity>
+          </Link>
+        )}
+        keyExtractor={(item) => item.id}
       />
       <Link href="/chats/new-chat" asChild>
-        <TouchableOpacity>
-          <Text className='text-white'>Create New Chat</Text>
+        <TouchableOpacity className="p-4 bg-blue-500 m-4 rounded">
+          <Text className="text-white text-center">Create New Chat</Text>
         </TouchableOpacity>
       </Link>
     </View>

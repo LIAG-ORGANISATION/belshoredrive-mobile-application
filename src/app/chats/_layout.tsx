@@ -1,4 +1,3 @@
-import { PubNubWrapper } from '@/lib/pubnub';
 import { useFetchUserProfile } from '@/network/user-profile';
 import { Slot } from 'expo-router';
 import { Text, View } from 'react-native';
@@ -17,9 +16,7 @@ export default function ChatsLayout() {
   return (
     <View className="flex-1 bg-black">
       <View className="flex-1 py-safe-offset-6">
-        <PubNubWrapper userId={profile.user_id}>
-          <Slot />
-        </PubNubWrapper>
+        <Slot />
       </View>
     </View>
   );

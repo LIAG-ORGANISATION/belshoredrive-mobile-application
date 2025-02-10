@@ -15,7 +15,7 @@ export const Input = <T extends FieldValues>({
   ...props
 }: InputProps<T>) => {
   const classes = cx({
-    "text-white text-sm bg-neutral-800 px-4 py-3.5 border border-neutral-600 rounded-lg focus:border-gray-500 h-16": true,
+    "text-white text-sm bg-neutral-800 px-4 py-2 border border-neutral-600 rounded-lg focus:border-gray-500 h-12": true,
     [`${props.classes}`]: !!props.classes,
     "!border-red-500 !focus:border-red-500": error,
   });
