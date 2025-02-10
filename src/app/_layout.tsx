@@ -5,10 +5,14 @@ import { ProgressBar } from "@/components/ui/progress-bar";
 import { supabase } from "@/lib/supabase";
 import { Ionicons } from "@expo/vector-icons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+} from "@react-navigation/native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
-import { Stack, router } from "expo-router";
+import { Stack, Tabs, router } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { AppState, useColorScheme } from "react-native";
@@ -80,7 +84,7 @@ function RootLayoutNav() {
       } = await supabase.auth.getSession();
       if (session) {
         // User is signed in, redirect to main app
-        router.push("/onboarding");
+        router.replace("/(tabs)");
       } else {
         // No session, stay on auth flow
         router.push("/auth");
@@ -244,6 +248,13 @@ function RootLayoutNav() {
                   onPress={() => router.back()}
                 />
               ),
+            }}
+          />
+          <Stack.Screen
+            name="(tabs)"
+            options={{
+              headerShown: false,
+              headerStyle: { backgroundColor: "#000" },
             }}
           />
         </Stack>
