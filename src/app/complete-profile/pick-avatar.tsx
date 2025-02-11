@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { CameraIcon } from "@/components/vectors/camera-icon";
 import { GalleryIcon } from "@/components/vectors/gallery-icon";
 import * as ImageManipulator from "expo-image-manipulator";
+import { SaveFormat } from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
 import { Link } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -19,12 +20,6 @@ import Animated, {
 
 export default function PickAvatar() {
   const [image, setImage] = useState<string | null>(null);
-  const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions({
-    writeOnly: true,
-  });
-  const scale = useSharedValue(1);
-  const focalX = useSharedValue(0);
-  const focalY = useSharedValue(0);
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -39,22 +34,116 @@ export default function PickAvatar() {
     }
   };
 
-  const pinchHandler = Gesture.Pinch()
+  const scale = useSharedValue(1);
+  const savedScale = useSharedValue(1);
+  const translateX = useSharedValue(0);
+  const translateY = useSharedValue(0);
+  const savedTranslateX = useSharedValue(0);
+  const savedTranslateY = useSharedValue(0);
+
+  const dragHandler = Gesture.Pan()
+    .onStart(() => {
+      savedTranslateX.value = translateX.value;
+      savedTranslateY.value = translateY.value;
+    })
     .onChange((event) => {
-      scale.value = event.scale;
-      focalX.value = event.focalX;
-      focalY.value = event.focalY;
+      const maxTranslation = (scale.value - 1) * 150;
+
+      const newTranslateX = savedTranslateX.value + event.translationX;
+      const newTranslateY = savedTranslateY.value + event.translationY;
+
+      translateX.value = Math.min(
+        Math.max(newTranslateX, -maxTranslation),
+        maxTranslation,
+      );
+      translateY.value = Math.min(
+        Math.max(newTranslateY, -maxTranslation),
+        maxTranslation,
+      );
+    });
+
+  const pinchHandler = Gesture.Pinch()
+    .onStart(() => {
+      savedScale.value = scale.value;
+    })
+    .onChange((event) => {
+      scale.value = savedScale.value * event.scale;
     })
     .onEnd(() => {
-      // Limit min/max scale
       scale.value = Math.min(Math.max(scale.value, 1), 3);
+      savedScale.value = scale.value;
+
+      const maxTranslation = (scale.value - 1) * 150;
+      translateX.value = Math.min(
+        Math.max(translateX.value, -maxTranslation),
+        maxTranslation,
+      );
+      translateY.value = Math.min(
+        Math.max(translateY.value, -maxTranslation),
+        maxTranslation,
+      );
+
+      savedTranslateX.value = translateX.value;
+      savedTranslateY.value = translateY.value;
     });
+
+  const composed = Gesture.Simultaneous(pinchHandler, dragHandler);
 
   const imageStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ scale: scale.value }],
+      transform: [
+        { translateX: translateX.value },
+        { translateY: translateY.value },
+        { scale: scale.value },
+      ],
     };
   });
+
+  const cropAndSaveImage = async () => {
+    if (!image) return;
+
+    // Calculate the crop region based on current scale and translation
+    const viewportSize = 300; // Assuming the view is 300x300
+    const cropSize = viewportSize / scale.value;
+
+    // Center point adjustments based on translation
+    const centerX = viewportSize / 2 - translateX.value / scale.value;
+    const centerY = viewportSize / 2 - translateY.value / scale.value;
+
+    // Calculate crop origin (top-left corner)
+    const originX = centerX - cropSize / 2;
+    const originY = centerY - cropSize / 2;
+
+    console.log("originX", originX);
+    console.log("originY", originY);
+    console.log("cropSize", cropSize);
+    console.log("scale", scale.value);
+    console.log("translateX", translateX.value);
+    console.log("translateY", translateY.value);
+
+    try {
+      const manipulatedImage = await ImageManipulator.manipulateAsync(
+        image,
+        [
+          {
+            crop: {
+              originX: originX,
+              originY: originY,
+              width: cropSize,
+              height: cropSize,
+            },
+          },
+        ],
+        { compress: 1, format: SaveFormat.JPEG },
+      );
+
+      // Here you can handle the cropped image (manipulatedImage.uri)
+      console.log("Cropped image URI:", manipulatedImage.uri);
+      // You might want to save this to state or pass it to the next screen
+    } catch (error) {
+      console.error("Error cropping image:", error);
+    }
+  };
 
   return (
     <View className="w-full h-fit max-h-screen flex-1 items-start justify-between pb-safe-offset-4 px-safe-offset-6 bg-black">
@@ -64,9 +153,9 @@ export default function PickAvatar() {
         </Text>
 
         <GestureHandlerRootView className="w-full aspect-square">
-          <View className="w-full relative aspect-square bg-black rounded-lg overflow-hidden">
+          <View className="w-full relative aspect-square rounded-lg overflow-hidden">
             {image && (
-              <GestureDetector gesture={pinchHandler}>
+              <GestureDetector gesture={composed}>
                 <Animated.View className="w-full h-full">
                   <Animated.Image
                     source={{ uri: image }}
@@ -75,19 +164,18 @@ export default function PickAvatar() {
                     resizeMode="cover"
                   />
                 </Animated.View>
-                <View className="w-full h-full rounded-full"></View>
               </GestureDetector>
             )}
-            {/* <View className="absolute top-0 left-0 w-full h-full">
-              <View className="absolute top-0 left-0 w-full h-full bg-black opacity-50" />
-              {/* <View
-                className="absolute w-full aspect-square rounded-full border-2 border-white"
+            <View className="absolute left-0 right-0 w-full h-full translate-x-1/2 pointer-events-none">
+              <View
+                className="w-10/12 my-auto mx-auto aspect-square rounded-full border-2 border-white drop-shadow-2xl"
                 style={{
                   overflow: "hidden",
                   backgroundColor: "transparent",
+                  boxShadow: "0 0 200px 0 rgba(0, 0, 0, 0.8)",
                 }}
-              /> 
-            </View>*/}
+              />
+            </View>
           </View>
         </GestureHandlerRootView>
 
@@ -114,7 +202,7 @@ export default function PickAvatar() {
               className="w-full"
               variant="secondary"
               label="Continuer"
-              onPress={() => {}}
+              onPress={cropAndSaveImage}
             />
           </View>
           <Link href="/complete-profile" asChild>
