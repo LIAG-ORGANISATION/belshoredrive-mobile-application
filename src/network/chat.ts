@@ -50,7 +50,6 @@ export function useFetchConversations(): UseQueryResult<
         },
         async (payload) => {
           // Invalidate conversations query to refresh unread status
-          console.log("payload", payload);
           queryClient.invalidateQueries({ queryKey: ["conversations"] });
 
           // Use the tracked conversationId instead of window.location
@@ -107,7 +106,6 @@ export function useFetchConversations(): UseQueryResult<
           );
 
       if (participantsError) {
-        console.log(JSON.stringify(participantsError, null, 2));
         throw participantsError;
       }
 
@@ -122,7 +120,6 @@ export function useFetchConversations(): UseQueryResult<
         .order("created_at", { ascending: false });
 
       if (convsError) {
-        console.log(JSON.stringify(convsError, null, 2));
         throw convsError;
       }
 
@@ -136,7 +133,6 @@ export function useFetchConversations(): UseQueryResult<
       );
 
       if (unreadError) {
-        console.log(JSON.stringify(unreadError, null, 2));
         throw unreadError;
       }
 
@@ -176,10 +172,8 @@ export function useFetchMessages(conversationId: string) {
         .order("created_at", { ascending: true });
 
       if (error) {
-        console.error("Error fetching messages:", error);
         throw error;
       }
-      console.log("data", JSON.stringify(data, null, 2));
       return data;
     },
   });
@@ -307,7 +301,6 @@ export function useCreateConversation() {
         .single();
 
       if (convError) {
-        console.log(JSON.stringify(convError, null, 2));
         throw convError;
       }
 
@@ -323,7 +316,6 @@ export function useCreateConversation() {
         );
 
       if (partError) {
-        console.log(JSON.stringify(partError, null, 2));
         throw partError;
       }
 
@@ -425,13 +417,10 @@ export function useMarkConversationAsRead() {
       const { error } = await supabase
         .from("messages")
         .update({ read: true })
-        .eq("conversation_id", conversationId)
-        .neq("sender_id", user.id);
-
-      console.log("conversationId", conversationId);
+        .eq("conversation_id", conversationId);
 
       if (error) {
-        console.error(
+        console.log(
           "Error marking conversation as read:",
           JSON.stringify(error, null, 2),
         );

@@ -12,8 +12,6 @@ const ChatListComponent = () => {
     return <Text className="text-white">Loading...</Text>;
   }
 
-  console.log("conversations", conversations);
-
   const getConversationTitle = (conversation: {
     title: string;
     participants: {
