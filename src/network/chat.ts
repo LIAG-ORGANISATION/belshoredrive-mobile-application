@@ -1,28 +1,85 @@
 import { supabase } from "@/lib/supabase";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  type UseQueryResult,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 // Fetch all conversations for current user
-export function useFetchConversations() {
+export function useFetchConversations(): UseQueryResult<
+  {
+    id: string;
+    title: string;
+    participants: {
+      pseudo: string;
+      profile_picture_url: string;
+      user_id: string;
+    }[];
+  }[]
+> {
   return useQuery({
     queryKey: ["conversations"],
     queryFn: async () => {
       const {
         data: { user },
       } = await supabase.auth.getUser();
+
       if (!user) throw new Error("User not authenticated");
 
-      const { data, error } = await supabase
-        .from("conversations")
-        .select(`
-          *,
-          conversation_participants!inner(*)
+      // First, get all participants for all conversations the user is in
+      const { data: userConversations } = await supabase
+        .from("conversation_participants")
+        .select("conversation_id")
+        .eq("user_id", user.id)
+        .eq("is_archived", false);
+
+      if (!userConversations?.length) return [];
+
+      const { data: conversationParticipants, error: participantsError } =
+        await supabase
+          .from("conversation_participants")
+          .select(`
+          conversation_id,
+          user_id,
+          user:user_profiles!user_id(
+            pseudo,
+            profile_picture_url,
+            user_id
+          )
         `)
-        .eq("conversation_participants.user_id", user.id)
-        .eq("conversation_participants.is_archived", false)
+          .in(
+            "conversation_id",
+            userConversations.map((c) => c.conversation_id),
+          );
+
+      if (participantsError) {
+        console.log(JSON.stringify(participantsError, null, 2));
+        throw participantsError;
+      }
+
+      // Then get the conversations
+      const { data: conversations, error: convsError } = await supabase
+        .from("conversations")
+        .select("*")
+        .in(
+          "id",
+          userConversations.map((c) => c.conversation_id),
+        )
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
-      return data;
+      if (convsError) {
+        console.log(JSON.stringify(convsError, null, 2));
+        throw convsError;
+      }
+
+      // Combine the data
+      return conversations.map((conv) => ({
+        ...conv,
+        participants: conversationParticipants
+          .filter((cp) => cp.conversation_id === conv.id)
+          .map((cp) => cp.user),
+      }));
     },
   });
 }

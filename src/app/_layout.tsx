@@ -94,7 +94,7 @@ function RootLayoutNav() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider value={DefaultTheme}>
-          <Stack>
+        <Stack>
           <Stack.Screen
             name="index"
             options={{ headerShown: false, headerTitle: "" }}
@@ -252,6 +252,8 @@ function RootLayoutNav() {
             name="chats"
             options={{
               headerShown: true,
+              headerTitle: "Conversations",
+              headerTintColor: "white",
               headerStyle: { backgroundColor: "#000" },
               headerLeft: () => (
                 <Ionicons
