@@ -111,8 +111,6 @@ const ChatComponent = () => {
     setMessage('');
   };
 
-  console.log(JSON.stringify(messages, null, 2));
-
   return (
     <View className="flex-1">
       <FlatList
@@ -124,7 +122,7 @@ const ChatComponent = () => {
               : 'flex-row items-start'
           }`}>
             <View className='w-6 h-6 rounded-full bg-gray-700'>
-              <Image source={{ uri: item.sender_profile_picture_url }} contentFit='cover' className='w-full h-full rounded-full' />
+              <Image source={{ uri: item.sender.profile_picture_url }} contentFit='cover' className='w-full h-full rounded-full' />
             </View>
             <View className={`p-2 m-2 rounded ${
               item.sender_id === profile?.user_id
