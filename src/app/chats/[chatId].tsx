@@ -1,4 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
+import { Image } from 'expo-image';
 import { Stack, router, useLocalSearchParams, useRouter } from 'expo-router';
 import { useNavigation } from 'expo-router';
 import React, { useState, useEffect, useLayoutEffect } from 'react';
@@ -6,6 +7,7 @@ import { FlatList, Text, View } from 'react-native';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/text-input';
+import { DirectMessageIcon } from '@/components/vectors/direct-message-icon';
 import { supabase } from '@/lib/supabase';
 import { useFetchMessages, useSendMessage } from '@/network/chat';
 import { useFetchUserProfile } from '@/network/user-profile';
@@ -43,7 +45,7 @@ const ChatComponent = () => {
       const userIds = data.conversation_participants.map(p => p.user_id);
       const { data: profiles, error: profilesError } = await supabase
         .from('user_profiles')
-        .select('user_id, pseudo')
+        .select('user_id, pseudo, profile_picture_url')
         .in('user_id', userIds);
 
       if (profilesError) {
@@ -109,17 +111,28 @@ const ChatComponent = () => {
     setMessage('');
   };
 
+  console.log(JSON.stringify(messages, null, 2));
+
   return (
     <View className="flex-1">
       <FlatList
         data={messages}
         renderItem={({ item }) => (
-          <View className={`p-2 m-2 rounded ${
-            item.sender_id === profile?.user_id 
-              ? 'bg-blue-500 ml-auto' 
-              : 'bg-gray-700 mr-auto'
+          <View className={`${
+            item.sender_id === profile?.user_id
+              ? 'flex-row-reverse items-end'
+              : 'flex-row items-start'
           }`}>
-            <Text className="text-white">{item.content}</Text>
+            <View className='w-6 h-6 rounded-full bg-gray-700'>
+              <Image source={{ uri: item.sender_profile_picture_url }} contentFit='cover' className='w-full h-full rounded-full' />
+            </View>
+            <View className={`p-2 m-2 rounded ${
+              item.sender_id === profile?.user_id
+                ? 'bg-primary ml-auto'
+                : 'bg-gray-700 mr-auto'
+            }`}>
+              <Text className="text-white">{item.content}</Text>
+            </View>
           </View>
         )}
         keyExtractor={(item) => item.id}
@@ -133,7 +146,7 @@ const ChatComponent = () => {
             placeholder="Type a message"
           />
         </View>
-        <Button onPress={handleSend} label="" icon={<Ionicons name="send" size={24} color="white" />} variant="primary" />
+        <Button className='!bg-transparent' onPress={handleSend} label="" icon={<DirectMessageIcon fill="#fff" />} variant="primary" />
       </View>
     </View>
   );
