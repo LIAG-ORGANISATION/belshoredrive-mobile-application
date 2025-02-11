@@ -1,16 +1,19 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useLocalSearchParams} from 'expo-router';
+import { Stack, router, useLocalSearchParams, useNavigation} from 'expo-router';
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { FlatList, Image, Text, View } from 'react-native';
 
 import { Button } from '@/components/ui/button';
+import { ProgressBar } from '@/components/ui/progress-bar';
 import { Input } from '@/components/ui/text-input';
 import { DirectMessageIcon } from '@/components/vectors/direct-message-icon';
 import { supabase } from '@/lib/supabase';
 import { useFetchMessages, useSendMessage } from '@/network/chat';
 import { useFetchUserProfile } from '@/network/user-profile';
+import { Ionicons } from '@expo/vector-icons';
 
 const ChatComponent = () => {
+  const navigation = useNavigation();
   const queryClient = useQueryClient();
   const [message, setMessage] = useState('');
   const { chatId } = useLocalSearchParams();
@@ -63,7 +66,9 @@ const ChatComponent = () => {
   useLayoutEffect(() => {
     if (conversation && profile) {
       if (conversation.title) {
-        // TODO: Set the title
+        navigation.setOptions({
+          title: conversation.title,
+        });
       } else {
         const OTHER_PARTICIPANTS = conversation.conversation_participants
           .filter(p => p.user_id !== profile.user_id)
@@ -72,7 +77,10 @@ const ChatComponent = () => {
 
         if (OTHER_PARTICIPANTS.length > 0) {
           const TITLE = OTHER_PARTICIPANTS.join(', ');
-          // TODO: Set the title
+
+          navigation.setOptions({
+            title: TITLE,
+          });
         }
       }
     }
@@ -108,7 +116,7 @@ const ChatComponent = () => {
   };
 
   return (
-    <View className="flex-1">
+    <View className="flex-1 bg-black">
       <FlatList
         data={messages}
         renderItem={({ item }) => (

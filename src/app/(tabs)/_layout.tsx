@@ -96,7 +96,7 @@ export default function TabLayout() {
                 </Pressable>
               </Link>
 
-              <Link href="/chats" asChild>
+              <Link href="/(chats)" asChild>
                 <Pressable>
                   {({ pressed }) => (
                     <DirectMessageIcon

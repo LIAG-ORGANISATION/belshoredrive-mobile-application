@@ -8,10 +8,11 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
-import { Stack, router } from "expo-router";
+import { Stack, router, useLocalSearchParams, useNavigation } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { AppState } from "react-native";
+import { Text } from "react-native";
 
 const isStoryBookEnabled = false;
 
@@ -52,6 +53,8 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
+  const params = useLocalSearchParams();
+
   if (isStoryBookEnabled) {
     return <StorybookUIRoot />;
   }
@@ -87,6 +90,8 @@ function RootLayoutNav() {
 
     checkSession();
   }, []);
+
+  console.log(params);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -278,52 +283,11 @@ function RootLayoutNav() {
           />
 
           <Stack.Screen
-            name="chats"
+            name="(chats)"
             options={{
-              headerShown: true,
-              headerTitle: "Conversations",
-              headerTintColor: "white",
+              headerShown: false,
+              headerTitle: "",
               headerStyle: { backgroundColor: "#000" },
-              headerLeft: () => (
-                <Ionicons
-                  name="chevron-back"
-                  size={24}
-                  color="white"
-                  onPress={() => router.back()}
-                />
-              ),
-            }}
-          />
-
-          <Stack.Screen
-            name="chats/new-chat"
-            options={{
-              headerShown: true,
-              headerStyle: { backgroundColor: "#000" },
-              headerLeft: () => (
-                <Ionicons
-                  name="chevron-back"
-                  size={24}
-                  color="white"
-                  onPress={() => router.back()}
-                />
-              ),
-            }}
-          />
-
-          <Stack.Screen
-            name="chats/[chatId]"
-            options={{
-              headerShown: true,
-              headerStyle: { backgroundColor: "#000" },
-              headerLeft: () => (
-                <Ionicons
-                  name="chevron-back"
-                  size={24}
-                  color="white"
-                  onPress={() => router.back()}
-                />
-              ),
             }}
           />
 

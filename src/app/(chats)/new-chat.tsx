@@ -17,13 +17,13 @@ const NewChatComponent = () => {
       participantIds: [participantId]
     }, {
       onSuccess: (conversation) => {
-        router.push(`/chats/${conversation.id}`);
+        router.push(`/(chats)/details/${conversation.id}`);
       }
     });
   };
 
   return (
-    <View className="flex-1 p-4 py-safe-offset-10 flex flex-col gap-4">
+    <View className="flex-1 p-4 py-safe-offset-10 flex flex-col gap-4 bg-black">
       <Input
         name="title"
         value={title}

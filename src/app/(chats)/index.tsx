@@ -31,11 +31,11 @@ const ChatListComponent = () => {
   };
 
   return (
-    <View className="flex-1">
+    <View className="flex-1 bg-black">
       <FlatList
         data={conversations}
         renderItem={({ item }) => (
-          <Link href={`/chats/${item.id}`} asChild>
+          <Link href={`/(chats)/details/${item.id}`} asChild>
             <TouchableOpacity className="p-4 border-b border-gray-800">
               <Text className="text-white text-lg">{getConversationTitle(item)}</Text>
             </TouchableOpacity>
@@ -43,7 +43,7 @@ const ChatListComponent = () => {
         )}
         keyExtractor={(item) => item.id}
       />
-      <Link href="/chats/new-chat" asChild>
+      <Link href="/(chats)/new-chat" asChild>
         <TouchableOpacity className="p-4 bg-primary m-4 rounded">
           <Text className="text-white text-center font-bold">Create New Chat</Text>
         </TouchableOpacity>
