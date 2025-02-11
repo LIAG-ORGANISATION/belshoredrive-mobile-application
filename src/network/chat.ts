@@ -93,7 +93,11 @@ export function useFetchMessages(conversationId: string) {
         .from("messages")
         .select(`
           *,
-          sender:user_profiles(*)
+          sender:user_profiles(
+            user_id,
+            pseudo,
+            profile_picture_url
+          )
         `)
         .eq("conversation_id", conversationId)
         .order("created_at", { ascending: true });
