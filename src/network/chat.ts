@@ -1,10 +1,15 @@
 import { supabase } from "@/lib/supabase";
+import type { RealtimeChannel } from "@supabase/supabase-js";
 import {
   type UseQueryResult,
   useMutation,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
+import { useEffect } from "react";
+
+// Add this at the top level of the file
+let messageChannel: RealtimeChannel | null = null;
 
 // Fetch all conversations for current user
 export function useFetchConversations(): UseQueryResult<
@@ -16,8 +21,47 @@ export function useFetchConversations(): UseQueryResult<
       profile_picture_url: string;
       user_id: string;
     }[];
+    messages: {
+      id: string;
+      sender_id: string;
+      read: boolean;
+    }[];
   }[]
 > {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    // Initialize real-time subscription
+    messageChannel = supabase
+      .channel("new_messages")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
+        },
+        async (payload) => {
+          // Invalidate conversations query to refresh unread status
+          queryClient.invalidateQueries({ queryKey: ["conversations"] });
+
+          // If we're currently viewing the conversation, mark as read
+          const conversationId = payload.new.conversation_id;
+          if (window.location.pathname.includes(conversationId)) {
+            await markMessageAsRead(payload.new.id);
+          }
+        },
+      )
+      .subscribe();
+
+    // Cleanup subscription
+    return () => {
+      if (messageChannel) {
+        supabase.removeChannel(messageChannel);
+      }
+    };
+  }, [queryClient]);
+
   return useQuery({
     queryKey: ["conversations"],
     queryFn: async () => {
@@ -73,12 +117,24 @@ export function useFetchConversations(): UseQueryResult<
         throw convsError;
       }
 
-      // Combine the data
+      // Add messages to the query
+      const { data: messages, error: messagesError } = await supabase
+        .from("messages")
+        .select("id, sender_id, read")
+        .in(
+          "conversation_id",
+          userConversations.map((c) => c.conversation_id),
+        );
+
+      if (messagesError) throw messagesError;
+
+      // Combine the data including messages
       return conversations.map((conv) => ({
         ...conv,
         participants: conversationParticipants
           .filter((cp) => cp.conversation_id === conv.id)
           .map((cp) => cp.user),
+        messages: messages.filter((msg) => msg.conversation_id === conv.id),
       }));
     },
   });
@@ -224,6 +280,53 @@ export function useArchiveConversation() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["conversations"] });
+    },
+  });
+}
+
+// Add this helper function to mark messages as read
+async function markMessageAsRead(messageId: string) {
+  const { error } = await supabase
+    .from("messages")
+    .update({ read: true })
+    .eq("id", messageId);
+
+  if (error) {
+    console.error("Error marking message as read:", error);
+  }
+}
+
+// Add this hook to mark all messages in a conversation as read
+export function useMarkConversationAsRead() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (conversationId: string) => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) throw new Error("User not authenticated");
+
+      const { error } = await supabase
+        .from("messages")
+        .update({ read: true })
+        .eq("conversation_id", conversationId)
+        .neq("sender_id", user.id);
+
+      console.log("conversationId", conversationId);
+
+      if (error) {
+        console.error(
+          "Error marking conversation as read:",
+          JSON.stringify(error, null, 2),
+        );
+        throw error;
+      }
+    },
+    onSuccess: (_, conversationId) => {
+      queryClient.invalidateQueries({ queryKey: ["conversations"] });
+      queryClient.invalidateQueries({ queryKey: ["messages", conversationId] });
     },
   });
 }

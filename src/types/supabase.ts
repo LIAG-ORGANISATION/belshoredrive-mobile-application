@@ -82,6 +82,13 @@ export type Database = {
             referencedRelation: "conversations";
             referencedColumns: ["id"];
           },
+          {
+            foreignKeyName: "conversation_participants_user_profiles_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "user_profiles";
+            referencedColumns: ["user_id"];
+          },
         ];
       };
       conversations: {
@@ -141,6 +148,7 @@ export type Database = {
           conversation_id: string;
           created_at: string;
           id: string;
+          read: boolean;
           sender_id: string;
         };
         Insert: {
@@ -148,6 +156,7 @@ export type Database = {
           conversation_id: string;
           created_at?: string;
           id?: string;
+          read?: boolean;
           sender_id: string;
         };
         Update: {
@@ -155,6 +164,7 @@ export type Database = {
           conversation_id?: string;
           created_at?: string;
           id?: string;
+          read?: boolean;
           sender_id?: string;
         };
         Relationships: [
@@ -164,6 +174,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: "conversations";
             referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "messages_sender_user_profiles_fkey";
+            columns: ["sender_id"];
+            isOneToOne: false;
+            referencedRelation: "user_profiles";
+            referencedColumns: ["user_id"];
           },
         ];
       };

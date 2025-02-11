@@ -1,16 +1,14 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Stack, router, useLocalSearchParams, useNavigation} from 'expo-router';
+import { useLocalSearchParams, useNavigation} from 'expo-router';
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { FlatList, Image, Text, View } from 'react-native';
 
 import { Button } from '@/components/ui/button';
-import { ProgressBar } from '@/components/ui/progress-bar';
 import { Input } from '@/components/ui/text-input';
 import { DirectMessageIcon } from '@/components/vectors/direct-message-icon';
 import { supabase } from '@/lib/supabase';
-import { useFetchMessages, useSendMessage } from '@/network/chat';
+import { useFetchMessages, useMarkConversationAsRead, useSendMessage } from '@/network/chat';
 import { useFetchUserProfile } from '@/network/user-profile';
-import { Ionicons } from '@expo/vector-icons';
 
 const ChatComponent = () => {
   const navigation = useNavigation();
@@ -20,6 +18,7 @@ const ChatComponent = () => {
   const { data: messages } = useFetchMessages(chatId as string);
   const { data: profile } = useFetchUserProfile();
   const { mutate: sendMessage } = useSendMessage();
+  const markAsRead = useMarkConversationAsRead();
 
   const { data: conversation } = useQuery({
     queryKey: ['conversation', chatId],
@@ -103,6 +102,10 @@ const ChatComponent = () => {
       supabase.removeChannel(channel);
     };
   }, [chatId]);
+
+  useEffect(() => {
+    markAsRead.mutate(chatId as string);
+  }, [chatId, messages]);
 
   const handleSend = () => {
     if (!message.trim()) return;
