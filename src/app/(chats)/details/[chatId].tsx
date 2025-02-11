@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useLocalSearchParams, useNavigation} from 'expo-router';
 import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { FlatList, Image, Text, View } from 'react-native';
+import { FlatList, Image, KeyboardAvoidingView, Platform, Text, View } from 'react-native';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/text-input';
@@ -61,6 +61,9 @@ const ChatComponent = () => {
     },
   });
 
+  const flatListRef = React.useRef<FlatList>(null);
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
+
   useLayoutEffect(() => {
     if (conversation && profile) {
       if (conversation.title) {
@@ -109,6 +112,15 @@ const ChatComponent = () => {
     }
   }, [messages]);
 
+  useEffect(() => {
+    if (messages && messages.length > 0 && isFirstLoad) {
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: false });
+        setIsFirstLoad(false);
+      }, 100);
+    }
+  }, [messages]);
+
   const handleSend = () => {
     if (!message.trim()) return;
 
@@ -118,44 +130,63 @@ const ChatComponent = () => {
     });
 
     setMessage('');
+    setTimeout(() => {
+      flatListRef.current?.scrollToEnd({ animated: true });
+    }, 100);
   };
 
   return (
-    <View className="flex-1 bg-black">
-      <FlatList
-        data={messages}
-        renderItem={({ item }) => (
-          <View className={`${
-            item.sender_id === profile?.user_id
-              ? 'flex-row-reverse items-end'
-              : 'flex-row items-start'
-          }`}>
-            <View className='w-6 h-6 rounded-full bg-gray-700'>
-              <Image source={{ uri: item.sender.profile_picture_url }} className='w-full h-full rounded-full' />
-            </View>
-            <View className={`p-2 m-2 rounded ${
+    <KeyboardAvoidingView 
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      className="flex-1 bg-black"
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 120 : 0}
+    >
+      <View className="flex-1">
+        <FlatList
+          ref={flatListRef}
+          data={messages}
+          keyboardShouldPersistTaps="handled"
+          automaticallyAdjustKeyboardInsets={true}
+          contentContainerStyle={{ paddingBottom: 20 }}
+          renderItem={({ item }) => (
+            <View className={`${
               item.sender_id === profile?.user_id
-                ? 'bg-primary ml-auto'
-                : 'bg-gray-700 mr-auto'
+                ? 'flex-row-reverse items-end'
+                : 'flex-row items-start'
             }`}>
-              <Text className="text-white">{item.content}</Text>
+              <View className='w-6 h-6 rounded-full bg-gray-700'>
+                <Image source={{ uri: item.sender.profile_picture_url }} className='w-full h-full rounded-full' />
+              </View>
+              <View className={`w-fit max-w-[80%] p-2 m-2 rounded ${
+                item.sender_id === profile?.user_id
+                  ? 'bg-primary ml-auto'
+                  : 'bg-gray-700 mr-auto'
+              }`}>
+                <Text className="text-white">{item.content}</Text>
+              </View>
             </View>
+          )}
+          keyExtractor={(item) => item.id}
+        />
+        <View className="p-4 flex flex-row items-center gap-2">
+          <View className="flex-1">
+            <Input
+              name="inputMessage"
+              value={message}
+              onChangeText={setMessage}
+              placeholder="Type a message"
+            />
           </View>
-        )}
-        keyExtractor={(item) => item.id}
-      />
-      <View className="p-4 flex flex-row items-center gap-2">
-        <View className="flex-1">
-          <Input
-            name="inputMessage"
-            value={message}
-            onChangeText={setMessage}
-            placeholder="Type a message"
+          <Button 
+            className='!bg-transparent'
+            onPress={handleSend}
+            label=""
+            icon={<DirectMessageIcon fill="#fff" />}
+            variant="primary"
           />
         </View>
-        <Button className='!bg-transparent' onPress={handleSend} label="" icon={<DirectMessageIcon fill="#fff" />} variant="primary" />
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 

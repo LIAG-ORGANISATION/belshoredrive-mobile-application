@@ -1,7 +1,8 @@
+import { OptionsIcon } from '@/components/vectors/options-icon';
 import { useFetchUserProfile } from '@/network/user-profile';
 import { Ionicons } from '@expo/vector-icons';
-import { Stack, router, useLocalSearchParams } from 'expo-router';
-import { Text, View } from 'react-native';
+import { Link, Stack, router, useLocalSearchParams } from 'expo-router';
+import { Pressable, Text, View } from 'react-native';
 
 export default function ChatsLayout() {
   const { data: profile, isLoading: loadingProfile } = useFetchUserProfile();
@@ -73,6 +74,18 @@ export default function ChatsLayout() {
                   color="white"
                   onPress={() => router.back()}
                 />
+              ),
+              headerRight: () => (
+                <Link href="/(chats)/new-chat" asChild>
+                  <Pressable>
+                    {({ pressed }) => (
+                      <OptionsIcon
+                        fill="#fff"
+                        style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
+                      />
+                    )}
+                  </Pressable>
+              </Link>
               ),
             }}
           />
