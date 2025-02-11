@@ -1,9 +1,7 @@
-import { useQueryClient } from '@tanstack/react-query';
-import { Image } from 'expo-image';
-import { Stack, router, useLocalSearchParams, useRouter } from 'expo-router';
-import { useNavigation } from 'expo-router';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useLocalSearchParams} from 'expo-router';
 import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { FlatList, Text, View } from 'react-native';
+import { FlatList, Image, Text, View } from 'react-native';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/text-input';
@@ -11,8 +9,6 @@ import { DirectMessageIcon } from '@/components/vectors/direct-message-icon';
 import { supabase } from '@/lib/supabase';
 import { useFetchMessages, useSendMessage } from '@/network/chat';
 import { useFetchUserProfile } from '@/network/user-profile';
-import { Ionicons } from '@expo/vector-icons';
-import { useQuery } from '@tanstack/react-query';
 
 const ChatComponent = () => {
   const queryClient = useQueryClient();
@@ -122,7 +118,7 @@ const ChatComponent = () => {
               : 'flex-row items-start'
           }`}>
             <View className='w-6 h-6 rounded-full bg-gray-700'>
-              <Image source={{ uri: item.sender.profile_picture_url }} contentFit='cover' className='w-full h-full rounded-full' />
+              <Image source={{ uri: item.sender.profile_picture_url }} className='w-full h-full rounded-full' />
             </View>
             <View className={`p-2 m-2 rounded ${
               item.sender_id === profile?.user_id
