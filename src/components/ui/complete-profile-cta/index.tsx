@@ -20,7 +20,9 @@ export const CompleteProfileCta = () => {
       </View>
       <Button
         variant="secondary"
-        onPress={() => {}}
+        onPress={() => {
+          router.replace("/complete-profile/pick-avatar");
+        }}
         label="Compléter mon profil"
       />
     </View>

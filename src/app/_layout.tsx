@@ -5,10 +5,7 @@ import { ProgressBar } from "@/components/ui/progress-bar";
 import { supabase } from "@/lib/supabase";
 import { Ionicons } from "@expo/vector-icons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import {
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
+import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
 import { Stack, router } from "expo-router";
@@ -94,7 +91,7 @@ function RootLayoutNav() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider value={DefaultTheme}>
-          <Stack>
+        <Stack>
           <Stack.Screen
             name="index"
             options={{ headerShown: false, headerTitle: "" }}
@@ -237,6 +234,38 @@ function RootLayoutNav() {
               headerShown: true,
               headerStyle: { backgroundColor: "#000" },
               headerTitle: () => <ProgressBar currentStep={4} totalSteps={4} />,
+              headerLeft: () => (
+                <Ionicons
+                  name="chevron-back"
+                  size={24}
+                  color="white"
+                  onPress={() => router.back()}
+                />
+              ),
+            }}
+          />
+          <Stack.Screen
+            name="complete-profile/index"
+            options={{
+              headerShown: true,
+              headerStyle: { backgroundColor: "#000" },
+              headerTitle: () => <ProgressBar currentStep={0} totalSteps={5} />,
+              headerLeft: () => (
+                <Ionicons
+                  name="chevron-back"
+                  size={24}
+                  color="white"
+                  onPress={() => router.back()}
+                />
+              ),
+            }}
+          />
+          <Stack.Screen
+            name="complete-profile/pick-avatar"
+            options={{
+              headerShown: true,
+              headerStyle: { backgroundColor: "#000" },
+              headerTitle: () => <ProgressBar currentStep={1} totalSteps={5} />,
               headerLeft: () => (
                 <Ionicons
                   name="chevron-back"

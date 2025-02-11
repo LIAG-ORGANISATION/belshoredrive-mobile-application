@@ -6,12 +6,12 @@ import { KeyboardAvoidingView, Platform, Text, View } from "react-native";
 
 import { Button } from "@/components/ui/button";
 
-import { supabase } from "@/lib/supabase";
-import { router } from "expo-router";
 import { Input } from "@/components/ui/text-input";
-import { EmailLoginType, emailLoginSchema } from "@/lib/schemas/auth";
-import { Controller, useForm } from "react-hook-form";
+import { type EmailLoginType, emailLoginSchema } from "@/lib/schemas/auth";
+import { supabase } from "@/lib/supabase";
 import { valibotResolver } from "@hookform/resolvers/valibot";
+import { router } from "expo-router";
+import { Controller, useForm } from "react-hook-form";
 
 const createSessionFromUrl = async (url: string) => {
   const { params, errorCode } = QueryParams.getQueryParams(url);
