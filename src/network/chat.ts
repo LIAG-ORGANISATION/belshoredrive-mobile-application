@@ -10,12 +10,19 @@ import { useEffect } from "react";
 
 // Add this at the top level of the file
 let messageChannel: RealtimeChannel | null = null;
+let currentConversationId: string | null = null;
+
+// Add this helper function to update current conversation
+export function setCurrentConversationId(id: string | null) {
+  currentConversationId = id;
+}
 
 // Fetch all conversations for current user
 export function useFetchConversations(): UseQueryResult<
   {
     id: string;
     title: string;
+    unreadCount: number;
     participants: {
       pseudo: string;
       profile_picture_url: string;
@@ -43,11 +50,13 @@ export function useFetchConversations(): UseQueryResult<
         },
         async (payload) => {
           // Invalidate conversations query to refresh unread status
+          console.log("payload", payload);
           queryClient.invalidateQueries({ queryKey: ["conversations"] });
 
-          // If we're currently viewing the conversation, mark as read
+          // Use the tracked conversationId instead of window.location
           const conversationId = payload.new.conversation_id;
-          if (window.location.pathname.includes(conversationId)) {
+
+          if (currentConversationId === conversationId) {
             await markMessageAsRead(payload.new.id);
           }
         },
@@ -117,16 +126,24 @@ export function useFetchConversations(): UseQueryResult<
         throw convsError;
       }
 
-      // Add messages to the query
-      const { data: messages, error: messagesError } = await supabase
-        .from("messages")
-        .select("id, sender_id, read")
-        .in(
-          "conversation_id",
-          userConversations.map((c) => c.conversation_id),
-        );
+      // Get unread messages count for each conversation
+      const { data: unreadMessages, error: unreadError } = await supabase.rpc(
+        "get_unread_message_counts",
+        {
+          user_id: user.id,
+          conversation_ids: userConversations.map((c) => c.conversation_id),
+        },
+      );
 
-      if (messagesError) throw messagesError;
+      if (unreadError) {
+        console.log(JSON.stringify(unreadError, null, 2));
+        throw unreadError;
+      }
+
+      // Create a map of conversation_id to unread count
+      const unreadCountMap = new Map(
+        unreadMessages?.map((msg) => [msg.conversation_id, msg.count]) || [],
+      );
 
       // Combine the data including messages
       return conversations.map((conv) => ({
@@ -134,7 +151,7 @@ export function useFetchConversations(): UseQueryResult<
         participants: conversationParticipants
           .filter((cp) => cp.conversation_id === conv.id)
           .map((cp) => cp.user),
-        messages: messages.filter((msg) => msg.conversation_id === conv.id),
+        unreadCount: unreadCountMap.get(conv.id) || 0,
       }));
     },
   });
@@ -162,8 +179,105 @@ export function useFetchMessages(conversationId: string) {
         console.error("Error fetching messages:", error);
         throw error;
       }
-
+      console.log("data", JSON.stringify(data, null, 2));
       return data;
+    },
+  });
+}
+
+export function useHasUnreadMessages() {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("unread_messages_global")
+      .on(
+        "postgres_changes",
+        {
+          event: "*", // Listen to all events (INSERT, UPDATE, DELETE)
+          schema: "public",
+          table: "messages",
+        },
+        () => {
+          // Invalidate the query to refresh unread status
+          queryClient.invalidateQueries({ queryKey: ["unreadMessages"] });
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
+  return useQuery({
+    queryKey: ["unreadMessages"],
+    queryFn: async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("User not authenticated");
+
+      const { data, error } = await supabase
+        .from("messages")
+        .select("id")
+        .eq("read", false)
+        .neq("sender_id", user.id)
+        .limit(1);
+
+      if (error) throw error;
+      return data.length > 0;
+    },
+  });
+}
+
+export function useHasUnreadMessagesInConversation(conversationId: string) {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const channel = supabase
+      .channel(`unread_messages_${conversationId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*", // Listen to all events (INSERT, UPDATE, DELETE)
+          schema: "public",
+          table: "messages",
+          filter: `conversation_id=eq.${conversationId}`,
+        },
+        () => {
+          // Invalidate the query to refresh unread status for this conversation
+          queryClient.invalidateQueries({
+            queryKey: ["unreadMessages", conversationId],
+          });
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [conversationId, queryClient]);
+
+  return useQuery({
+    queryKey: ["unreadMessages", conversationId],
+    queryFn: async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("User not authenticated");
+
+      const { data, error } = await supabase
+        .from("messages")
+        .select("id")
+        .eq("conversation_id", conversationId)
+        .eq("read", false)
+        .neq("sender_id", user.id)
+        .limit(1);
+
+      if (error) throw error;
+
+      return data.length > 0;
     },
   });
 }

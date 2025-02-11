@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/text-input';
 import { DirectMessageIcon } from '@/components/vectors/direct-message-icon';
 import { supabase } from '@/lib/supabase';
-import { useFetchMessages, useMarkConversationAsRead, useSendMessage } from '@/network/chat';
+import { useFetchMessages, useSendMessage } from '@/network/chat';
 import { useFetchUserProfile } from '@/network/user-profile';
 
 const ChatComponent = () => {
@@ -18,7 +18,6 @@ const ChatComponent = () => {
   const { data: messages } = useFetchMessages(chatId as string);
   const { data: profile } = useFetchUserProfile();
   const { mutate: sendMessage } = useSendMessage();
-  const markAsRead = useMarkConversationAsRead();
 
   const { data: conversation } = useQuery({
     queryKey: ['conversation', chatId],
@@ -102,10 +101,6 @@ const ChatComponent = () => {
       supabase.removeChannel(channel);
     };
   }, [chatId]);
-
-  useEffect(() => {
-    markAsRead.mutate(chatId as string);
-  }, [chatId, messages]);
 
   const handleSend = () => {
     if (!message.trim()) return;

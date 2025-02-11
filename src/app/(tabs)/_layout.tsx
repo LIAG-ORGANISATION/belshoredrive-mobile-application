@@ -6,7 +6,7 @@ import { NotificationIcon } from "@/components/vectors/notification-icon";
 import { OptionsIcon } from "@/components/vectors/options-icon";
 import { SearchIcon } from "@/components/vectors/search";
 import { checkIfProfileComplete } from "@/lib/helpers/check-if-profile-complete";
-import { useFetchConversations } from "@/network/chat";
+import { useHasUnreadMessages } from "@/network/chat";
 import { useFetchUserProfile } from "@/network/user-profile";
 import { Link, Tabs } from "expo-router";
 import type React from "react";
@@ -14,12 +14,7 @@ import { Image, Pressable, View } from "react-native";
 
 export default function TabLayout() {
   const { data: profile, isLoading: loadingProfile } = useFetchUserProfile();
-  const { data: conversations } = useFetchConversations();
-
-  // Check if there are any unread messages
-  const hasUnreadMessages = conversations?.some(conv => 
-    conv.messages?.some(msg => !msg.read && msg.sender_id !== profile?.user_id)
-  ) ?? false;
+  const { data: hasUnreadMessages } = useHasUnreadMessages();
 
   return (
     <Tabs
@@ -42,9 +37,6 @@ export default function TabLayout() {
           alignItems: "center",
           paddingHorizontal: 20,
         },
-        // Disable the static render of the header on web
-        // to prevent a hydration error in React Navigation v6.
-        // headerShown: useClientOnlyValue(false, true),
       }}
     >
       <Tabs.Screen
@@ -101,7 +93,7 @@ export default function TabLayout() {
                         style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
                       />
                       {hasUnreadMessages && (
-                        <View className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full" />
+                        <View className="absolute top-1 right-2 w-2 h-2 bg-red-500 rounded-full" />
                       )}
                     </View>
                   )}

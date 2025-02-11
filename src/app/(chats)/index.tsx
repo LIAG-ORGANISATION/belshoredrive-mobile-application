@@ -12,6 +12,8 @@ const ChatListComponent = () => {
     return <Text className="text-white">Loading...</Text>;
   }
 
+  console.log("conversations", conversations);
+
   const getConversationTitle = (conversation: {
     title: string;
     participants: {
@@ -36,8 +38,15 @@ const ChatListComponent = () => {
         data={conversations}
         renderItem={({ item }) => (
           <Link href={`/(chats)/details/${item.id}`} asChild>
-            <TouchableOpacity className="p-4 border-b border-gray-800">
+            <TouchableOpacity className="p-4 border-b border-gray-600 flex flex-row justify-between items-center">
               <Text className="text-white text-lg">{getConversationTitle(item)}</Text>
+              {item.unreadCount > 0 && (
+                <View className="bg-red-500 rounded-full w-5 h-5 flex items-center justify-center">
+                  <Text className="text-white text-sm">
+                    {item.unreadCount}
+                  </Text>
+                </View>
+              )}
             </TouchableOpacity>
           </Link>
         )}
