@@ -1,7 +1,9 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import dayjs from 'dayjs';
 import { useLocalSearchParams, useNavigation} from 'expo-router';
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { FlatList, Image, KeyboardAvoidingView, Platform, Text, View } from 'react-native';
+import 'dayjs/locale/fr';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/text-input';
@@ -9,6 +11,8 @@ import { DirectMessageIcon } from '@/components/vectors/direct-message-icon';
 import { supabase } from '@/lib/supabase';
 import { useFetchMessages, useMarkConversationAsRead, useSendMessage } from '@/network/chat';
 import { useFetchUserProfile } from '@/network/user-profile';
+
+dayjs.locale('fr');
 
 const ChatComponent = () => {
   const navigation = useNavigation();
@@ -157,12 +161,21 @@ const ChatComponent = () => {
               <View className='w-6 h-6 rounded-full bg-gray-700'>
                 <Image source={{ uri: item.sender.profile_picture_url }} className='w-full h-full rounded-full' />
               </View>
-              <View className={`w-fit max-w-[80%] p-2 m-2 rounded ${
+              <View className={`w-fit max-w-[80%] p-2 m-2 rounded flex flex-col gap-1.5 ${
                 item.sender_id === profile?.user_id
                   ? 'bg-primary ml-auto'
                   : 'bg-gray-700 mr-auto'
               }`}>
                 <Text className="text-white">{item.content}</Text>
+                <Text className={`text-xs ${
+                  item.sender_id === profile?.user_id
+                    ? 'text-gray-200'
+                    : 'text-gray-400'
+                }`}>
+                  {dayjs(item.created_at).isSame(dayjs(), 'day')
+                    ? dayjs(item.created_at).format('HH:mm')
+                    : dayjs(item.created_at).format('dddd D MMM [à] HH:mm')}
+                </Text>
               </View>
             </View>
           )}
