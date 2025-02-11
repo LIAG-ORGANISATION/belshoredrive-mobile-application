@@ -1,14 +1,18 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { useLocalSearchParams } from 'expo-router';
-import React, { useState, useEffect } from 'react';
+import { Image } from 'expo-image';
+import { Stack, router, useLocalSearchParams, useRouter } from 'expo-router';
+import { useNavigation } from 'expo-router';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { FlatList, Text, View } from 'react-native';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/text-input';
+import { DirectMessageIcon } from '@/components/vectors/direct-message-icon';
 import { supabase } from '@/lib/supabase';
 import { useFetchMessages, useSendMessage } from '@/network/chat';
 import { useFetchUserProfile } from '@/network/user-profile';
 import { Ionicons } from '@expo/vector-icons';
+import { useQuery } from '@tanstack/react-query';
 
 const ChatComponent = () => {
   const queryClient = useQueryClient();
@@ -17,6 +21,66 @@ const ChatComponent = () => {
   const { data: messages } = useFetchMessages(chatId as string);
   const { data: profile } = useFetchUserProfile();
   const { mutate: sendMessage } = useSendMessage();
+
+  const { data: conversation } = useQuery({
+    queryKey: ['conversation', chatId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('conversations')
+        .select(`
+          title,
+          conversation_participants!inner(
+            user_id
+          )
+        `)
+        .eq('id', chatId)
+        .single();
+
+      if (error) {
+        console.error(error);
+        throw error;
+      }
+
+      // Fetch user profiles separately
+      const userIds = data.conversation_participants.map(p => p.user_id);
+      const { data: profiles, error: profilesError } = await supabase
+        .from('user_profiles')
+        .select('user_id, pseudo, profile_picture_url')
+        .in('user_id', userIds);
+
+      if (profilesError) {
+        console.log(JSON.stringify(profilesError, null, 2));
+        throw profilesError;
+      }
+
+      // Combine the data
+      return {
+        ...data,
+        conversation_participants: data.conversation_participants.map(participant => ({
+          ...participant,
+          user_profiles: profiles.find(p => p.user_id === participant.user_id)
+        }))
+      };
+    },
+  });
+
+  useLayoutEffect(() => {
+    if (conversation && profile) {
+      if (conversation.title) {
+        // TODO: Set the title
+      } else {
+        const OTHER_PARTICIPANTS = conversation.conversation_participants
+          .filter(p => p.user_id !== profile.user_id)
+          .map(p => p.user_profiles?.pseudo)
+          .filter(Boolean);
+
+        if (OTHER_PARTICIPANTS.length > 0) {
+          const TITLE = OTHER_PARTICIPANTS.join(', ');
+          // TODO: Set the title
+        }
+      }
+    }
+  }, [conversation, profile]);
 
   useEffect(() => {
     const channel = supabase
@@ -47,17 +111,28 @@ const ChatComponent = () => {
     setMessage('');
   };
 
+  console.log(JSON.stringify(messages, null, 2));
+
   return (
     <View className="flex-1">
       <FlatList
         data={messages}
         renderItem={({ item }) => (
-          <View className={`p-2 m-2 rounded ${
-            item.sender_id === profile?.user_id 
-              ? 'bg-blue-500 ml-auto' 
-              : 'bg-gray-700 mr-auto'
+          <View className={`${
+            item.sender_id === profile?.user_id
+              ? 'flex-row-reverse items-end'
+              : 'flex-row items-start'
           }`}>
-            <Text className="text-white">{item.content}</Text>
+            <View className='w-6 h-6 rounded-full bg-gray-700'>
+              <Image source={{ uri: item.sender_profile_picture_url }} contentFit='cover' className='w-full h-full rounded-full' />
+            </View>
+            <View className={`p-2 m-2 rounded ${
+              item.sender_id === profile?.user_id
+                ? 'bg-primary ml-auto'
+                : 'bg-gray-700 mr-auto'
+            }`}>
+              <Text className="text-white">{item.content}</Text>
+            </View>
           </View>
         )}
         keyExtractor={(item) => item.id}
@@ -71,7 +146,7 @@ const ChatComponent = () => {
             placeholder="Type a message"
           />
         </View>
-        <Button onPress={handleSend} label="" icon={<Ionicons name="send" size={24} color="white" />} variant="primary" />
+        <Button className='!bg-transparent' onPress={handleSend} label="" icon={<DirectMessageIcon fill="#fff" />} variant="primary" />
       </View>
     </View>
   );
