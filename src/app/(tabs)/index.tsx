@@ -1,8 +1,17 @@
 import { CompleteProfileCta } from "@/components/ui/complete-profile-cta";
 import { useVehicles } from "@/network/vehicles";
+import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams } from "expo-router";
+import { cssInterop } from 'nativewind';
 import React from "react";
 import { FlatList, Image, Text, View } from "react-native";
+
+// Add this before the component
+cssInterop(LinearGradient, {
+  className: {
+    target: 'style',
+  },
+});
 
 export default function TabOneScreen() {
   const { isProfileComplete } = useLocalSearchParams();
@@ -47,17 +56,18 @@ export default function TabOneScreen() {
                   className="w-full h-full rounded-lg"
                   resizeMode="cover"
                 />
-                {/* Gradient overlay for better text visibility */}
-                <View className="absolute bottom-0 w-full top-10 bg-gradient-to-t from-black/80 to-transparent rounded-b-lg z-10" />
+                <LinearGradient
+                  colors={['transparent', 'rgba(0,0,0,0.8)']}
+                  className="absolute bottom-0 w-full h-1/3 rounded-b-lg"
+                />
               </>
             )}
-
             <View className="absolute bottom-4 left-4 right-4">
               {item.nickname && (
                 <Text className="text-gray-200">{item.nickname}</Text>
               )}
               <Text className="text-white text-lg font-bold">
-                {item.year} {item.brands?.name} {item.model}
+                {item.brands?.name} {item.model}
               </Text>
             </View>
           </View>
