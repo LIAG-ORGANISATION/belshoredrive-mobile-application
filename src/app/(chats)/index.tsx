@@ -1,8 +1,9 @@
+import { formatPicturesUri } from '@/lib/helpers/format-pictures-uri';
 import { useFetchConversations } from '@/network/chat';
 import { useFetchUserProfile } from '@/network/user-profile';
 import { Link } from 'expo-router';
 import React from 'react';
-import { FlatList, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
 
 const ChatListComponent = () => {
   const { data: conversations, isLoading } = useFetchConversations();
@@ -37,7 +38,13 @@ const ChatListComponent = () => {
         renderItem={({ item }) => (
           <Link href={`/(chats)/details/${item.id}`} asChild>
             <TouchableOpacity className="p-4 border-b border-gray-600 flex flex-row justify-between items-center">
-              <Text className="text-white text-lg">{getConversationTitle(item)}</Text>
+              <View className="flex flex-row items-center gap-4">
+                <Image
+                  source={{ uri: formatPicturesUri('profile_pictures', item.participants[0].profile_picture_url) }}
+                  className="w-10 h-10 rounded-full"
+                />
+                <Text className="text-white text-lg">{getConversationTitle(item)}</Text>
+              </View>
               {item.unreadCount > 0 && (
                 <View className="bg-red-500 rounded-full w-5 h-5 flex items-center justify-center">
                   <Text className="text-white text-sm">

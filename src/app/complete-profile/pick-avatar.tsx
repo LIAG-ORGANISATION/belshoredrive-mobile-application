@@ -2,19 +2,17 @@ import { Button } from "@/components/ui/button";
 import { CameraIcon } from "@/components/vectors/camera-icon";
 import { GalleryIcon } from "@/components/vectors/gallery-icon";
 import { useUploadUserProfileMedia } from "@/network/user-profile";
-import { useUpdateUserProfile } from "@/network/user-profile";
 import * as ImageManipulator from "expo-image-manipulator";
 import { SaveFormat } from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
 import type { ImagePickerAsset } from "expo-image-picker";
 import { Link, router } from "expo-router";
-import React, { useEffect, useState } from "react";
-import { Dimensions, Image, Text, View } from "react-native";
+import React, { useState } from "react";
+import { Text, View } from "react-native";
 import {
   Gesture,
   GestureDetector,
   GestureHandlerRootView,
-  PinchGestureHandler,
 } from "react-native-gesture-handler";
 import Animated, {
   useAnimatedStyle,
@@ -25,7 +23,6 @@ export default function PickAvatar() {
   const [isLoading, setIsLoading] = useState(false);
   const { mutate: uploadMedia } = useUploadUserProfileMedia();
 
-  const { mutate: updateUserProfile } = useUpdateUserProfile();
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
@@ -135,7 +132,9 @@ export default function PickAvatar() {
         file: manipulatedImage.base64 || "",
         fileExt: image.uri.split(".")[1],
       });
+
       setIsLoading(false);
+
       router.replace("/(tabs)");
     } catch (error) {
       console.error("Error cropping image:", error);
@@ -143,7 +142,7 @@ export default function PickAvatar() {
   };
 
   return (
-    <View className="w-full h-fit max-h-screen flex-1 items-start justify-between pb-safe-offset-4 px-safe-offset-6 bg-black">
+    <View className="w-full h-fit max-h-screen flex-1 items-start justify-between pb-safe-offset-4 bg-black">
       <View className="w-full flex-1 flex-col items-center justify-between gap-4">
         <Text className="text-white text-2xl font-bold">
           Ajoutez votre avatar
