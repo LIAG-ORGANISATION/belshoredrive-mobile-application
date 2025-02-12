@@ -1,9 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { CameraIcon } from "@/components/vectors/camera-icon";
 import { GalleryIcon } from "@/components/vectors/gallery-icon";
+import { useUploadUserProfileMedia } from "@/network/user-profile";
 import * as ImageManipulator from "expo-image-manipulator";
 import { SaveFormat } from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
+import type { ImagePickerAsset } from "expo-image-picker";
 import { Link } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Dimensions, Image, Text, View } from "react-native";
@@ -17,20 +19,22 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from "react-native-reanimated";
-
 export default function PickAvatar() {
-  const [image, setImage] = useState<string | null>(null);
-
+  const [image, setImage] = useState<ImagePickerAsset | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const { mutate: uploadMedia } = useUploadUserProfileMedia();
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
       allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
+      aspect: [1, 1],
+      quality: 0,
+      base64: true,
     });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      console.log("result ------>", result.assets[0].uri);
+      setImage(result.assets[0]);
     }
   };
 
@@ -102,44 +106,40 @@ export default function PickAvatar() {
   const cropAndSaveImage = async () => {
     if (!image) return;
 
-    // Calculate the crop region based on current scale and translation
-    const viewportSize = 300; // Assuming the view is 300x300
-    const cropSize = viewportSize / scale.value;
-
-    // Center point adjustments based on translation
-    const centerX = viewportSize / 2 - translateX.value / scale.value;
-    const centerY = viewportSize / 2 - translateY.value / scale.value;
-
-    // Calculate crop origin (top-left corner)
-    const originX = centerX - cropSize / 2;
-    const originY = centerY - cropSize / 2;
-
-    console.log("originX", originX);
-    console.log("originY", originY);
-    console.log("cropSize", cropSize);
-    console.log("scale", scale.value);
-    console.log("translateX", translateX.value);
-    console.log("translateY", translateY.value);
-
     try {
+      const center = {
+        x: image.width / 2,
+        y: image.height / 2,
+      };
+
       const manipulatedImage = await ImageManipulator.manipulateAsync(
-        image,
+        image.uri,
         [
           {
             crop: {
-              originX: originX,
-              originY: originY,
-              width: cropSize,
-              height: cropSize,
+              originX: center.x - savedTranslateX.value * scale.value,
+              originY: center.y - savedTranslateY.value * scale.value,
+              width: image.width / scale.value,
+              height: image.height / scale.value,
             },
           },
         ],
-        { compress: 1, format: SaveFormat.JPEG },
+        { compress: 1, format: SaveFormat.JPEG, base64: true },
       );
 
-      // Here you can handle the cropped image (manipulatedImage.uri)
-      console.log("Cropped image URI:", manipulatedImage.uri);
-      // You might want to save this to state or pass it to the next screen
+      setIsLoading(true);
+      // // Convert manipulated image to File
+      // const response = await fetch(image.uri);
+      // const blob = await response.blob();
+      // const file = new File([blob], "avatar.jpg", { type: "image/jpeg" });
+
+      // Upload the file and get public URL
+      console.log("manipulatedImage ------>", manipulatedImage.uri);
+      await uploadMedia({
+        file: manipulatedImage.base64 || "",
+        fileExt: image.uri.split(".")[1],
+      });
+      setIsLoading(false);
     } catch (error) {
       console.error("Error cropping image:", error);
     }
@@ -158,7 +158,7 @@ export default function PickAvatar() {
               <GestureDetector gesture={composed}>
                 <Animated.View className="w-full h-full">
                   <Animated.Image
-                    source={{ uri: image }}
+                    source={{ uri: image.uri }}
                     className="w-full h-full"
                     style={[imageStyle]}
                     resizeMode="cover"

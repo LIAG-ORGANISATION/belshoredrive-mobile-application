@@ -6,7 +6,11 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
+import "react-native-get-random-values";
+import { decode } from "base64-arraybuffer";
+import { v4 as uuidv4 } from "uuid";
 
+import * as FileSystem from "expo-file-system";
 export function useFetchUserProfile(): UseQueryResult<Tables<"user_profiles">> {
   return useQuery({
     queryKey: ["userProfile"],
@@ -52,5 +56,81 @@ export function useUpdateUserProfile() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["userProfile"] });
     },
+  });
+}
+
+export function useUploadUserProfileMedia() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      file,
+      fileExt,
+    }: { file: string; fileExt: string }) => {
+      if (!file) {
+        throw new Error("No file provided");
+      }
+
+      // Validate file properties
+      // if (!file.name) {
+      //   throw new Error("File name is missing");
+      // }
+
+      // const fileUUID = uuidv4();
+      // const fileExt = file.name.split(".").pop();
+
+      // if (!fileExt) {
+      //   throw new Error("File extension could not be determined");
+      // }
+
+      // const filePath = `${fileUUID}.${fileExt}`;
+
+      // console.log("file ------>", file);
+      // const fileBlob = await FileSystem.readAsStringAsync(file, {
+      //   encoding: FileSystem.EncodingType.Base64,
+      // });
+      // console.log("fileBlob ------>", fileBlob);
+
+      const fileUUID = uuidv4();
+
+      console.log("fileExt ------>", fileExt);
+
+      const filePath = `${fileUUID}.${fileExt}`;
+
+      // const buffer = .from(fileBlob, "base64");
+
+      // console.log("buffer ------>", buffer);
+
+      const arrayBuffer = decode(file);
+
+      try {
+        console.log("start upload ------>");
+        const { data, error: uploadError } = await supabase.storage
+          .from("profile_pictures")
+          .upload(filePath, arrayBuffer, {
+            contentType: `image/${fileExt}`, // Specify the correct content type
+            upsert: false,
+          });
+
+        if (uploadError) {
+          console.error("Error uploading file:", uploadError);
+          throw uploadError;
+        }
+
+        if (!data?.path) {
+          throw new Error("Upload successful but file path is missing");
+        }
+
+        return data.path;
+      } catch (error) {
+        console.error("Error in file upload:", error);
+        // Rethrow with more context
+        throw new Error(
+          `File upload failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+        );
+      }
+    },
+    onError: (error) => console.error("Error uploading file:", error),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["userProfile"] }),
   });
 }
