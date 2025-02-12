@@ -103,9 +103,7 @@ export function useVehicle(
 }
 
 // Fetch all vehicles with pagination
-export function useVehicles(
-  limit = 10,
-): UseInfiniteQueryResult<VehicleWithComments[]> {
+export function useVehicles() {
   return useInfiniteQuery({
     queryKey: ["vehicles"],
     initialPageParam: 0,
@@ -114,18 +112,20 @@ export function useVehicles(
         .from("vehicles")
         .select(`
           *,
-          brands (name),
-          user_profiles (pseudo, profile_picture_url),
-          vehicle_comments (count)
+          brands (*)
         `)
-        .range(pageParam * limit, (pageParam + 1) * limit - 1)
+        .range(pageParam * 10, (pageParam + 1) * 10 - 1)
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error(JSON.stringify(error, null, 2));
+        throw error;
+      }
       return data;
     },
     getNextPageParam: (lastPage, allPages) => {
-      return lastPage.length === limit ? allPages.length : undefined;
+      if (!lastPage?.length) return undefined;
+      return allPages.length;
     },
   });
 }
@@ -363,7 +363,7 @@ export function useUploadVehicleMedia() {
           .getPublicUrl(filePath);
 
         if (data?.publicUrl) {
-          mediaUUIDs.push(fileUUID);
+          mediaUUIDs.push(`${fileUUID}.${fileExt}`);
         }
       }
 
