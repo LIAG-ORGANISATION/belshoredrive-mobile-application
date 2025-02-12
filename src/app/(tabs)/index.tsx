@@ -46,7 +46,7 @@ export default function TabOneScreen() {
         data={vehicles}
         className="w-full mt-3"
         renderItem={({ item }) => (
-          <View className="rounded-lg mb-4 relative h-96">
+          <View className="rounded-lg mb-4 relative h-[500px]">
             {item.media && item.media.length > 0 && (
               <>
                 <Image
@@ -64,10 +64,10 @@ export default function TabOneScreen() {
             )}
             <View className="absolute bottom-4 left-4 right-4">
               {item.nickname && (
-                <Text className="text-gray-200">{item.nickname}</Text>
+                <Text className="text-white font-semibold">{item.nickname}</Text>
               )}
               <Text className="text-white text-lg font-bold">
-                {item.brands?.name} {item.model}
+                {item.year} {item.brands?.name} {item.model}
               </Text>
             </View>
           </View>
