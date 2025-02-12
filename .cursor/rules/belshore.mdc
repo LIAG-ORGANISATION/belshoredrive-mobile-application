@@ -7,5 +7,10 @@ globs:
 
 - Supabase types are located here [supabase.ts](mdc:src/types/supabase.ts)
 - This project is only working using React Native with Expo and Expo Router
-- Tailwind with Nativewind Library
+- You need to use tailwind with Nativewind Library
 - Everything should be typed using Typescript
+- All async queries mutation should be done using react-query
+- All async queries mutation should be located in src/networks
+- Example of queries and mutation can be found at [user-profile.ts](mdc:src/network/user-profile.ts)
+- routes are located to src/app folder
+- You need to respect the best practice, lazy loading, suspense to avoid render issues
