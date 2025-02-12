@@ -3,7 +3,6 @@ import type { Tables } from "@/types/supabase";
 export const checkIfProfileComplete = (
   profile: Partial<Tables<"user_profiles">>,
 ) => {
-  console.log(profile);
   if (!profile) return false;
   if (!profile.pseudo || profile.pseudo === null)
     return "/complete-profile/index";
