@@ -19,10 +19,6 @@ import Animated, {
   useSharedValue,
 } from "react-native-reanimated";
 
-import { Button } from "@/components/ui/button";
-import { CameraIcon } from "@/components/vectors/camera-icon";
-import { GalleryIcon } from "@/components/vectors/gallery-icon";
-
 export default function PickAvatar() {
   const [image, setImage] = useState<ImagePickerAsset | null>(null);
   const [isLoading, setIsLoading] = useState(false);
