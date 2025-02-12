@@ -1,3 +1,7 @@
+import { Button } from "@/components/ui/button";
+import { CameraIcon } from "@/components/vectors/camera-icon";
+import { GalleryIcon } from "@/components/vectors/gallery-icon";
+import { useUploadUserProfileMedia } from "@/network/user-profile";
 import * as ImageManipulator from "expo-image-manipulator";
 import { SaveFormat } from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
@@ -18,17 +22,12 @@ import Animated, {
 import { Button } from "@/components/ui/button";
 import { CameraIcon } from "@/components/vectors/camera-icon";
 import { GalleryIcon } from "@/components/vectors/gallery-icon";
-import {
-  useUpdateUserProfile,
-  useUploadUserProfileMedia,
-} from "@/network/user-profile";
 
 export default function PickAvatar() {
   const [image, setImage] = useState<ImagePickerAsset | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { mutate: uploadMedia } = useUploadUserProfileMedia();
 
-  const { mutate: updateUserProfile } = useUpdateUserProfile();
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
@@ -138,6 +137,7 @@ export default function PickAvatar() {
         file: manipulatedImage.base64 || "",
         fileExt: image.uri.split(".")[1],
       });
+
       setIsLoading(false);
       router.push("/complete-profile/profile-details");
     } catch (error) {

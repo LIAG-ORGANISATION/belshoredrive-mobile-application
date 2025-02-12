@@ -273,7 +273,7 @@ function RootLayoutNav() {
                   name="chevron-back"
                   size={24}
                   color="white"
-                  onPress={() => router.replace("/(tabs)")}
+                  onPress={() => router.push("/(tabs)")}
                 />
               ),
             }}
