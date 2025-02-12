@@ -8,11 +8,10 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
-import { Stack, router, useLocalSearchParams, useNavigation } from "expo-router";
+import { Stack, router, useLocalSearchParams } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { AppState } from "react-native";
-import { Text } from "react-native";
 
 const isStoryBookEnabled = false;
 
@@ -90,8 +89,6 @@ function RootLayoutNav() {
 
     checkSession();
   }, []);
-
-  console.log(params);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -276,12 +273,44 @@ function RootLayoutNav() {
                   name="chevron-back"
                   size={24}
                   color="white"
-                  onPress={() => router.back()}
+                  onPress={() => router.replace("/(tabs)")}
                 />
               ),
             }}
           />
 
+          <Stack.Screen
+            name="complete-profile/profile-details"
+            options={{
+              headerShown: true,
+              headerStyle: { backgroundColor: "#000" },
+              headerTitle: () => <ProgressBar currentStep={2} totalSteps={5} />,
+              headerLeft: () => (
+                <Ionicons
+                  name="chevron-back"
+                  size={24}
+                  color="white"
+                  onPress={() => router.back()}
+                />
+              ),
+            }}
+          />
+          <Stack.Screen
+            name="complete-profile/services"
+            options={{
+              headerShown: true,
+              headerStyle: { backgroundColor: "#000" },
+              headerTitle: () => <ProgressBar currentStep={3} totalSteps={5} />,
+              headerLeft: () => (
+                <Ionicons
+                  name="chevron-back"
+                  size={24}
+                  color="white"
+                  onPress={() => router.back()}
+                />
+              ),
+            }}
+          />
           <Stack.Screen
             name="(chats)"
             options={{

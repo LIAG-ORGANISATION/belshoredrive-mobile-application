@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { CloseIcon } from "@/components/vectors/close-icon";
-import { router } from "expo-router";
+import { type Href, router } from "expo-router";
 import { Text, View } from "react-native";
 
-export const CompleteProfileCta = () => {
+export const CompleteProfileCta = ({ step }: { step: string }) => {
   return (
     <View className="w-full mx-safe-offset-6 bg-white/20 p-4 rounded-lg flex-col gap-2">
       <View className="w-full flex-row items-center justify-between">
@@ -21,7 +21,7 @@ export const CompleteProfileCta = () => {
       <Button
         variant="secondary"
         onPress={() => {
-          router.replace("/complete-profile/pick-avatar");
+          router.replace(step as Href);
         }}
         label="Compléter mon profil"
       />

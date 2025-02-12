@@ -1,25 +1,28 @@
-import { Button } from "@/components/ui/button";
-import { CameraIcon } from "@/components/vectors/camera-icon";
-import { GalleryIcon } from "@/components/vectors/gallery-icon";
-import { useUploadUserProfileMedia } from "@/network/user-profile";
-import { useUpdateUserProfile } from "@/network/user-profile";
 import * as ImageManipulator from "expo-image-manipulator";
 import { SaveFormat } from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
 import type { ImagePickerAsset } from "expo-image-picker";
 import { Link, router } from "expo-router";
-import React, { useEffect, useState } from "react";
-import { Dimensions, Image, Text, View } from "react-native";
+import React, { useState } from "react";
+import { Text, View } from "react-native";
 import {
   Gesture,
   GestureDetector,
   GestureHandlerRootView,
-  PinchGestureHandler,
 } from "react-native-gesture-handler";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from "react-native-reanimated";
+
+import { Button } from "@/components/ui/button";
+import { CameraIcon } from "@/components/vectors/camera-icon";
+import { GalleryIcon } from "@/components/vectors/gallery-icon";
+import {
+  useUpdateUserProfile,
+  useUploadUserProfileMedia,
+} from "@/network/user-profile";
+
 export default function PickAvatar() {
   const [image, setImage] = useState<ImagePickerAsset | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -136,7 +139,7 @@ export default function PickAvatar() {
         fileExt: image.uri.split(".")[1],
       });
       setIsLoading(false);
-      router.replace("/(tabs)");
+      router.push("/complete-profile/profile-details");
     } catch (error) {
       console.error("Error cropping image:", error);
     }
@@ -144,11 +147,10 @@ export default function PickAvatar() {
 
   return (
     <View className="w-full h-fit max-h-screen flex-1 items-start justify-between pb-safe-offset-4 px-safe-offset-6 bg-black">
+      <Text className="text-white text-2xl font-bold">
+        Ajoutez votre avatar
+      </Text>
       <View className="w-full flex-1 flex-col items-center justify-between gap-4">
-        <Text className="text-white text-2xl font-bold">
-          Ajoutez votre avatar
-        </Text>
-
         <GestureHandlerRootView className="w-full aspect-square">
           <View className="w-full relative aspect-square rounded-lg overflow-hidden">
             {image && (
@@ -176,7 +178,7 @@ export default function PickAvatar() {
           </View>
         </GestureHandlerRootView>
 
-        <View className="w-full flex-col gap-4">
+        <View className="w-full flex-col gap-4 pb-4">
           <Button
             className="w-full justify-center"
             variant="with-icon"

@@ -72,14 +72,11 @@ export function useUploadUserProfileMedia() {
 
       const fileUUID = uuidv4();
 
-      console.log("fileExt ------>", fileExt);
-
       const filePath = `${fileUUID}.${fileExt}`;
 
       const arrayBuffer = decode(file);
 
       try {
-        console.log("start upload ------>");
         const { data, error: uploadError } = await supabase.storage
           .from("profile_pictures")
           .upload(filePath, arrayBuffer, {
