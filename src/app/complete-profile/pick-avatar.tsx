@@ -2,11 +2,12 @@ import { Button } from "@/components/ui/button";
 import { CameraIcon } from "@/components/vectors/camera-icon";
 import { GalleryIcon } from "@/components/vectors/gallery-icon";
 import { useUploadUserProfileMedia } from "@/network/user-profile";
+import { useUpdateUserProfile } from "@/network/user-profile";
 import * as ImageManipulator from "expo-image-manipulator";
 import { SaveFormat } from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
 import type { ImagePickerAsset } from "expo-image-picker";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Dimensions, Image, Text, View } from "react-native";
 import {
@@ -23,6 +24,8 @@ export default function PickAvatar() {
   const [image, setImage] = useState<ImagePickerAsset | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { mutate: uploadMedia } = useUploadUserProfileMedia();
+
+  const { mutate: updateUserProfile } = useUpdateUserProfile();
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
@@ -33,7 +36,6 @@ export default function PickAvatar() {
     });
 
     if (!result.canceled) {
-      console.log("result ------>", result.assets[0].uri);
       setImage(result.assets[0]);
     }
   };
@@ -77,7 +79,7 @@ export default function PickAvatar() {
       scale.value = Math.min(Math.max(scale.value, 1), 3);
       savedScale.value = scale.value;
 
-      const maxTranslation = (scale.value - 1) * 150;
+      const maxTranslation = (scale.value - 1) * 20;
       translateX.value = Math.min(
         Math.max(translateX.value, -maxTranslation),
         maxTranslation,
@@ -106,6 +108,8 @@ export default function PickAvatar() {
   const cropAndSaveImage = async () => {
     if (!image) return;
 
+    setIsLoading(true);
+
     try {
       const center = {
         x: image.width / 2,
@@ -127,19 +131,12 @@ export default function PickAvatar() {
         { compress: 1, format: SaveFormat.JPEG, base64: true },
       );
 
-      setIsLoading(true);
-      // // Convert manipulated image to File
-      // const response = await fetch(image.uri);
-      // const blob = await response.blob();
-      // const file = new File([blob], "avatar.jpg", { type: "image/jpeg" });
-
-      // Upload the file and get public URL
-      console.log("manipulatedImage ------>", manipulatedImage.uri);
       await uploadMedia({
         file: manipulatedImage.base64 || "",
         fileExt: image.uri.split(".")[1],
       });
       setIsLoading(false);
+      router.replace("/(tabs)");
     } catch (error) {
       console.error("Error cropping image:", error);
     }
@@ -161,7 +158,7 @@ export default function PickAvatar() {
                     source={{ uri: image.uri }}
                     className="w-full h-full"
                     style={[imageStyle]}
-                    resizeMode="cover"
+                    resizeMode="contain"
                   />
                 </Animated.View>
               </GestureDetector>
@@ -202,6 +199,7 @@ export default function PickAvatar() {
               className="w-full"
               variant="secondary"
               label="Continuer"
+              disabled={!image || isLoading}
               onPress={cropAndSaveImage}
             />
           </View>

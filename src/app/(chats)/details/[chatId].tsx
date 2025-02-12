@@ -1,40 +1,52 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import dayjs from 'dayjs';
-import { useLocalSearchParams, useNavigation} from 'expo-router';
-import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { FlatList, Image, KeyboardAvoidingView, Platform, Text, View } from 'react-native';
-import 'dayjs/locale/fr';
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import dayjs from "dayjs";
+import { useLocalSearchParams, useNavigation } from "expo-router";
+import React, { useState, useEffect, useLayoutEffect } from "react";
+import {
+  FlatList,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  Text,
+  View,
+} from "react-native";
+import "dayjs/locale/fr";
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/text-input';
-import { DirectMessageIcon } from '@/components/vectors/direct-message-icon';
-import { supabase } from '@/lib/supabase';
-import { useFetchMessages, useMarkConversationAsRead, useSendMessage } from '@/network/chat';
-import { useFetchUserProfile } from '@/network/user-profile';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/text-input";
+import { DirectMessageIcon } from "@/components/vectors/direct-message-icon";
+import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
+import { supabase } from "@/lib/supabase";
+import {
+  useFetchMessages,
+  useMarkConversationAsRead,
+  useSendMessage,
+} from "@/network/chat";
+import { useFetchUserProfile } from "@/network/user-profile";
 
-dayjs.locale('fr');
+dayjs.locale("fr");
 
 const ChatComponent = () => {
   const navigation = useNavigation();
   const queryClient = useQueryClient();
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const { chatId } = useLocalSearchParams();
   const { data: messages } = useFetchMessages(chatId as string);
   const { data: profile } = useFetchUserProfile();
   const { mutate: sendMessage } = useSendMessage();
   const { mutate: markConversationAsRead } = useMarkConversationAsRead();
   const { data: conversation } = useQuery({
-    queryKey: ['conversation', chatId],
+    queryKey: ["conversation", chatId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('conversations')
+        .from("conversations")
         .select(`
           title,
           conversation_participants!inner(
             user_id
           )
         `)
-        .eq('id', chatId)
+        .eq("id", chatId)
         .single();
 
       if (error) {
@@ -42,11 +54,11 @@ const ChatComponent = () => {
       }
 
       // Fetch user profiles separately
-      const userIds = data.conversation_participants.map(p => p.user_id);
+      const userIds = data.conversation_participants.map((p) => p.user_id);
       const { data: profiles, error: profilesError } = await supabase
-        .from('user_profiles')
-        .select('user_id, pseudo, profile_picture_url')
-        .in('user_id', userIds);
+        .from("user_profiles")
+        .select("user_id, pseudo, profile_picture_url")
+        .in("user_id", userIds);
 
       if (profilesError) {
         throw profilesError;
@@ -55,10 +67,14 @@ const ChatComponent = () => {
       // Combine the data
       return {
         ...data,
-        conversation_participants: data.conversation_participants.map(participant => ({
-          ...participant,
-          user_profiles: profiles.find(p => p.user_id === participant.user_id)
-        }))
+        conversation_participants: data.conversation_participants.map(
+          (participant) => ({
+            ...participant,
+            user_profiles: profiles.find(
+              (p) => p.user_id === participant.user_id,
+            ),
+          }),
+        ),
       };
     },
   });
@@ -74,12 +90,12 @@ const ChatComponent = () => {
         });
       } else {
         const OTHER_PARTICIPANTS = conversation.conversation_participants
-          .filter(p => p.user_id !== profile.user_id)
-          .map(p => p.user_profiles?.pseudo)
+          .filter((p) => p.user_id !== profile.user_id)
+          .map((p) => p.user_profiles?.pseudo)
           .filter(Boolean);
 
         if (OTHER_PARTICIPANTS.length > 0) {
-          const TITLE = OTHER_PARTICIPANTS.join(', ');
+          const TITLE = OTHER_PARTICIPANTS.join(", ");
 
           navigation.setOptions({
             title: TITLE,
@@ -92,21 +108,24 @@ const ChatComponent = () => {
   useEffect(() => {
     const channel = supabase
       .channel(`messages:${chatId}`)
-      .on('postgres_changes', {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'messages',
-        filter: `conversation_id=eq.${chatId}`,
-      }, (payload) => {
-        queryClient.invalidateQueries({ queryKey: ['messages', chatId] });
-      })
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
+          filter: `conversation_id=eq.${chatId}`,
+        },
+        (payload) => {
+          queryClient.invalidateQueries({ queryKey: ["messages", chatId] });
+        },
+      )
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
   }, [chatId]);
-
 
   useEffect(() => {
     if (messages) {
@@ -131,7 +150,7 @@ const ChatComponent = () => {
       content: message.trim(),
     });
 
-    setMessage('');
+    setMessage("");
     setTimeout(() => {
       flatListRef.current?.scrollToEnd({ animated: true });
     }, 100);
@@ -139,9 +158,9 @@ const ChatComponent = () => {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
       className="flex-1 bg-black"
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 120 : 0}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 120 : 0}
     >
       <View className="flex-1">
         <FlatList
@@ -151,28 +170,42 @@ const ChatComponent = () => {
           automaticallyAdjustKeyboardInsets={true}
           contentContainerStyle={{ paddingBottom: 20 }}
           renderItem={({ item }) => (
-            <View className={`${
-              item.sender_id === profile?.user_id
-                ? 'flex-row-reverse items-end'
-                : 'flex-row items-start'
-            }`}>
-              <View className='w-6 h-6 rounded-full bg-gray-700'>
-                <Image source={{ uri: item.sender.profile_picture_url }} className='w-full h-full rounded-full' />
-              </View>
-              <View className={`w-fit max-w-[80%] p-2 m-2 rounded flex flex-col gap-1.5 ${
+            <View
+              className={`${
                 item.sender_id === profile?.user_id
-                  ? 'bg-primary ml-auto'
-                  : 'bg-gray-700 mr-auto'
-              }`}>
-                <Text className="text-white">{item.content}</Text>
-                <Text className={`text-xs ${
+                  ? "flex-row-reverse items-end"
+                  : "flex-row items-start"
+              }`}
+            >
+              <View className="w-6 h-6 rounded-full bg-gray-700">
+                <Image
+                  source={{
+                    uri: formatPicturesUri(
+                      "profile_pictures",
+                      item.sender.profile_picture_url,
+                    ),
+                  }}
+                  className="w-full h-full rounded-full"
+                />
+              </View>
+              <View
+                className={`w-fit max-w-[80%] p-2 m-2 rounded flex flex-col gap-1.5 ${
                   item.sender_id === profile?.user_id
-                    ? 'text-gray-200'
-                    : 'text-gray-400'
-                }`}>
-                  {dayjs(item.created_at).isSame(dayjs(), 'day')
-                    ? dayjs(item.created_at).format('HH:mm')
-                    : dayjs(item.created_at).format('dddd D MMM [à] HH:mm')}
+                    ? "bg-primary ml-auto"
+                    : "bg-gray-700 mr-auto"
+                }`}
+              >
+                <Text className="text-white">{item.content}</Text>
+                <Text
+                  className={`text-xs ${
+                    item.sender_id === profile?.user_id
+                      ? "text-gray-200"
+                      : "text-gray-400"
+                  }`}
+                >
+                  {dayjs(item.created_at).isSame(dayjs(), "day")
+                    ? dayjs(item.created_at).format("HH:mm")
+                    : dayjs(item.created_at).format("dddd D MMM [à] HH:mm")}
                 </Text>
               </View>
             </View>
@@ -189,7 +222,7 @@ const ChatComponent = () => {
             />
           </View>
           <Button
-            className='!bg-transparent'
+            className="!bg-transparent"
             onPress={handleSend}
             label=""
             icon={<DirectMessageIcon fill="#fff" />}

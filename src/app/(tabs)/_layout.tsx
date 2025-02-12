@@ -6,6 +6,7 @@ import { NotificationIcon } from "@/components/vectors/notification-icon";
 import { OptionsIcon } from "@/components/vectors/options-icon";
 import { SearchIcon } from "@/components/vectors/search";
 import { checkIfProfileComplete } from "@/lib/helpers/check-if-profile-complete";
+import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
 import { useHasUnreadMessages } from "@/network/chat";
 import { useFetchUserProfile } from "@/network/user-profile";
 import { Link, Tabs } from "expo-router";
@@ -102,7 +103,9 @@ export default function TabLayout() {
             </View>
           ),
         }}
-        initialParams={{ isProfileComplete: checkIfProfileComplete(profile) }}
+        initialParams={{
+          isProfileComplete: checkIfProfileComplete(profile),
+        }}
       />
       <Tabs.Screen
         name="discover"
@@ -145,7 +148,12 @@ export default function TabLayout() {
           tabBarIcon: ({ focused }) => (
             <View className="flex-1 items-center justify-center">
               <Image
-                source={{ uri: profile?.profile_picture_url }}
+                source={{
+                  uri: formatPicturesUri(
+                    "profile_pictures",
+                    profile?.profile_picture_url as string,
+                  ),
+                }}
                 className={`w-6 h-6 rounded-full bg-cover ${
                   focused ? "border-2 border-white" : ""
                 }`}

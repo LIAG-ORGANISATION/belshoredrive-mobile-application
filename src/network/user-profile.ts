@@ -70,35 +70,11 @@ export function useUploadUserProfileMedia() {
         throw new Error("No file provided");
       }
 
-      // Validate file properties
-      // if (!file.name) {
-      //   throw new Error("File name is missing");
-      // }
-
-      // const fileUUID = uuidv4();
-      // const fileExt = file.name.split(".").pop();
-
-      // if (!fileExt) {
-      //   throw new Error("File extension could not be determined");
-      // }
-
-      // const filePath = `${fileUUID}.${fileExt}`;
-
-      // console.log("file ------>", file);
-      // const fileBlob = await FileSystem.readAsStringAsync(file, {
-      //   encoding: FileSystem.EncodingType.Base64,
-      // });
-      // console.log("fileBlob ------>", fileBlob);
-
       const fileUUID = uuidv4();
 
       console.log("fileExt ------>", fileExt);
 
       const filePath = `${fileUUID}.${fileExt}`;
-
-      // const buffer = .from(fileBlob, "base64");
-
-      // console.log("buffer ------>", buffer);
 
       const arrayBuffer = decode(file);
 
@@ -120,10 +96,20 @@ export function useUploadUserProfileMedia() {
           throw new Error("Upload successful but file path is missing");
         }
 
-        return data.path;
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (!user) throw new Error("User not authenticated");
+        const { data: userProfile, error: userProfileError } = await supabase
+          .from("user_profiles")
+          .update({ profile_picture_url: data.path })
+          .eq("user_id", user.id)
+          .select()
+          .single();
+        if (userProfileError) throw userProfileError;
+        return userProfile;
       } catch (error) {
         console.error("Error in file upload:", error);
-        // Rethrow with more context
         throw new Error(
           `File upload failed: ${error instanceof Error ? error.message : "Unknown error"}`,
         );
