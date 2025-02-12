@@ -41,7 +41,7 @@ export default function TabOneScreen() {
             {item.media && item.media.length > 0 && (
               <Image
                 source={{ 
-                  uri: `${process.env.EXPO_PUBLIC_SUPABASE_URL}/storage/v1/object/public/vehicles/vehicle-media/${item.media[0]}`
+                  uri: `${process.env.EXPO_PUBLIC_SUPABASE_URL}/storage/v1/object/public/vehicles/${item.media[0]}`
                 }}
                 className="w-full h-48 rounded-lg mb-4"
                 resizeMode="cover"
