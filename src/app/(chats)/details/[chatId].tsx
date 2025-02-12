@@ -38,7 +38,6 @@ const ChatComponent = () => {
         .single();
 
       if (error) {
-        console.error(error);
         throw error;
       }
 
@@ -50,7 +49,6 @@ const ChatComponent = () => {
         .in('user_id', userIds);
 
       if (profilesError) {
-        console.log(JSON.stringify(profilesError, null, 2));
         throw profilesError;
       }
 
@@ -140,7 +138,7 @@ const ChatComponent = () => {
   };
 
   return (
-    <KeyboardAvoidingView 
+    <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       className="flex-1 bg-black"
       keyboardVerticalOffset={Platform.OS === 'ios' ? 120 : 0}
@@ -190,7 +188,7 @@ const ChatComponent = () => {
               placeholder="Type a message"
             />
           </View>
-          <Button 
+          <Button
             className='!bg-transparent'
             onPress={handleSend}
             label=""

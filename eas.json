@@ -6,6 +6,13 @@
       "ios": {
         "simulator": true
       }
+    },
+    "development-device": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "buildConfiguration": "Debug"
+      }
     }
   }
 }
