@@ -35,27 +35,31 @@ export default function TabOneScreen() {
 
       <FlatList
         data={vehicles}
-        className="w-full px-4"
+        className="w-full mt-3"
         renderItem={({ item }) => (
-          <View className="bg-gray-800 p-4 rounded-lg mb-4">
+          <View className="rounded-lg mb-4 relative h-96">
             {item.media && item.media.length > 0 && (
-              <Image
-                source={{ 
-                  uri: `${process.env.EXPO_PUBLIC_SUPABASE_URL}/storage/v1/object/public/vehicles/${item.media[0]}`
-                }}
-                className="w-full h-48 rounded-lg mb-4"
-                resizeMode="cover"
-              />
+              <>
+                <Image
+                  source={{ 
+                    uri: `${process.env.EXPO_PUBLIC_SUPABASE_URL}/storage/v1/object/public/vehicles/${item.media[0]}`
+                  }}
+                  className="w-full h-full rounded-lg"
+                  resizeMode="cover"
+                />
+                {/* Gradient overlay for better text visibility */}
+                <View className="absolute bottom-0 w-full top-10 bg-gradient-to-t from-black/80 to-transparent rounded-b-lg z-10" />
+              </>
             )}
-            <Text className="text-white text-lg font-bold">
-              {item.brands?.name} {item.model}
-            </Text>
-            {item.nickname && (
-              <Text className="text-gray-400">{item.nickname}</Text>
-            )}
-            <Text className="text-white mt-2">
-              Year: {item.year}
-            </Text>
+
+            <View className="absolute bottom-4 left-4 right-4">
+              {item.nickname && (
+                <Text className="text-gray-200">{item.nickname}</Text>
+              )}
+              <Text className="text-white text-lg font-bold">
+                {item.year} {item.brands?.name} {item.model}
+              </Text>
+            </View>
           </View>
         )}
         keyExtractor={(item) => item.vehicle_id}
