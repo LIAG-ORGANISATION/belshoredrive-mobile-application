@@ -242,12 +242,16 @@ export type Database = {
         Row: {
           biography: string | null;
           birth_year: number | null;
+          facebook: string | null;
           favorite_vehicle_brands: string[] | null;
+          instagram: string | null;
           interests: string[] | null;
           postal_address: string | null;
           profile_picture_url: string | null;
           pseudo: string | null;
           services: string[] | null;
+          tiktok: string | null;
+          twitter: string | null;
           user_id: string;
           viewable_departments: string[] | null;
           website: string | null;
@@ -255,12 +259,16 @@ export type Database = {
         Insert: {
           biography?: string | null;
           birth_year?: number | null;
+          facebook?: string | null;
           favorite_vehicle_brands?: string[] | null;
+          instagram?: string | null;
           interests?: string[] | null;
           postal_address?: string | null;
           profile_picture_url?: string | null;
           pseudo?: string | null;
           services?: string[] | null;
+          tiktok?: string | null;
+          twitter?: string | null;
           user_id: string;
           viewable_departments?: string[] | null;
           website?: string | null;
@@ -268,12 +276,16 @@ export type Database = {
         Update: {
           biography?: string | null;
           birth_year?: number | null;
+          facebook?: string | null;
           favorite_vehicle_brands?: string[] | null;
+          instagram?: string | null;
           interests?: string[] | null;
           postal_address?: string | null;
           profile_picture_url?: string | null;
           pseudo?: string | null;
           services?: string[] | null;
+          tiktok?: string | null;
+          twitter?: string | null;
           user_id?: string;
           viewable_departments?: string[] | null;
           website?: string | null;
@@ -375,6 +387,7 @@ export type Database = {
           braking: string | null;
           brand_id: string | null;
           chassis: string | null;
+          created_at: string | null;
           driving_side: string | null;
           exterior: string | null;
           fuel: string | null;
@@ -398,6 +411,7 @@ export type Database = {
           braking?: string | null;
           brand_id?: string | null;
           chassis?: string | null;
+          created_at?: string | null;
           driving_side?: string | null;
           exterior?: string | null;
           fuel?: string | null;
@@ -421,6 +435,7 @@ export type Database = {
           braking?: string | null;
           brand_id?: string | null;
           chassis?: string | null;
+          created_at?: string | null;
           driving_side?: string | null;
           exterior?: string | null;
           fuel?: string | null;
@@ -440,13 +455,32 @@ export type Database = {
           vehicle_id?: string;
           year?: number | null;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "vehicles_brand_id_fkey";
+            columns: ["brand_id"];
+            isOneToOne: false;
+            referencedRelation: "brands";
+            referencedColumns: ["brand_id"];
+          },
+        ];
       };
     };
     Views: {
       [_ in never]: never;
     };
     Functions: {
+      get_tags_for_vehicle: {
+        Args: {
+          _tags: string[];
+        };
+        Returns: {
+          created_at: string;
+          name: string | null;
+          tag_id: string;
+          type: string | null;
+        }[];
+      };
       get_unread_message_counts: {
         Args: {
           user_id: string;

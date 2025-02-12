@@ -89,7 +89,7 @@ export default function Contact() {
         />
 
         {/* TODO : Add a link to the next step */}
-        <Link href="/onboarding/brands" asChild>
+        <Link href="/(tabs)" asChild>
           <Text className="text-white text-sm text-center font-semibold">Passer cette étape</Text>
         </Link>
       </View>

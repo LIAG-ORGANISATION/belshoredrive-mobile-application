@@ -29,7 +29,7 @@ const createSessionFromUrl = async (url: string) => {
 
   if (error) throw error;
 
-  router.push("/auth/verification");
+  router.push("/onboarding");
 };
 
 export default function Email() {
@@ -64,6 +64,8 @@ export default function Email() {
     });
 
     if (error) throw error;
+
+    router.push("/auth/verification");
   };
 
   return (
@@ -88,6 +90,9 @@ export default function Email() {
                   value={value}
                   onChangeText={onChange}
                   onBlur={onBlur}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  autoComplete="email"
                   placeholderTextColor="white"
                   error={errors.email}
                 />
