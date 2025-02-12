@@ -280,6 +280,70 @@ export type Database = {
         };
         Relationships: [];
       };
+      vehicle_comment_votes: {
+        Row: {
+          comment_id: string;
+          created_at: string;
+          user_id: string;
+          vote_type: string;
+        };
+        Insert: {
+          comment_id: string;
+          created_at?: string;
+          user_id: string;
+          vote_type: string;
+        };
+        Update: {
+          comment_id?: string;
+          created_at?: string;
+          user_id?: string;
+          vote_type?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "vehicle_comment_votes_comment_id_fkey";
+            columns: ["comment_id"];
+            isOneToOne: false;
+            referencedRelation: "vehicle_comments";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      vehicle_comments: {
+        Row: {
+          content: string;
+          created_at: string;
+          id: string;
+          updated_at: string | null;
+          user_id: string;
+          vehicle_id: string;
+        };
+        Insert: {
+          content: string;
+          created_at?: string;
+          id?: string;
+          updated_at?: string | null;
+          user_id: string;
+          vehicle_id: string;
+        };
+        Update: {
+          content?: string;
+          created_at?: string;
+          id?: string;
+          updated_at?: string | null;
+          user_id?: string;
+          vehicle_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "vehicle_comments_vehicle_id_fkey";
+            columns: ["vehicle_id"];
+            isOneToOne: false;
+            referencedRelation: "vehicles";
+            referencedColumns: ["vehicle_id"];
+          },
+        ];
+      };
       vehicle_ratings: {
         Row: {
           rating: number | null;
@@ -383,7 +447,16 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      get_unread_message_counts: {
+        Args: {
+          user_id: string;
+          conversation_ids: string[];
+        };
+        Returns: {
+          conversation_id: string;
+          count: number;
+        }[];
+      };
     };
     Enums: {
       [_ in never]: never;
