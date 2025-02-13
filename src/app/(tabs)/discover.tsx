@@ -68,7 +68,7 @@ export default function SearchScreen() {
         // Navigate to vehicle detail
       }}
     >
-      <View className="w-full h-full rounded-lg overflow-hidden bg-gray-800">
+      <View className="w-full h-full overflow-hidden bg-gray-800">
         {item.media?.[0] ? (
           <Image
             source={{
@@ -95,7 +95,7 @@ export default function SearchScreen() {
   }
 
   return (
-    <View className="flex-1 bg-black px-4 p-safe-offset-6">
+    <View className="flex-1 bg-black p-safe-offset-2">
       <Input
         name="search"
         placeholder="Rechercher un utilisateur..."
