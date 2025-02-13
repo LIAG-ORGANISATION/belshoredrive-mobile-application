@@ -29,7 +29,7 @@ export const completeProfileDetailsSchema = object({
     minValue(1900),
     maxValue(new Date().getFullYear()),
   ),
-  postal_address: optional(pipe(string(), minLength(1), maxLength(10))),
+  postal_address: optional(pipe(string(), minLength(1), maxLength(100))),
   website_url: optional(pipe(string(), minLength(1), maxLength(100))),
   instagram: optional(pipe(string(), minLength(1), maxLength(100))),
   facebook: optional(pipe(string(), minLength(1), maxLength(100))),

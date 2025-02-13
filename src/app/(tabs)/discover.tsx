@@ -6,7 +6,6 @@ import { useFetchDepartments } from '@/network/departments';
 import { useVehicles } from "@/network/vehicles";
 import type { Tables } from '@/types/supabase';
 import { useQuery } from '@tanstack/react-query';
-import { useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import {
   FlatList,
@@ -34,8 +33,6 @@ export default function SearchScreen() {
   const { data: departments = [], isLoading: isLoadingDepartments } = useFetchDepartments();
   const [searchQuery, setSearchQuery] = useState("");
   const [isInputFocused, setIsInputFocused] = useState(false);
-
-  const params = useLocalSearchParams();
 
 
   const { data: searchResults, isLoading: isLoadingSearchResults } = useQuery({

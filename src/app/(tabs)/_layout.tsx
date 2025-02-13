@@ -1,4 +1,3 @@
-import { Input } from "@/components/ui/text-input";
 import { AddIcon } from "@/components/vectors/add-icon";
 import { DirectMessageIcon } from "@/components/vectors/direct-message-icon";
 import { IconCalendar } from "@/components/vectors/icon-calendar";
@@ -152,7 +151,11 @@ export default function TabLayout() {
           options={{
             tabBarIcon: ({ color }) => (
               <View className="flex-1 items-center justify-center">
-                <IconCalendar color={color} fill={color} />
+                <Link href="/(tabs)/calendar" asChild>
+                  <Pressable>
+                    <IconCalendar color={color} fill={color} />
+                  </Pressable>
+                </Link>
               </View>
             ),
             tabBarShowLabel: false,

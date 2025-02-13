@@ -194,7 +194,7 @@ export default function ProfileDetails() {
             name="postal_address"
             render={({ field: { onChange, onBlur, value } }) => (
               <Input
-                placeholder="Adresse postale"
+                placeholder="Ville de résidence"
                 name="postal_address"
                 value={value as string}
                 onChangeText={onChange}
