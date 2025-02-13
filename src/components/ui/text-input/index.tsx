@@ -7,11 +7,15 @@ interface InputProps<T> extends TextInputProps {
   name: Path<T>;
   classes?: string;
   icon?: React.ReactNode;
+  onFocus?: () => void;
+  onBlur?: () => void;
 }
 
 export const Input = <T extends FieldValues>({
   error,
   icon,
+  onFocus,
+  onBlur,
   ...props
 }: InputProps<T>) => {
   const classes = cx({
@@ -30,6 +34,8 @@ export const Input = <T extends FieldValues>({
         className={classes}
         {...props}
         placeholderTextColor="#ffffff70"
+        onFocus={onFocus}
+        onBlur={onBlur}
       />
       {error && (
         <Text className="text-red-500 absolute -bottom-6 text-xs">
