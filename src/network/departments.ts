@@ -10,6 +10,15 @@ export const useFetchDepartments = () => {
   return { data, isLoading, error };
 };
 
+export const useFetchUserDepartments = (ids: string[]) => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["userDepartments"],
+    queryFn: () => fetchUserDepartments(ids),
+  });
+
+  return { data, isLoading, error };
+};
+
 export type DepartmentType = {
   department_id: string;
   department_number: string;
@@ -18,6 +27,19 @@ export type DepartmentType = {
 
 const fetchDepartments = async (): Promise<DepartmentType[]> => {
   const { data, error } = await supabase.from("departments").select("*");
+
+  if (error) throw error;
+
+  return data;
+};
+
+const fetchUserDepartments = async (
+  ids: string[],
+): Promise<DepartmentType[]> => {
+  const { data, error } = await supabase
+    .from("departments")
+    .select("*")
+    .in("department_id", ids);
 
   if (error) throw error;
 

@@ -32,7 +32,24 @@ export function useFetchUserProfile(): UseQueryResult<Tables<"user_profiles">> {
     },
   });
 }
+export function useFetchUserProfileById(
+  userId: string,
+): UseQueryResult<Tables<"user_profiles">> {
+  return useQuery({
+    queryKey: ["userProfile", userId],
+    queryFn: async () => {
+      const { data: profile, error } = await supabase
+        .from("user_profiles")
+        .select("*")
+        .eq("user_id", userId)
+        .single();
 
+      if (error) throw error;
+
+      return profile;
+    },
+  });
+}
 export function useUpdateUserProfile() {
   const queryClient = useQueryClient();
 

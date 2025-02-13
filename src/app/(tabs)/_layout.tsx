@@ -167,6 +167,28 @@ export default function TabLayout() {
         <Tabs.Screen
           name="profile"
           options={{
+            headerShown: true,
+            title: profile.pseudo || "",
+            sceneStyle: {
+              backgroundColor: "#000",
+            },
+            headerTitleAlign: "center",
+            headerTitleStyle: {
+              color: "#fff",
+              textAlign: "auto",
+              fontSize: 18,
+              fontWeight: "800",
+            },
+            tabBarShowLabel: false,
+            headerRight: () => (
+              <View className="flex-row items-center gap-2 rotate-90">
+                <Link href="/onboarding" asChild>
+                  <Pressable>
+                    <OptionsIcon fill="#fff" />
+                  </Pressable>
+                </Link>
+              </View>
+            ),
             tabBarIcon: ({ focused }) => (
               <View className="flex-1 items-center justify-center">
                 <Image
@@ -182,7 +204,6 @@ export default function TabLayout() {
                 />
               </View>
             ),
-            tabBarShowLabel: false,
           }}
         />
       </Tabs>
