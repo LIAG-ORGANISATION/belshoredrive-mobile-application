@@ -3,15 +3,11 @@ import { useFetchConversations } from '@/network/chat';
 import { useFetchUserProfile } from '@/network/user-profile';
 import { Link } from 'expo-router';
 import React from 'react';
-import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
 
 const ChatListComponent = () => {
   const { data: conversations, isLoading } = useFetchConversations();
   const { data: currentUserProfile } = useFetchUserProfile();
-
-  if (isLoading) {
-    return <Text className="text-white">Loading...</Text>;
-  }
 
   const getConversationTitle = (conversation: {
     title: string;
@@ -30,6 +26,14 @@ const ChatListComponent = () => {
 
     return otherParticipants || 'Chat';
   };
+
+  if (isLoading) {
+    return (
+      <View className="flex-1 bg-black items-center justify-center">
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    )
+  }
 
   return (
     <View className="flex-1 bg-black">
