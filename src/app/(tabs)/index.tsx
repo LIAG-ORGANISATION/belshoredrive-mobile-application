@@ -16,6 +16,7 @@ cssInterop(LinearGradient, {
 
 export default function TabOneScreen() {
   const { isProfileComplete } = useLocalSearchParams();
+
   const {
     data: vehiclesPages,
     isLoading,
@@ -77,6 +78,24 @@ export default function TabOneScreen() {
               <Text className="text-white text-lg font-bold">
                 {item.year} {item.brands?.name} {item.model}
               </Text>
+
+              {/* Add owner information */}
+              <View className="flex-row items-center mt-4">
+                {item.user_profiles?.profile_picture_url && (
+                  <Image
+                    source={{
+                      uri: formatPicturesUri(
+                        "profile_pictures",
+                        item.user_profiles.profile_picture_url
+                      ),
+                    }}
+                    className="w-6 h-6 rounded-full mr-2"
+                  />
+                )}
+                <Text className="text-white text-sm">
+                  {item.user_profiles?.pseudo || "Unknown User"}
+                </Text>
+              </View>
             </View>
           </View>
         )}

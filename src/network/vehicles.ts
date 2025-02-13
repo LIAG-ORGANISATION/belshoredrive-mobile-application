@@ -112,7 +112,11 @@ export function useVehicles() {
         .from("vehicles")
         .select(`
           *,
-          brands (*)
+          brands (*),
+          user_profiles!user_id (
+            pseudo,
+            profile_picture_url
+          )
         `)
         .range(pageParam * 10, (pageParam + 1) * 10 - 1)
         .order("created_at", { ascending: false });
