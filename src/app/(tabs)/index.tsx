@@ -51,16 +51,16 @@ export default function TabOneScreen() {
 
       <FlatList
         data={vehicles}
-        className="w-full mt-3"
+        className={`w-full ${isProfileComplete ? "mt-0" : "mt-3"}`}
         renderItem={({ item }) => (
-          <View className="rounded-lg mb-4 relative h-[500px]">
+          <View className="rounded-2xl mb-4 relative h-[500px]">
             {item.media && item.media.length > 0 && (
               <>
                 <Image
                   source={{
                     uri: formatPicturesUri("vehicles", item.media[0]),
                   }}
-                  className="w-full h-full rounded-lg"
+                  className="w-full h-full rounded-2xl"
                   resizeMode="cover"
                 />
                 <LinearGradient
