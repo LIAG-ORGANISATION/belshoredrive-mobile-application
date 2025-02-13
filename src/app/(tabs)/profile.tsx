@@ -2,6 +2,7 @@ import { ExternalLink } from "@/components/ExternalLink";
 import { Button } from "@/components/ui/button";
 import { Tabs } from "@/components/ui/tabs";
 import { UserDetails } from "@/components/user-details";
+import { Socials } from "@/components/user-details/socials";
 import { EditIcon } from "@/components/vectors/edit-icon";
 import { IdentificationIcon } from "@/components/vectors/identification-icon";
 import { LinkIcon } from "@/components/vectors/link-icon";
@@ -42,9 +43,9 @@ export default function TabOneScreen() {
   }
 
   return (
-    <ScrollView className="w-full flex-1  bg-black text-white mt-5">
+    <ScrollView className="w-full flex-1  bg-black text-white">
       {/* profile details */}
-      <View className="w-full flex flex-col gap-2 px-safe-offset-6">
+      <View className="w-full flex flex-col gap-2">
         <View className="flex flex-row gap-2">
           <View className="flex items-center justify-start">
             <Image
@@ -191,7 +192,7 @@ export default function TabOneScreen() {
             icon: <IdentificationIcon />,
           },
           {
-            content: <Text className="text-white">Following</Text>,
+            content: <Socials user={profile} />,
             icon: <LinkIcon width={24} height={24} />,
           },
         ]}

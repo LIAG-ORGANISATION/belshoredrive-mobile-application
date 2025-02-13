@@ -10,7 +10,6 @@ import "react-native-get-random-values";
 import { decode } from "base64-arraybuffer";
 import { v4 as uuidv4 } from "uuid";
 
-import * as FileSystem from "expo-file-system";
 export function useFetchUserProfile(): UseQueryResult<Tables<"user_profiles">> {
   return useQuery({
     queryKey: ["userProfile"],
