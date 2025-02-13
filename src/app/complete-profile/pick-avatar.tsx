@@ -8,7 +8,7 @@ import * as ImagePicker from "expo-image-picker";
 import type { ImagePickerAsset } from "expo-image-picker";
 import { Link, router } from "expo-router";
 import React, { useState } from "react";
-import { Text, View } from "react-native";
+import { Dimensions, Text, View } from "react-native";
 import {
   Gesture,
   GestureDetector,
@@ -23,6 +23,7 @@ export default function PickAvatar() {
   const [image, setImage] = useState<ImagePickerAsset | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { mutate: uploadMedia } = useUploadUserProfileMedia();
+  const { width, height } = Dimensions.get("window");
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -51,7 +52,7 @@ export default function PickAvatar() {
       savedTranslateY.value = translateY.value;
     })
     .onChange((event) => {
-      const maxTranslation = (scale.value - 1) * 150;
+      const maxTranslation = ((scale.value - 1) * width) / 2;
 
       const newTranslateX = savedTranslateX.value + event.translationX;
       const newTranslateY = savedTranslateY.value + event.translationY;
@@ -113,16 +114,56 @@ export default function PickAvatar() {
         x: image.width / 2,
         y: image.height / 2,
       };
+      let cropX: number;
+      let cropY: number;
+      let cropWidth: number;
+      let cropHeight: number;
+
+      if (scale.value > 1) {
+        if (Number(savedTranslateX.value) < 0) {
+          cropX =
+            center.x -
+            (savedTranslateX.value * (image.width / 2)) /
+              ((scale.value - 1) * width) /
+              2;
+        } else if (savedTranslateX.value === 0) {
+          cropX = center.x - image.width / 2 / scale.value;
+        } else {
+          cropX =
+            (savedTranslateX.value * (image.width / 2)) /
+            ((scale.value - 1) * width);
+        }
+        if (Number(savedTranslateY.value) < 0) {
+          cropY =
+            center.y -
+            (savedTranslateY.value * (image.height / 2)) /
+              ((scale.value - 1) * height) /
+              2;
+        } else if (savedTranslateY.value === 0) {
+          cropY = center.y - image.height / 2 / scale.value;
+        } else {
+          cropY =
+            (savedTranslateY.value * (image.height / 2)) /
+            ((scale.value - 1) * height);
+        }
+        cropWidth = image.width / scale.value;
+        cropHeight = image.height / scale.value;
+      } else {
+        cropX = 0;
+        cropY = 0;
+        cropWidth = image.width;
+        cropHeight = image.height;
+      }
 
       const manipulatedImage = await ImageManipulator.manipulateAsync(
         image.uri,
         [
           {
             crop: {
-              originX: center.x - savedTranslateX.value * scale.value,
-              originY: center.y - savedTranslateY.value * scale.value,
-              width: image.width / scale.value,
-              height: image.height / scale.value,
+              originX: cropX,
+              originY: cropY,
+              width: cropWidth,
+              height: cropHeight,
             },
           },
         ],
@@ -133,7 +174,6 @@ export default function PickAvatar() {
         file: manipulatedImage.base64 || "",
         fileExt: image.uri.split(".")[1],
       });
-
       setIsLoading(false);
       router.push("/complete-profile/profile-details");
     } catch (error) {

@@ -39,7 +39,7 @@ export default function Onboarding() {
   const onSubmit = async (data: UserServicesType) => {
     try {
       await updateProfile(data);
-      router.push("/complete-profile/profile-details");
+      router.push("/(tabs)");
     } catch (error) {
       console.error("Failed to update interests:", error);
     }

@@ -21,22 +21,16 @@ import { Modal, Pressable, Text, View } from "react-native";
 import { ScrollView } from "react-native";
 
 import { Button } from "@/components/ui/button";
-import { useFetchUserServices } from "@/network/services";
 
 export default function ProfileDetails() {
   const { data: userProfile } = useFetchUserProfile();
   const { mutate: updateProfile } = useUpdateUserProfile();
-  const { data: userServices } = useFetchUserServices(
-    userProfile?.services || [],
-  );
 
   const {
     control,
     handleSubmit,
-    getValues,
     formState: { errors, isValid, isSubmitting },
     reset,
-    watch,
   } = useForm<CompleteProfileType>({
     resolver: valibotResolver(completeProfileDetailsSchema),
     defaultValues: {
@@ -172,7 +166,7 @@ export default function ProfileDetails() {
                       >
                         {Array.from({ length: 100 }, (_, i) => (
                           <Picker.Item
-                            key={new Date().getFullYear() - i}
+                            key={`${new Date().getFullYear() - i}`}
                             label={`${new Date().getFullYear() - i}`}
                             value={new Date().getFullYear() - i}
                           />
@@ -222,28 +216,6 @@ export default function ProfileDetails() {
               />
             )}
           />
-        </View>
-        <View className="flex-col w-full gap-1 ">
-          <Text className="text-white text-lg font-semibold my-4">
-            COMPÉTENCES & SERVICES
-          </Text>
-          <View className="flex-row flex-wrap gap-2">
-            {userServices?.map((service) => (
-              <Chip
-                key={service.service_id}
-                label={service.name}
-                isSelected={false}
-                onPress={() => {}}
-              />
-            ))}
-            <Chip
-              label="+ Ajouter une compétence"
-              isSelected={false}
-              onPress={() => {
-                router.push("/complete-profile/services");
-              }}
-            />
-          </View>
         </View>
 
         <View className="flex-col w-full gap-1 ">

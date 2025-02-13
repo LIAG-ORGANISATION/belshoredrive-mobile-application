@@ -99,7 +99,10 @@ export default function TabLayout() {
                       <View className="relative">
                         <DirectMessageIcon
                           fill="#fff"
-                          style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
+                          style={{
+                            marginRight: 15,
+                            opacity: pressed ? 0.5 : 1,
+                          }}
                         />
                         {hasUnreadMessages && (
                           <View className="absolute top-1 right-2 w-2 h-2 bg-red-500 rounded-full" />
