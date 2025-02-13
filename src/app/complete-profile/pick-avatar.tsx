@@ -18,6 +18,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from "react-native-reanimated";
+
 export default function PickAvatar() {
   const [image, setImage] = useState<ImagePickerAsset | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -134,20 +135,18 @@ export default function PickAvatar() {
       });
 
       setIsLoading(false);
-
-      router.replace("/(tabs)");
+      router.push("/complete-profile/profile-details");
     } catch (error) {
       console.error("Error cropping image:", error);
     }
   };
 
   return (
-    <View className="w-full h-fit max-h-screen flex-1 items-start justify-between pb-safe-offset-4 bg-black">
+    <View className="w-full h-fit max-h-screen flex-1 items-start justify-between pb-safe-offset-4 px-safe-offset-6 bg-black">
+      <Text className="text-white text-2xl font-bold">
+        Ajoutez votre avatar
+      </Text>
       <View className="w-full flex-1 flex-col items-center justify-between gap-4">
-        <Text className="text-white text-2xl font-bold">
-          Ajoutez votre avatar
-        </Text>
-
         <GestureHandlerRootView className="w-full aspect-square">
           <View className="w-full relative aspect-square rounded-lg overflow-hidden">
             {image && (
@@ -175,7 +174,7 @@ export default function PickAvatar() {
           </View>
         </GestureHandlerRootView>
 
-        <View className="w-full flex-col gap-4">
+        <View className="w-full flex-col gap-4 pb-4">
           <Button
             className="w-full justify-center"
             variant="with-icon"
