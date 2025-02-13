@@ -18,6 +18,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
+  ActivityIndicator,
   Dimensions,
   Image,
   Modal,
@@ -48,7 +49,9 @@ export default function TabOneScreen() {
   if (!profile) {
     return (
       <View className="flex-1 items-center justify-center bg-black">
-        <Text className="text-white">Loading...</Text>
+        <Text className="text-white">
+          <ActivityIndicator size="large" color="#ffffff" />
+        </Text>
       </View>
     );
   }
@@ -100,7 +103,7 @@ export default function TabOneScreen() {
             <Button
               variant="secondary"
               label="Modifier"
-              onPress={handleLogout}
+              onPress={() => {}}
               className="gap-2"
               icon={<EditIcon />}
             />
@@ -109,7 +112,7 @@ export default function TabOneScreen() {
             <Button
               variant="primary"
               label="Partager"
-              onPress={handleLogout}
+              onPress={() => {}}
               className="gap-2"
               icon={<ShareIcon fill="#ffffff50" width={16} height={16} />}
             />

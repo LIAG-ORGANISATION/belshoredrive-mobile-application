@@ -63,7 +63,10 @@ export default function Email() {
       },
     });
 
-    if (error) throw error;
+    if (error) {
+      console.log(JSON.stringify(error, null, 2));
+      throw error;
+    }
 
     router.push("/auth/verification");
   };
