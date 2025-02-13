@@ -327,23 +327,6 @@ function RootLayoutNav() {
               headerStyle: { backgroundColor: "#000" },
             }}
           />
-
-          <Stack.Screen
-            name="(search)"
-            options={{
-              headerShown: false,
-              headerStyle: { backgroundColor: "#000" },
-              headerTitle: "",
-              headerLeft: () => (
-                <Ionicons
-                  name="chevron-back"
-                  size={24}
-                  color="white"
-                  onPress={() => router.back()}
-                />
-              ),
-            }}
-          />
         </Stack>
       </ThemeProvider>
     </QueryClientProvider>
