@@ -180,72 +180,12 @@ function RootLayoutNav() {
           />
 
           <Stack.Screen
-            name="onboarding/index"
+            name="(onboarding)"
             options={{
-              headerShown: true,
-              headerStyle: { backgroundColor: "#000" },
-              headerTitle: () => <ProgressBar currentStep={1} totalSteps={4} />,
-              headerLeft: () => (
-                <Ionicons
-                  name="chevron-back"
-                  size={24}
-                  color="white"
-                  onPress={() => router.back()}
-                />
-              ),
+              headerShown: false,
             }}
           />
 
-          <Stack.Screen
-            name="onboarding/brands"
-            options={{
-              headerShown: true,
-              headerStyle: { backgroundColor: "#000" },
-              headerTitle: () => <ProgressBar currentStep={2} totalSteps={4} />,
-              headerLeft: () => (
-                <Ionicons
-                  name="chevron-back"
-                  size={24}
-                  color="white"
-                  onPress={() => router.back()}
-                />
-              ),
-            }}
-          />
-
-          <Stack.Screen
-            name="onboarding/contact"
-            options={{
-              headerShown: true,
-              headerStyle: { backgroundColor: "#000" },
-              headerTitle: () => <ProgressBar currentStep={3} totalSteps={4} />,
-              headerLeft: () => (
-                <Ionicons
-                  name="chevron-back"
-                  size={24}
-                  color="white"
-                  onPress={() => router.back()}
-                />
-              ),
-            }}
-          />
-
-          <Stack.Screen
-            name="onboarding/interests"
-            options={{
-              headerShown: true,
-              headerStyle: { backgroundColor: "#000" },
-              headerTitle: () => <ProgressBar currentStep={4} totalSteps={4} />,
-              headerLeft: () => (
-                <Ionicons
-                  name="chevron-back"
-                  size={24}
-                  color="white"
-                  onPress={() => router.back()}
-                />
-              ),
-            }}
-          />
           <Stack.Screen
             name="complete-profile/index"
             options={{
@@ -362,3 +302,23 @@ function RootLayoutNav() {
     </QueryClientProvider>
   );
 }
+
+
+
+
+<Stack.Screen
+name="onboarding/brands"
+options={{
+  headerShown: true,
+  headerStyle: { backgroundColor: "#000" },
+  headerTitle: () => <ProgressBar currentStep={2} totalSteps={4} />,
+  headerLeft: () => (
+    <Ionicons
+      name="chevron-back"
+      size={24}
+      color="white"
+      onPress={() => router.back()}
+    />
+  ),
+}}
+/>

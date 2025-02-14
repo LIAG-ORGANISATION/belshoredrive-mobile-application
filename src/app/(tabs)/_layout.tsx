@@ -98,7 +98,7 @@ export default function TabLayout() {
             ),
             headerRight: () => (
               <View className="flex-row items-center gap-2">
-                <Link href="/onboarding" asChild>
+                <Link href="/(onboarding)" asChild>
                   <Pressable>
                     {({ pressed }) => (
                       <OptionsIcon
@@ -109,7 +109,7 @@ export default function TabLayout() {
                   </Pressable>
                 </Link>
 
-                <Link href="/onboarding" asChild>
+                <Link href="/(onboarding)" asChild>
                   <Pressable>
                     {({ pressed }) => (
                       <NotificationIcon

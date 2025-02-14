@@ -43,7 +43,7 @@ export default function Onboarding() {
   const onSubmit = async (data: FavoriteInterestsType) => {
     try {
       await updateProfile(data);
-      router.push("/onboarding/contact");
+      router.push("/(onboarding)/contacts");
     } catch (error) {
       console.error("Failed to update interests:", error);
     }
@@ -57,12 +57,12 @@ export default function Onboarding() {
   if (interestsError) return <Text>Error: {interestsError.message}</Text>;
 
   return (
-    <View className="flex-1 bg-black">
-      <View className="flex-1 px-safe-offset-6 ">
-        <Text className="text-white text-2xl font-bold py-4">
-          Quel(s) intérêt(s) partagez-vous ?{" "}
-        </Text>
+    <View className="flex-1 bg-black relative px-2">
+      <Text className="text-white text-2xl font-bold py-4">
+        Quel(s) intérêt(s) partagez-vous ?{" "}
+      </Text>
 
+      <View className="flex-1">
         <ChipSelector<
           FavoriteInterestsType,
           ExtractId<InterestsType, "interest_id">
@@ -73,7 +73,7 @@ export default function Onboarding() {
         />
       </View>
 
-      <View className="bottom-0 w-full px-4 pb-10 pt-4 bg-black z-10 inset-x-0">
+      <View className="absolute bottom-0 w-full px-4 pb-10 pt-4 bg-black z-50 inset-x-0">
         <Button
           variant="secondary"
           label="Continuer"

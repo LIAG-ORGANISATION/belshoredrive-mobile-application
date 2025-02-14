@@ -37,7 +37,7 @@ const createSessionFromUrl = async (url: string) => {
   if (profile?.length === 0) {
     router.push("/(tabs)");
   } else {
-    router.push("/onboarding");
+    router.push("/(onboarding)");
   }
 };
 

@@ -18,7 +18,7 @@ export default function ChatsLayout() {
 
   return (
     <View className="flex-1 bg-black">
-      <View className="flex-1 py-safe-offset-6">
+      <View className="flex-1 py-safe-offset-2">
         <Stack screenOptions={{
           headerShown: false,
           headerTintColor: "white",

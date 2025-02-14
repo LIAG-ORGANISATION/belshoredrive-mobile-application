@@ -112,7 +112,7 @@ export const ChipSelector = <
   };
 
   return (
-    <View className="pb-safe-offset-0 h-full">
+    <View className="h-full pb-24">
       {haveSearch && (
         <Input
           name="search"
@@ -126,7 +126,7 @@ export const ChipSelector = <
       {items[0].type && <TypeFilters />}
       <FlatList
         data={filterItems(items[0].type ? itemsByType[selectedType] : items)}
-        contentContainerClassName="flex flex-row flex-wrap gap-2"
+        contentContainerClassName="flex flex-row flex-wrap gap-2 pb-4"
         numColumns={1}
         renderItem={({ item }) => (
           <Chip
