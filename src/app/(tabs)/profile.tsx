@@ -36,6 +36,7 @@ export default function TabOneScreen() {
   const { data: vehicles } = useUserVehicles(profile?.user_id as string);
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
   const { width } = Dimensions.get("window");
+
   const handleLogout = async () => {
     try {
       const { error } = await supabase.auth.signOut();
@@ -83,7 +84,7 @@ export default function TabOneScreen() {
             </Text>
           </View>
         </View>
-        <Text className="text-lg text-white font-semibold">
+        <Text className="text-sm text-white font-semibold">
           {profile?.biography}
         </Text>
         <View className="flex flex-row gap-2">
