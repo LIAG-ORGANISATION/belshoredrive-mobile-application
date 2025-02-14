@@ -2,6 +2,7 @@ import { ExternalLink } from "@/components/ExternalLink";
 import { Button } from "@/components/ui/button";
 import { CopyInput } from "@/components/ui/copy-input";
 import { Tabs } from "@/components/ui/tabs";
+import { VehicleCard } from "@/components/ui/vehicle-card";
 import { UserDetails } from "@/components/user-details";
 import { Socials } from "@/components/user-details/socials";
 import { EditIcon } from "@/components/vectors/edit-icon";
@@ -16,7 +17,6 @@ import { useFetchUserProfile } from "@/network/user-profile";
 import { useUserVehicles } from "@/network/vehicles";
 import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
-import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -34,8 +34,6 @@ export default function TabOneScreen() {
   const { data: profile } = useFetchUserProfile();
   const { data: vehicles } = useUserVehicles(profile?.user_id as string);
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
-  const [showColorPicker, setShowColorPicker] = useState(false);
-  const [qrCodeColor, setQrCodeColor] = useState("white");
   const { width } = Dimensions.get("window");
   const handleLogout = async () => {
     try {
@@ -48,12 +46,6 @@ export default function TabOneScreen() {
       console.error("Error logging out:", error);
     }
   };
-
-  const qrColorOptions = [
-    { label: "White", value: "white" },
-    { label: "Black", value: "black" },
-    { label: "Blue", value: "#0E57C1" },
-  ];
 
   if (!profile) {
     return (
@@ -149,7 +141,7 @@ export default function TabOneScreen() {
                     <View className="w-full items-center rounded-lg bg-[#0E57C1] py-8 px-4">
                       <QRCode
                         size={width * 0.8}
-                        color={qrCodeColor}
+                        color={"white"}
                         value={`https://www.belshoredrive.com/${profile?.pseudo}`}
                         backgroundColor="#0E57C1"
                         logo={{
@@ -225,59 +217,16 @@ export default function TabOneScreen() {
         tabs={[
           {
             content: (
-              <View className="flex items-center justify-center">
+              <View className="flex flex-col gap-4 h-full pb-10">
                 {vehicles?.length === 0 && (
                   <Text className="text-white">Aucun véhicule trouvé</Text>
                 )}
                 {vehicles?.map((item) => (
-                  <View
+                  <VehicleCard
                     key={item.vehicle_id}
-                    className="rounded-2xl mb-4 relative h-[500px]"
-                  >
-                    {item.media && item.media.length > 0 && (
-                      <>
-                        <Image
-                          source={{
-                            uri: formatPicturesUri("vehicles", item.media[0]),
-                          }}
-                          className="w-full h-full rounded-2xl"
-                          resizeMode="cover"
-                        />
-                        <LinearGradient
-                          colors={["transparent", "rgba(0,0,0,0.8)"]}
-                          className="absolute bottom-0 w-full h-1/3 rounded-b-lg"
-                        />
-                      </>
-                    )}
-                    <View className="absolute bottom-4 left-4 right-4">
-                      {item.nickname && (
-                        <Text className="text-white font-semibold">
-                          {item.nickname}
-                        </Text>
-                      )}
-                      <Text className="text-white text-lg font-bold">
-                        {item.year} {item.brands?.name} {item.model}
-                      </Text>
-
-                      {/* Add owner information */}
-                      <View className="flex-row items-center mt-4">
-                        {item.user_profiles?.profile_picture_url && (
-                          <Image
-                            source={{
-                              uri: formatPicturesUri(
-                                "profile_pictures",
-                                item.user_profiles.profile_picture_url,
-                              ),
-                            }}
-                            className="w-6 h-6 rounded-full mr-2"
-                          />
-                        )}
-                        <Text className="text-white text-sm">
-                          {item.user_profiles?.pseudo || "Unknown User"}
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
+                    item={item}
+                    user={profile}
+                  />
                 ))}
               </View>
             ),

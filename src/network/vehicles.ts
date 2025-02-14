@@ -10,7 +10,7 @@ import {
 } from "@tanstack/react-query";
 
 // Types
-type VehicleWithComments = Tables<"vehicles"> & {
+export type VehicleWithComments = Tables<"vehicles"> & {
   vehicle_comments: (Tables<"vehicle_comments"> & {
     user_profiles: Pick<
       Tables<"user_profiles">,
