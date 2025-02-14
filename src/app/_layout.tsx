@@ -30,10 +30,8 @@ export default function RootLayout() {
   const [loaded, error] = useFonts({
     ...FontAwesome.font,
     SpaceMono: require("../../assets/fonts/SpaceMono-Regular.ttf"),
-    // TwemojiMozilla: require("../../assets/fonts/TwemojiMozilla.woff2"),
   });
 
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
     if (error) throw error;
   }, [error]);
@@ -52,26 +50,20 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-  const params = useLocalSearchParams();
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", (state) => {
+      if (state === "active") {
+        supabase.auth.startAutoRefresh();
+      } else {
+        supabase.auth.stopAutoRefresh();
+      }
+    });
 
-  if (isStoryBookEnabled) {
-    return <StorybookUIRoot />;
-  }
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
-  // Tells Supabase Auth to continuously refresh the session automatically
-  // if the app is in the foreground. When this is added, you will continue
-  // to receive `onAuthStateChange` events with the `TOKEN_REFRESHED` or
-  // `SIGNED_OUT` event if the user's session is terminated. This should
-  // only be registered once.
-  AppState.addEventListener("change", (state) => {
-    if (state === "active") {
-      supabase.auth.startAutoRefresh();
-    } else {
-      supabase.auth.stopAutoRefresh();
-    }
-  });
-
-  // Add session check
   useEffect(() => {
     const checkSession = async () => {
       const {

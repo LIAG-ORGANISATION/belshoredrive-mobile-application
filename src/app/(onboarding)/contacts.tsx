@@ -2,9 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Ionicons } from "@expo/vector-icons";
 import * as Contacts from 'expo-contacts';
 import { Link } from "expo-router";
-import { useMemo, useState } from 'react';
-import { FlatList, Image, ScrollView, Text, View } from "react-native";
-// import { ScrollView } from "react-native-gesture-handler";
+import { useState } from 'react';
+import { FlatList, Text, View } from "react-native";
 
 export default function Contact() {
   const [contacts, setContacts] = useState<Contacts.Contact[]>([]);
