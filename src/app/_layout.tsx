@@ -257,7 +257,13 @@ function RootLayoutNav() {
                   name="chevron-back"
                   size={24}
                   color="white"
-                  onPress={() => router.back()}
+                  onPress={() => {
+                    if (router.canGoBack()) {
+                      router.back();
+                    } else {
+                      router.replace("/(tabs)");
+                    }
+                  }}
                 />
               ),
             }}
@@ -273,7 +279,13 @@ function RootLayoutNav() {
                   name="chevron-back"
                   size={24}
                   color="white"
-                  onPress={() => router.push("/(tabs)")}
+                  onPress={() => {
+                    if (router.canGoBack()) {
+                      router.back();
+                    } else {
+                      router.replace("/(tabs)");
+                    }
+                  }}
                 />
               ),
             }}
@@ -290,7 +302,13 @@ function RootLayoutNav() {
                   name="chevron-back"
                   size={24}
                   color="white"
-                  onPress={() => router.back()}
+                  onPress={() => {
+                    if (router.canGoBack()) {
+                      router.back();
+                    } else {
+                      router.replace("/(tabs)");
+                    }
+                  }}
                 />
               ),
             }}
@@ -306,7 +324,13 @@ function RootLayoutNav() {
                   name="chevron-back"
                   size={24}
                   color="white"
-                  onPress={() => router.back()}
+                  onPress={() => {
+                    if (router.canGoBack()) {
+                      router.back();
+                    } else {
+                      router.replace("/(tabs)");
+                    }
+                  }}
                 />
               ),
             }}
@@ -317,6 +341,12 @@ function RootLayoutNav() {
               headerShown: false,
               headerTitle: "",
               headerStyle: { backgroundColor: "#000" },
+            }}
+          />
+          <Stack.Screen
+            name="create-vehicle"
+            options={{
+              headerShown: false,
             }}
           />
 

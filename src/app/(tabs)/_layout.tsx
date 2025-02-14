@@ -9,7 +9,7 @@ import { checkIfProfileComplete } from "@/lib/helpers/check-if-profile-complete"
 import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
 import { useHasUnreadMessages } from "@/network/chat";
 import { useFetchUserProfile } from "@/network/user-profile";
-import { Link, Tabs } from "expo-router";
+import { Link, Tabs, router } from "expo-router";
 import { Image, Pressable, Text, View } from "react-native";
 
 export default function TabLayout() {
@@ -142,9 +142,11 @@ export default function TabLayout() {
             tabBarShowLabel: false,
             tabBarIcon: (props) => (
               <View className="relative w-16">
-                <View className="absolute w-16 h-16 bottom-1/2 right-0 left-0 mx-auto bg-[#4AA8BA] rounded-full flex items-center justify-center">
-                  <AddIcon />
-                </View>
+                <Pressable onPress={() => router.replace("/create-vehicle")}>
+                  <View className="absolute w-16 h-16 bottom-1/2 right-0 left-0 mx-auto bg-[#4AA8BA] rounded-full flex items-center justify-center">
+                    <AddIcon />
+                  </View>
+                </Pressable>
               </View>
             ),
           }}

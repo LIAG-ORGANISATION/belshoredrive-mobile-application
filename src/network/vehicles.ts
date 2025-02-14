@@ -8,7 +8,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-
+import { decode } from "base64-arraybuffer";
 // Types
 export type VehicleWithComments = Tables<"vehicles"> & {
   vehicle_comments: (Tables<"vehicle_comments"> & {
@@ -345,29 +345,44 @@ export function useUploadVehicleMedia() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (files: File[]) => {
+    mutationFn: async (files: { base64: string; fileExt: string }[]) => {
       const mediaUUIDs: string[] = [];
 
-      for (const file of files) {
-        const fileUUID = crypto.randomUUID();
-        const fileExt = file.name.split(".").pop();
-        const filePath = `vehicle-media/${fileUUID}.${fileExt}`;
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const ext = file.fileExt;
 
-        const { error: uploadError } = await supabase.storage
-          .from("vehicles")
-          .upload(filePath, file);
-
-        if (uploadError) {
-          console.error("Error uploading file:", uploadError);
+        if (!file) {
+          console.error("No file provided");
           continue;
         }
 
-        const { data } = supabase.storage
-          .from("vehicles")
-          .getPublicUrl(filePath);
+        const fileUUID = crypto.randomUUID();
+        const filePath = `vehicle-media/${fileUUID}.${ext}`;
 
-        if (data?.publicUrl) {
-          mediaUUIDs.push(`${fileUUID}.${fileExt}`);
+        try {
+          const arrayBuffer = decode(file.base64);
+
+          const { data, error: uploadError } = await supabase.storage
+            .from("vehicles")
+            .upload(filePath, arrayBuffer, {
+              contentType: `image/${ext}`,
+              upsert: false,
+            });
+
+          if (uploadError) {
+            console.error("Error uploading file:", uploadError);
+            continue;
+          }
+
+          if (!data?.path) {
+            console.error("Upload successful but file path is missing");
+            continue;
+          }
+
+          mediaUUIDs.push(data.path);
+        } catch (error) {
+          console.error("Error in file upload:", error);
         }
       }
 
