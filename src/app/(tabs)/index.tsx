@@ -5,7 +5,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams } from "expo-router";
 import { cssInterop } from "nativewind";
 import React from "react";
-import { FlatList, Image, Text, View } from "react-native";
+import { FlatList, Image, RefreshControl, Text, View } from "react-native";
 
 // Add this before the component
 cssInterop(LinearGradient, {
@@ -22,6 +22,8 @@ export default function TabOneScreen() {
     isLoading,
     error,
     fetchNextPage,
+    refetch,
+    isFetching,
   } = useVehicles();
 
   if (isLoading) {
@@ -52,6 +54,13 @@ export default function TabOneScreen() {
       <FlatList
         data={vehicles}
         className={`w-full ${isProfileComplete ? "mt-0" : "mt-3"}`}
+        refreshControl={
+          <RefreshControl
+            refreshing={isFetching}
+            onRefresh={refetch}
+            tintColor="white"
+          />
+        }
         renderItem={({ item }) => (
           <View className="rounded-2xl mb-4 relative h-[500px]">
             {item.media && item.media.length > 0 && (
