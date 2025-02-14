@@ -1,5 +1,4 @@
 import "@/global.css";
-import StorybookUIRoot from "../../.storybook";
 import "react-native-reanimated";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import { supabase } from "@/lib/supabase";
@@ -8,12 +7,10 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
-import { Stack, router, useLocalSearchParams } from "expo-router";
+import { Stack, router } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { AppState } from "react-native";
-
-const isStoryBookEnabled = false;
 
 export { ErrorBoundary } from "expo-router";
 
@@ -294,23 +291,3 @@ function RootLayoutNav() {
     </QueryClientProvider>
   );
 }
-
-
-
-
-<Stack.Screen
-name="onboarding/brands"
-options={{
-  headerShown: true,
-  headerStyle: { backgroundColor: "#000" },
-  headerTitle: () => <ProgressBar currentStep={2} totalSteps={4} />,
-  headerLeft: () => (
-    <Ionicons
-      name="chevron-back"
-      size={24}
-      color="white"
-      onPress={() => router.back()}
-    />
-  ),
-}}
-/>
