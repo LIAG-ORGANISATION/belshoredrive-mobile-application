@@ -2,7 +2,7 @@ import type { Tables } from "@/types/supabase";
 import { View } from "react-native";
 import { Text } from "react-native";
 import { ExternalLink } from "../ExternalLink";
-import { Button } from "../ui/button";
+
 import { FacebookIcon } from "../vectors/facebookIcon";
 import { IconX } from "../vectors/icon-x";
 import { InstagramIcon } from "../vectors/instagram-icon";
@@ -18,7 +18,7 @@ export const Socials = ({ user }: { user: Tables<"user_profiles"> }) => {
           <View className="flex flex-row gap-2 items-center">
             <InstagramIcon />
             <Text className="text-white text-sm font-semibold">
-              {user.instagram}
+              Join me on Instagram
             </Text>
           </View>
         </ExternalLink>
@@ -31,7 +31,7 @@ export const Socials = ({ user }: { user: Tables<"user_profiles"> }) => {
           <View className="flex flex-row gap-2 items-center">
             <FacebookIcon />
             <Text className="text-white text-sm font-semibold">
-              {user.facebook}
+              Join me on Facebook
             </Text>
           </View>
         </ExternalLink>
@@ -46,7 +46,7 @@ export const Socials = ({ user }: { user: Tables<"user_profiles"> }) => {
               <IconX />
             </View>
             <Text className="text-white text-sm font-semibold">
-              {user.twitter}
+              Join me on Twitter
             </Text>
           </View>
         </ExternalLink>
@@ -59,7 +59,7 @@ export const Socials = ({ user }: { user: Tables<"user_profiles"> }) => {
           <View className="flex flex-row gap-2 items-center">
             <TikTokIcon />
             <Text className="text-white text-sm font-semibold">
-              {user.tiktok}
+              Join me on TikTok
             </Text>
           </View>
         </ExternalLink>

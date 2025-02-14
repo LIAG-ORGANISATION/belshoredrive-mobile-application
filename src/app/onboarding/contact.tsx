@@ -41,7 +41,7 @@ export default function Contact() {
 
   return (
     <View className="flex-1 bg-black">
-      <View className="flex-1 px-safe-offset-6">
+      <View className="flex-1 px-safe-offset-6 pb-32">
         <Text className="text-white text-2xl font-bold py-4">Trouvez et invitez des connaissances </Text>
 
         {contacts.length === 0 && (
@@ -53,6 +53,7 @@ export default function Contact() {
         {contacts.length > 0 && (
           <FlatList
             data={contacts}
+            keyExtractor={(item) => item.id ?? item.name ?? String(Math.random())}
             renderItem={({ item }) => (
               <View className="flex-row items-center gap-2 py-3 border-b border-gray-700">
                 <View className="w-12 h-12 rounded-full bg-gray-700">
@@ -76,21 +77,20 @@ export default function Contact() {
                   />
                 </View>
               </View>
-              )}
-            />
-          )}
+            )}
+          />
+        )}
       </View>
 
-      <View className="absolute bottom-0 w-full px-4 pb-10 pt-4 bg-black z-10 flex flex-col gap-4">
+      <View className="absolute bottom-0 left-0 right-0 px-4 pb-10 pt-4 bg-black border-t border-gray-800 shadow-lg">
         <Button
           variant="secondary"
           label="Continuer"
           onPress={handleContactPermission}
         />
 
-        {/* TODO : Add a link to the next step */}
         <Link href="/(tabs)" asChild>
-          <Text className="text-white text-sm text-center font-semibold">Passer cette étape</Text>
+          <Text className="text-white text-sm text-center font-semibold mt-4">Passer cette étape</Text>
         </Link>
       </View>
     </View>

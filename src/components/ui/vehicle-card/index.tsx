@@ -34,7 +34,7 @@ export const VehicleCard = ({
         </Text>
 
         {/* Add owner information */}
-        <View className="flex-row items-center mt-4">
+        {/* <View className="flex-row items-center mt-4">
           {(item.user_profiles?.profile_picture_url ||
             user?.profile_picture_url) && (
             <Image
@@ -51,7 +51,7 @@ export const VehicleCard = ({
           <Text className="text-white text-sm">
             {item.user_profiles?.pseudo || user?.pseudo || "Unknown User"}
           </Text>
-        </View>
+        </View> */}
       </View>
     </View>
   );
