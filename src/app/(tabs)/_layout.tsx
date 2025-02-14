@@ -7,15 +7,41 @@ import { OptionsIcon } from "@/components/vectors/options-icon";
 import { SearchIcon } from "@/components/vectors/search";
 import { checkIfProfileComplete } from "@/lib/helpers/check-if-profile-complete";
 import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
+import { supabase } from "@/lib/supabase";
 import { useHasUnreadMessages } from "@/network/chat";
 import { useFetchUserProfile } from "@/network/user-profile";
 import { Ionicons } from "@expo/vector-icons";
-import { Link, Tabs } from "expo-router";
-import { Image, Pressable, Text, View } from "react-native";
+import { Link, Tabs, router } from "expo-router";
+import { useState } from "react";
+import { Animated, Dimensions, Image, Pressable, Text, TouchableOpacity, View } from "react-native";
 
 export default function TabLayout() {
   const { data: hasUnreadMessages } = useHasUnreadMessages();
   const { data: profile, isLoading: loadingProfile } = useFetchUserProfile();
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const slideAnim = useState(new Animated.Value(Dimensions.get('window').width))[0];
+
+  const toggleDrawer = () => {
+    const toValue = isDrawerOpen ? Dimensions.get('window').width : 0;
+    Animated.timing(slideAnim, {
+      toValue,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+    setIsDrawerOpen(!isDrawerOpen);
+  };
+
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+
+      // After successful logout, redirect to auth screen
+      router.replace("/auth");
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
 
   if (loadingProfile) {
     return <Text>Loading...</Text>;
@@ -183,11 +209,9 @@ export default function TabLayout() {
             tabBarShowLabel: false,
             headerRight: () => (
               <View className="flex-row items-center gap-2 rotate-90">
-                <Link href="/onboarding" asChild>
-                  <Pressable>
-                    <OptionsIcon fill="#fff" />
-                  </Pressable>
-                </Link>
+                <Pressable onPress={toggleDrawer}>
+                  <OptionsIcon fill="#fff" />
+                </Pressable>
               </View>
             ),
             tabBarIcon: ({ color, focused }) => (
@@ -216,6 +240,38 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
+
+      {/* Drawer Menu */}
+      <Animated.View 
+        className="absolute top-0 right-0 h-full bg-[#1F1F1F] w-72 z-50"
+        style={{
+          transform: [{ translateX: slideAnim }],
+          borderLeftWidth: 1,
+          borderLeftColor: '#2F2F2F',
+        }}
+      >
+        <View className="p-6">
+          <Text className="text-white text-xl font-bold mb-6">Menu</Text>
+          <Pressable 
+            className="py-3"
+            onPress={() => {
+              toggleDrawer();
+            }}
+          >
+            <TouchableOpacity onPress={handleLogout}>
+              <Text className="text-white text-lg">Déconnexion</Text>
+            </TouchableOpacity>
+          </Pressable>
+        </View>
+      </Animated.View>
+
+      {/* Backdrop */}
+      {isDrawerOpen && (
+        <Pressable 
+          className="absolute top-0 left-0 right-0 bottom-0 bg-black/50"
+          onPress={toggleDrawer}
+        />
+      )}
     </View>
   );
 }
