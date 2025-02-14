@@ -29,7 +29,16 @@ const createSessionFromUrl = async (url: string) => {
 
   if (error) throw error;
 
-  router.push("/onboarding");
+  const { data: profile } = await supabase
+    .from("user_profiles")
+    .select("*")
+    .eq("user_id", (await supabase.auth.getUser()).data.user?.id);
+
+  if (profile?.length === 0) {
+    router.push("/(tabs)");
+  } else {
+    router.push("/onboarding");
+  }
 };
 
 export default function Email() {

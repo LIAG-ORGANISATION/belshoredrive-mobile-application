@@ -3,6 +3,7 @@ import { useFetchUserInterests } from "@/network/interests";
 import { useFetchUserServices } from "@/network/services";
 import { useFetchUserProfileById } from "@/network/user-profile";
 import dayjs from "dayjs";
+import { Link } from "expo-router";
 import { Text, View } from "react-native";
 import { Chip } from "../ui/chip";
 
@@ -42,6 +43,13 @@ export const UserDetails = ({ userId }: { userId: string }) => {
           COMPÉTENCES & SERVICES
         </Text>
         <View className="flex-row flex-wrap gap-2">
+          {services?.length === 0 && (
+            <Text className="text-white/70 text-sm font-semibold">
+              <Link href="/complete-profile/services">
+                <Text className="text-blue-500">Compléter mes services</Text>
+              </Link>
+            </Text>
+          )}
           {services?.map((service) => (
             <Chip
               key={service.service_id}

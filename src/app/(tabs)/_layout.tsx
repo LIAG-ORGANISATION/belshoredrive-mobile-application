@@ -9,6 +9,7 @@ import { checkIfProfileComplete } from "@/lib/helpers/check-if-profile-complete"
 import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
 import { useHasUnreadMessages } from "@/network/chat";
 import { useFetchUserProfile } from "@/network/user-profile";
+import { Ionicons } from "@expo/vector-icons";
 import { Link, Tabs } from "expo-router";
 import { Image, Pressable, Text, View } from "react-native";
 
@@ -189,19 +190,27 @@ export default function TabLayout() {
                 </Link>
               </View>
             ),
-            tabBarIcon: ({ focused }) => (
+            tabBarIcon: ({ color, focused }) => (
               <View className="flex-1 items-center justify-center">
-                <Image
+                {profile?.profile_picture_url ? (
+                  <Image
                   source={{
                     uri: formatPicturesUri(
                       "profile_pictures",
                       profile?.profile_picture_url as string,
                     ),
                   }}
-                  className={`w-6 h-6 rounded-full bg-cover ${
+                  className={`w-6 h-6 rounded-full bg-slate-500 bg-cover ${
                     focused ? "border-2 border-white" : ""
-                  }`}
-                />
+                    }`}
+                  />
+                ) : (
+                  <View className="w-6 h-6 flex items-center justify-center">
+                    <Text className="text-white text-sm font-semibold">
+                      <Ionicons name="person" size={20} color={color} />
+                    </Text>
+                  </View>
+                )}
               </View>
             ),
           }}

@@ -65,15 +65,21 @@ export default function TabOneScreen() {
       <View className="w-full flex flex-col gap-2">
         <View className="flex flex-row gap-2">
           <View className="flex items-center justify-start">
-            <Image
+            {profile?.profile_picture_url ? (
+              <Image
               source={{
                 uri: formatPicturesUri(
                   "profile_pictures",
                   profile?.profile_picture_url as string,
                 ),
               }}
-              className={"w-24 h-24 rounded-full bg-cover"}
-            />
+                className={"w-24 h-24 rounded-full bg-cover"}
+              />
+            ) : (
+              <View className="w-24 h-24 rounded-full bg-slate-500 flex items-center justify-center">
+                <Ionicons name="image" size={20} color="white" />
+              </View>
+            )}
           </View>
           <View className="flex flex-col gap-1 justify-center">
             <Text className="text-2xl text-white font-bold">

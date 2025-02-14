@@ -205,20 +205,31 @@ export type Database = {
           name: string | null;
           tag_id: string;
           type: string | null;
+          type_id: string | null;
         };
         Insert: {
           created_at?: string;
           name?: string | null;
           tag_id?: string;
           type?: string | null;
+          type_id?: string | null;
         };
         Update: {
           created_at?: string;
           name?: string | null;
           tag_id?: string;
           type?: string | null;
+          type_id?: string | null;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "fk_vehicle_type";
+            columns: ["type_id"];
+            isOneToOne: false;
+            referencedRelation: "vehicle_types";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       user_follows: {
         Row: {
@@ -242,6 +253,7 @@ export type Database = {
         Row: {
           biography: string | null;
           birth_year: number | null;
+          created_at: string;
           facebook: string | null;
           favorite_vehicle_brands: string[] | null;
           instagram: string | null;
@@ -259,6 +271,7 @@ export type Database = {
         Insert: {
           biography?: string | null;
           birth_year?: number | null;
+          created_at?: string;
           facebook?: string | null;
           favorite_vehicle_brands?: string[] | null;
           instagram?: string | null;
@@ -276,6 +289,7 @@ export type Database = {
         Update: {
           biography?: string | null;
           birth_year?: number | null;
+          created_at?: string;
           facebook?: string | null;
           favorite_vehicle_brands?: string[] | null;
           instagram?: string | null;
@@ -382,6 +396,24 @@ export type Database = {
           },
         ];
       };
+      vehicle_types: {
+        Row: {
+          created_at: string;
+          id: string;
+          label: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          label?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          label?: string | null;
+        };
+        Relationships: [];
+      };
       vehicles: {
         Row: {
           braking: string | null;
@@ -402,7 +434,7 @@ export type Database = {
           purchase_date: string | null;
           status: string | null;
           tags: string[] | null;
-          type: string | null;
+          type_id: string | null;
           user_id: string | null;
           vehicle_id: string;
           year: number | null;
@@ -426,7 +458,7 @@ export type Database = {
           purchase_date?: string | null;
           status?: string | null;
           tags?: string[] | null;
-          type?: string | null;
+          type_id?: string | null;
           user_id?: string | null;
           vehicle_id: string;
           year?: number | null;
@@ -450,7 +482,7 @@ export type Database = {
           purchase_date?: string | null;
           status?: string | null;
           tags?: string[] | null;
-          type?: string | null;
+          type_id?: string | null;
           user_id?: string | null;
           vehicle_id?: string;
           year?: number | null;
@@ -462,6 +494,20 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: "brands";
             referencedColumns: ["brand_id"];
+          },
+          {
+            foreignKeyName: "vehicles_type_id_fkey";
+            columns: ["type_id"];
+            isOneToOne: false;
+            referencedRelation: "vehicle_types";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "vehicles_user_id_fkey1";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "user_profiles";
+            referencedColumns: ["user_id"];
           },
         ];
       };
@@ -479,6 +525,7 @@ export type Database = {
           name: string | null;
           tag_id: string;
           type: string | null;
+          type_id: string | null;
         }[];
       };
       get_unread_message_counts: {
