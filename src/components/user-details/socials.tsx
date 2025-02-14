@@ -1,53 +1,68 @@
 import type { Tables } from "@/types/supabase";
 import { View } from "react-native";
+import { Text } from "react-native";
+import { ExternalLink } from "../ExternalLink";
 import { Button } from "../ui/button";
 import { FacebookIcon } from "../vectors/facebookIcon";
 import { IconX } from "../vectors/icon-x";
 import { InstagramIcon } from "../vectors/instagram-icon";
 import { TikTokIcon } from "../vectors/tiktok-icon";
-
 export const Socials = ({ user }: { user: Tables<"user_profiles"> }) => {
   return (
     <View className="flex flex-col gap-4">
       {user.instagram && (
-        <Button
-          variant="primary"
-          className="!bg-black !justify-start gap-4 border-white/20 border-2"
-          label="Instagram"
-          onPress={() => {}}
-          icon={<InstagramIcon />}
-        />
+        <ExternalLink
+          href={`https://instagram.com/${user.instagram}`}
+          className="w-full flex flex-row p-4 bg-black !justify-center items-center gap-4 border-white/20 border-2 rounded-md"
+        >
+          <View className="flex flex-row gap-2 items-center">
+            <InstagramIcon />
+            <Text className="text-white text-sm font-semibold">
+              {user.instagram}
+            </Text>
+          </View>
+        </ExternalLink>
       )}
       {user.facebook && (
-        <Button
-          variant="primary"
-          className="!bg-black !justify-start gap-4 border-white/20 border-2"
-          label="Facebook"
-          onPress={() => {}}
-          icon={<FacebookIcon />}
-        />
+        <ExternalLink
+          href={`https://facebook.com/${user.facebook}`}
+          className="w-full flex flex-row p-4 bg-black !justify-center items-center gap-4 border-white/20 border-2 rounded-md"
+        >
+          <View className="flex flex-row gap-2 items-center">
+            <FacebookIcon />
+            <Text className="text-white text-sm font-semibold">
+              {user.facebook}
+            </Text>
+          </View>
+        </ExternalLink>
       )}
       {user.twitter && (
-        <Button
-          variant="primary"
-          className="!bg-black !justify-start gap-4 border-white/20 border-2"
-          label="Twitter"
-          onPress={() => {}}
-          icon={
+        <ExternalLink
+          href={`https://twitter.com/${user.twitter}`}
+          className="w-full flex flex-row p-4 bg-black !justify-center items-center gap-4 border-white/20 border-2 rounded-md"
+        >
+          <View className="flex flex-row gap-2 items-center">
             <View className="opacity-50">
               <IconX />
             </View>
-          }
-        />
+            <Text className="text-white text-sm font-semibold">
+              {user.twitter}
+            </Text>
+          </View>
+        </ExternalLink>
       )}
       {user.tiktok && (
-        <Button
-          variant="primary"
-          className="!bg-black !justify-start gap-4 border-white/20 border-2"
-          label="TikTok"
-          onPress={() => {}}
-          icon={<TikTokIcon />}
-        />
+        <ExternalLink
+          href={`https://tiktok.com/@${user.tiktok}`}
+          className="w-full flex flex-row p-4 bg-black !justify-center items-center gap-4 border-white/20 border-2 rounded-md"
+        >
+          <View className="flex flex-row gap-2 items-center">
+            <TikTokIcon />
+            <Text className="text-white text-sm font-semibold">
+              {user.tiktok}
+            </Text>
+          </View>
+        </ExternalLink>
       )}
     </View>
   );

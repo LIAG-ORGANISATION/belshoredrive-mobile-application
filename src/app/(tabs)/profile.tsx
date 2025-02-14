@@ -1,20 +1,22 @@
 import { ExternalLink } from "@/components/ExternalLink";
 import { Button } from "@/components/ui/button";
+import { CopyInput } from "@/components/ui/copy-input";
 import { Tabs } from "@/components/ui/tabs";
+import { VehicleCard } from "@/components/ui/vehicle-card";
 import { UserDetails } from "@/components/user-details";
 import { Socials } from "@/components/user-details/socials";
 import { EditIcon } from "@/components/vectors/edit-icon";
 import { IdentificationIcon } from "@/components/vectors/identification-icon";
 import { LinkIcon } from "@/components/vectors/link-icon";
 import { QrCodeIcon } from "@/components/vectors/qr-code-icon";
-import { QrCodeLogo } from "@/components/vectors/qr-code-logo";
 import { ShareIcon } from "@/components/vectors/share-icon";
 import { WheelIcon } from "@/components/vectors/wheel-icon";
 import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
 import { supabase } from "@/lib/supabase";
 import { useFetchUserProfile } from "@/network/user-profile";
 import { useUserVehicles } from "@/network/vehicles";
-import { LinearGradient } from "expo-linear-gradient";
+import { Ionicons } from "@expo/vector-icons";
+import { BlurView } from "expo-blur";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -129,32 +131,74 @@ export default function TabOneScreen() {
             visible={isQrModalOpen}
             transparent={true}
             animationType="slide"
-            // onRequestClose={() => setIsQrModalOpen(false)}
           >
-            <View className="flex-1  justify-end bg-black/50 rounded-t-2xl">
-              <View className="bg-black/70 backdrop-blur-md w-full rounded-t-2xl">
-                <View className="flex-row justify-end p-4 border-b ">
-                  <Pressable onPress={() => setIsQrModalOpen(false)}>
-                    <Text className="text-white font-bold">Fermer</Text>
-                  </Pressable>
-                </View>
-                <View className="flex-col justify-center items-center">
-                  <View className="w-full items-center rounded-lg">
-                    <QRCode
-                      size={width * 0.9}
-                      value={`https://www.belshore.com/${profile?.pseudo}`}
-                      backgroundColor="#757575"
-                      logo={{
-                        uri: qrCodeLogoBase64,
-                      }}
-                      logoSize={90}
-                    />
+            <View className="flex-1 justify-end bg-black/50 rounded-t-2xl backdrop-blur-2xl">
+              <View className="bg-[#1f1f1f]/80 w-full rounded-t-2xl overflow-hidden pb-safe-offset-2">
+                <BlurView intensity={35} tint="dark">
+                  <View className="flex-row justify-end  p-4 border-b">
+                    <Pressable onPress={() => setIsQrModalOpen(false)}>
+                      <Text className="text-white font-bold">Fermer</Text>
+                    </Pressable>
                   </View>
-                  <Text className="text-white font-bold">QR Code</Text>
-                  <Text className="text-white font-bold">QR Code</Text>
-                  <Text className="text-white font-bold">QR Code</Text>
-                  <Text className="text-white font-bold">QR Code</Text>
-                </View>
+                  <View className="w-full flex-col gap-4 justify-center items-center py-8 px-4">
+                    <View className="w-full items-center rounded-lg bg-[#0E57C1] py-8 px-4">
+                      <QRCode
+                        size={width * 0.8}
+                        color={"white"}
+                        value={`https://www.belshoredrive.com/${profile?.pseudo}`}
+                        backgroundColor="#0E57C1"
+                        logo={{
+                          uri: qrCodeLogoBase64,
+                        }}
+                        logoSize={90}
+                      />
+                    </View>
+                    <CopyInput
+                      value={`https://www.belshoredrive.com/${profile?.pseudo}`}
+                    />
+                    <View className="w-full flex flex-col gap-2">
+                      <Button
+                        variant="primary"
+                        label="Télécharger en PDF"
+                        className=" !justify-start gap-4"
+                        icon={
+                          <Ionicons
+                            name="download-outline"
+                            size={24}
+                            color="white"
+                          />
+                        }
+                        onPress={() => {}}
+                      />
+                      <Button
+                        variant="primary"
+                        label="Télécharger en image PNG"
+                        className=" !justify-start gap-4"
+                        icon={
+                          <Ionicons
+                            name="image-outline"
+                            size={24}
+                            color="white"
+                          />
+                        }
+                        onPress={() => {}}
+                      />
+                      <Button
+                        variant="primary"
+                        label="Imprimer"
+                        className=" !justify-start gap-4"
+                        icon={
+                          <Ionicons
+                            name="print-outline"
+                            size={24}
+                            color="white"
+                          />
+                        }
+                        onPress={() => {}}
+                      />
+                    </View>
+                  </View>
+                </BlurView>
               </View>
             </View>
           </Modal>
@@ -176,59 +220,16 @@ export default function TabOneScreen() {
         tabs={[
           {
             content: (
-              <View className="flex items-center justify-center">
+              <View className="flex flex-col gap-4 h-full pb-10">
                 {vehicles?.length === 0 && (
                   <Text className="text-white">Aucun véhicule trouvé</Text>
                 )}
                 {vehicles?.map((item) => (
-                  <View
+                  <VehicleCard
                     key={item.vehicle_id}
-                    className="rounded-2xl mb-4 relative h-[500px]"
-                  >
-                    {item.media && item.media.length > 0 && (
-                      <>
-                        <Image
-                          source={{
-                            uri: formatPicturesUri("vehicles", item.media[0]),
-                          }}
-                          className="w-full h-full rounded-2xl"
-                          resizeMode="cover"
-                        />
-                        <LinearGradient
-                          colors={["transparent", "rgba(0,0,0,0.8)"]}
-                          className="absolute bottom-0 w-full h-1/3 rounded-b-lg"
-                        />
-                      </>
-                    )}
-                    <View className="absolute bottom-4 left-4 right-4">
-                      {item.nickname && (
-                        <Text className="text-white font-semibold">
-                          {item.nickname}
-                        </Text>
-                      )}
-                      <Text className="text-white text-lg font-bold">
-                        {item.year} {item.brands?.name} {item.model}
-                      </Text>
-
-                      {/* Add owner information */}
-                      <View className="flex-row items-center mt-4">
-                        {item.user_profiles?.profile_picture_url && (
-                          <Image
-                            source={{
-                              uri: formatPicturesUri(
-                                "profile_pictures",
-                                item.user_profiles.profile_picture_url,
-                              ),
-                            }}
-                            className="w-6 h-6 rounded-full mr-2"
-                          />
-                        )}
-                        <Text className="text-white text-sm">
-                          {item.user_profiles?.pseudo || "Unknown User"}
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
+                    item={item}
+                    user={profile}
+                  />
                 ))}
               </View>
             ),
