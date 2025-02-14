@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Ionicons } from "@expo/vector-icons";
 import * as Contacts from 'expo-contacts';
-
+import { Link } from "expo-router";
 import { useMemo, useState } from 'react';
 import { FlatList, Image, ScrollView, Text, View } from "react-native";
 // import { ScrollView } from "react-native-gesture-handler";
@@ -37,7 +37,7 @@ export default function Contact() {
   };
 
   return (
-    <View className="bg-black flex-1 px-2">
+    <View className="bg-black flex-1 px-2 relative">
       <Text className="text-white text-2xl font-bold my-4">
         Invitez des connaissances
       </Text>
@@ -73,12 +73,17 @@ export default function Contact() {
       </View>
 
 
-      <View className="absolute bottom-0 w-full px-4 pb-10 pt-4 bg-black z-50 inset-x-0">
+      <View className="w-full absolute bottom-0 left-0 right-0 px-4 pb-10 pt-4 bg-black z-50 gap-4">
         <Button
           variant="secondary"
           label="Continuer"
           onPress={handleContactPermission}
         />
+        <Link href="/(tabs)" className="w-full text-center">
+          <Text className="text-white text-sm">
+            Passer cette étape
+          </Text>
+        </Link>
       </View>
     </View>
   );
