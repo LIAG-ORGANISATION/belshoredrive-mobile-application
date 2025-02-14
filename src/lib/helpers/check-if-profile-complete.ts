@@ -4,10 +4,9 @@ export const checkIfProfileComplete = (
   profile: Partial<Tables<"user_profiles">>,
 ) => {
   if (!profile) return false;
-  if (!profile.pseudo || profile.pseudo === null)
-    return "/complete-profile/index";
+  if (!profile.pseudo || profile.pseudo === null) return "/complete-profile";
   if (!profile.profile_picture_url || profile.profile_picture_url === null)
-    return "/complete-profile/profile-picture";
+    return "/complete-profile/pick-avatar";
   if (!profile.biography || profile.biography === null)
     return "/complete-profile/profile-details";
   if (!profile.birth_year || profile.birth_year === null)

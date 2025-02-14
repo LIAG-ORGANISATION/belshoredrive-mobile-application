@@ -169,9 +169,11 @@ export default function TabLayout() {
             tabBarShowLabel: false,
             tabBarIcon: (props) => (
               <View className="relative w-16">
-                <View className="absolute w-16 h-16 bottom-1/2 right-0 left-0 mx-auto bg-[#4AA8BA] rounded-full flex items-center justify-center">
-                  <AddIcon />
-                </View>
+                <Pressable onPress={() => router.replace("/create-vehicle")}>
+                  <View className="absolute w-16 h-16 bottom-1/2 right-0 left-0 mx-auto bg-[#4AA8BA] rounded-full flex items-center justify-center">
+                    <AddIcon />
+                  </View>
+                </Pressable>
               </View>
             ),
           }}
