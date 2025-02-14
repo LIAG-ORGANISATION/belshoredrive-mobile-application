@@ -112,7 +112,9 @@ export default function TabOneScreen() {
             <Button
               variant="secondary"
               label="Modifier"
-              onPress={() => {}}
+              onPress={() => {
+                router.replace("/complete-profile");
+              }}
               className="gap-2"
               icon={<EditIcon />}
             />
