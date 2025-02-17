@@ -3,8 +3,8 @@ import { useFetchUserInterests } from "@/network/interests";
 import { useFetchUserServices } from "@/network/services";
 import { useFetchUserProfileById } from "@/network/user-profile";
 import dayjs from "dayjs";
-import { Link } from "expo-router";
-import { Text, View } from "react-native";
+import { Link, router } from "expo-router";
+import { Pressable, Text, View } from "react-native";
 import { Chip } from "../ui/chip";
 import { SkeletonChip } from "../ui/skeleton-chip";
 import { SkeletonText } from "../ui/skeleton-text";
@@ -22,6 +22,14 @@ export const UserDetails = ({ userId }: { userId: string }) => {
   );
 
   const isLoading = loadingUser || loadingInterests || loadingDepartments || loadingServices;
+
+  const renderAddChip = ({ onPress }: { onPress: () => void }) => {
+    return (
+      <Pressable className="border leading-5 border-[#545454] px-3 py-1 rounded-md bg-[#222]" onPress={onPress}>
+        <Text className="text-white ">+ Ajouter</Text>
+      </Pressable>
+    );
+  };
 
   if (isLoading) {
     return (
@@ -111,6 +119,10 @@ export const UserDetails = ({ userId }: { userId: string }) => {
               onPress={() => {}}
             />
           ))}
+          {renderAddChip({ onPress: () => {
+            // TODO: Create new view for adding services on profile service with back button
+            router.push("/complete-profile/services");
+          } })}
         </View>
       </View>
       <View className="flex-col w-full gap-1 ">
@@ -126,6 +138,9 @@ export const UserDetails = ({ userId }: { userId: string }) => {
               onPress={() => {}}
             />
           ))}
+          {renderAddChip({ onPress: () => {
+            // TODO: Create new view for adding interests on profile interests with back button
+          } })}
         </View>
       </View>
       <View className="flex-col w-full gap-1 ">
@@ -141,6 +156,9 @@ export const UserDetails = ({ userId }: { userId: string }) => {
               onPress={() => {}}
             />
           ))}
+          {renderAddChip({ onPress: () => {
+            // TODO: Create new view for adding departments on profile departments with back button
+          } })}
         </View>
       </View>
     </View>

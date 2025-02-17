@@ -76,8 +76,8 @@ export function Chip({
   return (
     <Pressable onPress={triggerHeartbeat}>
       <Text
-        className={`text-white border border-white px-2 py-1 rounded-md ${
-          isSelected ? "bg-white text-black" : ""
+        className={`text-white border leading-5 border-[#545454] px-3 py-1 rounded-md ${
+          isSelected ? "bg-white text-black" : "bg-[#141414]"
         }`}
       >
         {label}

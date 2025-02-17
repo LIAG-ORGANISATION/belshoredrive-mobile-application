@@ -17,7 +17,7 @@ import { useFetchUserProfile } from "@/network/user-profile";
 import { useUserVehicles } from "@/network/vehicles";
 import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
@@ -36,6 +36,7 @@ export default function TabOneScreen() {
   const { data: vehicles } = useUserVehicles(profile?.user_id as string);
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
   const { width } = Dimensions.get("window");
+  const { initialTab } = useLocalSearchParams();
 
   const handleLogout = async () => {
     try {
@@ -226,6 +227,7 @@ export default function TabOneScreen() {
         </View>
       </View>
       <Tabs
+        initialTab={Number(initialTab) || 0}
         tabs={[
           {
             content: (

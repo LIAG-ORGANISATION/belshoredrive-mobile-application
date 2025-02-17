@@ -8,7 +8,13 @@ export default function Services() {
     <View className="flex-1 bg-black">
       <UpdateServices
         title="Quel(s) service(s) offrez-vous ?"
-        onSubmitCallback={() => router.push("/(tabs)")}
+        onSubmitCallback={() => {
+          // Navigate to profile tab and set initial tab index
+          router.push({
+            pathname: "/(tabs)/profile",
+            params: { initialTab: 1 }
+          });
+        }}
       />
     </View>
   );

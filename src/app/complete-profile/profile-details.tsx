@@ -1,4 +1,3 @@
-import { Chip } from "@/components/ui/chip";
 import { Input } from "@/components/ui/text-input";
 import { FacebookIcon } from "@/components/vectors/facebookIcon";
 import { IconX } from "@/components/vectors/icon-x";
@@ -15,7 +14,7 @@ import {
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import { Picker } from "@react-native-picker/picker";
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Modal, Pressable, Text, View } from "react-native";
 import { ScrollView } from "react-native";
