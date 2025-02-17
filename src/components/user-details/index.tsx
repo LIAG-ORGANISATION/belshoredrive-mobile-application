@@ -3,25 +3,29 @@ import { useFetchUserInterests } from "@/network/interests";
 import { useFetchUserServices } from "@/network/services";
 import { useFetchUserProfileById } from "@/network/user-profile";
 import dayjs from "dayjs";
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 import { Pressable, Text, View } from "react-native";
+import { v4 as uuidv4 } from 'uuid';
 import { Chip } from "../ui/chip";
 import { SkeletonChip } from "../ui/skeleton-chip";
 import { SkeletonText } from "../ui/skeleton-text";
-
 export const UserDetails = ({ userId }: { userId: string }) => {
   const { data: user, isLoading: loadingUser } = useFetchUserProfileById(userId);
+
   const { data: interests, isLoading: loadingInterests } = useFetchUserInterests(
-    user?.interests as string[],
-  );
-  const { data: departments, isLoading: loadingDepartments } = useFetchUserDepartments(
-    user?.viewable_departments as string[],
-  );
-  const { data: services, isLoading: loadingServices } = useFetchUserServices(
-    user?.services as string[],
+    user?.interests ?? [],
   );
 
-  const isLoading = loadingUser || loadingInterests || loadingDepartments || loadingServices;
+  const { data: departments, isLoading: loadingDepartments } = useFetchUserDepartments(
+    user?.viewable_departments ?? [],
+  );
+
+  const { data: services, isLoading: loadingServices } = useFetchUserServices(
+    user?.services ?? [],
+  );
+
+  const isDataLoading = loadingUser ||
+    (!!user && (loadingInterests || loadingDepartments || loadingServices));
 
   const renderAddChip = ({ onPress }: { onPress: () => void }) => {
     return (
@@ -31,7 +35,15 @@ export const UserDetails = ({ userId }: { userId: string }) => {
     );
   };
 
-  if (isLoading) {
+  const renderSkeletonChips = ({ count }: { count: number }) => (
+    <View className="flex-row flex-wrap gap-2 mt-4">
+      {Array(count).fill(null).map((_, index) => (
+        <SkeletonChip key={uuidv4()} />
+      ))}
+    </View>
+  );
+
+  if (isDataLoading) {
     return (
       <View className="flex flex-col gap-4 h-full pb-10">
         <View className="flex flex-row gap-2">
@@ -48,35 +60,39 @@ export const UserDetails = ({ userId }: { userId: string }) => {
         {/* Services Section */}
         <View className="flex-col w-full gap-1">
           <SkeletonText width="w-48" />
-          <View className="flex-row flex-wrap gap-2 mt-4">
-            {[1, 2, 3].map((i) => (
-              <SkeletonChip key={i} />
-            ))}
-          </View>
+          {renderSkeletonChips({ count: 3 })}
         </View>
 
         {/* Interests Section */}
         <View className="flex-col w-full gap-1">
           <SkeletonText width="w-40" />
-          <View className="flex-row flex-wrap gap-2 mt-4">
-            {[1, 2, 3].map((i) => (
-              <SkeletonChip key={i} />
-            ))}
-          </View>
+          {renderSkeletonChips({ count: 3 })}
         </View>
 
         {/* Location Section */}
         <View className="flex-col w-full gap-1">
           <SkeletonText width="w-32" />
-          <View className="flex-row flex-wrap gap-2 mt-4">
-            {[1, 2].map((i) => (
-              <SkeletonChip key={i} />
-            ))}
-          </View>
+          {renderSkeletonChips({ count: 2 })}
         </View>
       </View>
     );
   }
+
+  const renderChip = ({ item, onPress = () => {} }) => (
+    <Chip
+      key={uuidv4()}
+      label={item.name}
+      isSelected={false}
+      onPress={onPress}
+    />
+  );
+
+  const renderChips = (items: any[], keyExtractor: (item: any) => string, onAddPress: () => void) => (
+    <View className="flex-row flex-wrap gap-2">
+      {items?.map((item) => renderChip({ item }))}
+      {renderAddChip({ onPress: onAddPress })}
+    </View>
+  );
 
   return (
     <View className="flex flex-col gap-4 h-full pb-10">
@@ -99,67 +115,37 @@ export const UserDetails = ({ userId }: { userId: string }) => {
         </View>
       </View>
 
-      <View className="flex-col w-full gap-1 ">
+      <View className="flex-col w-full gap-1">
         <Text className="text-white/70 text-lg font-semibold my-4">
           COMPÉTENCES & SERVICES
         </Text>
-        <View className="flex-row flex-wrap gap-2">
-          {services?.length === 0 && (
-            <Text className="text-white/70 text-sm font-semibold">
-              <Link href="/complete-profile/services">
-                <Text className="text-blue-500">Compléter mes services</Text>
-              </Link>
-            </Text>
-          )}
-          {services?.map((service) => (
-            <Chip
-              key={service.service_id}
-              label={service.name}
-              isSelected={false}
-              onPress={() => {}}
-            />
-          ))}
-          {renderAddChip({ onPress: () => {
-            // TODO: Create new view for adding services on profile service with back button
-            router.push("/update-services");
-          } })}
-        </View>
+        {renderChips(
+          services || [],
+          (item) => item.service_id,
+          () => router.push("/update-services")
+        )}
       </View>
-      <View className="flex-col w-full gap-1 ">
+
+      <View className="flex-col w-full gap-1">
         <Text className="text-white/70 text-lg font-semibold my-4">
           CENTRES D'INTÉRÊTS
         </Text>
-        <View className="flex-row flex-wrap gap-2">
-          {interests?.map((interest) => (
-            <Chip
-              key={interest.interest_id}
-              label={interest.name}
-              isSelected={false}
-              onPress={() => {}}
-            />
-          ))}
-          {renderAddChip({ onPress: () => {
-            router.push("/update-interests");
-          } })}
-        </View>
+        {renderChips(
+          interests || [],
+          (item) => item.interest_id,
+          () => router.push("/update-interests")
+        )}
       </View>
-      <View className="flex-col w-full gap-1 ">
+
+      <View className="flex-col w-full gap-1">
         <Text className="text-white/70 text-lg font-semibold my-4">
           LOCALISATION
         </Text>
-        <View className="flex-row flex-wrap gap-2">
-          {departments?.map((department) => (
-            <Chip
-              key={department.department_id}
-              label={department.name}
-              isSelected={false}
-              onPress={() => {}}
-            />
-          ))}
-          {renderAddChip({ onPress: () => {
-            router.push("/update-departments");
-          } })}
-        </View>
+        {renderChips(
+          departments || [],
+          (item) => item.department_id,
+          () => router.push("/update-departments")
+        )}
       </View>
     </View>
   );

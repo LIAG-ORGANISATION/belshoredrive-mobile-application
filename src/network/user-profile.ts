@@ -9,28 +9,29 @@ import {
 import "react-native-get-random-values";
 import { decode } from "base64-arraybuffer";
 import { v4 as uuidv4 } from "uuid";
+import { useGetSession } from "./session";
 
 export function useFetchUserProfile(): UseQueryResult<Tables<"user_profiles">> {
+  const { data: session } = useGetSession();
   return useQuery({
     queryKey: ["userProfile"],
     queryFn: async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error("User not authenticated");
+      if (!session) throw new Error("User not authenticated");
 
       const { data: profile, error } = await supabase
         .from("user_profiles")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("user_id", session.user.id)
         .single();
 
       if (error) throw error;
 
       return profile;
     },
+    enabled: !!session,
   });
 }
+
 export function useFetchUserProfileById(
   userId: string,
 ): UseQueryResult<Tables<"user_profiles">> {
