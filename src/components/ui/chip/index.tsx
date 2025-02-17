@@ -75,9 +75,9 @@ export function Chip({
 
   return (
     <Pressable onPress={triggerHeartbeat}>
-      <Animated.Text style={[isFilter ? animatedStyleFilter : animatedStyle]}>
+      <Text className="text-white">
         {label}
-      </Animated.Text>
+      </Text>
     </Pressable>
   );
 }
