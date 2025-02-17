@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { Text, View } from "react-native";
 
 import { valibotResolver } from "@hookform/resolvers/valibot";
@@ -53,13 +53,6 @@ export default function Onboarding() {
     reset(profile || {});
   }, [profile]);
 
-  if (loadingBrands || loadingProfile)
-    return (
-      <View className="flex-1">
-        <SkeletonText />
-      </View>
-    );
-
   if (brandsError) return <Text>Error: {brandsError.message}</Text>;
 
   return (
@@ -68,23 +61,34 @@ export default function Onboarding() {
         Quelles sont tes marques préférées ?
       </Text>
 
-      <View className="flex-1">
-        <ChipSelector<FavoriteBrandsType, ExtractId<BrandsType, "brand_id">>
-          name="favorite_vehicle_brands"
-          control={control}
-          items={mapToId(brands, "brand_id")}
-          haveSearch={true}
-        />
+      {/* TODO: Make it as generic components for all screen that needs this */}
+      {loadingBrands || loadingProfile ? (
+        <View className="flex flex-row flex-wrap gap-2 pb-4">
+          {[...Array(10)].map((_, index) => (
+            <SkeletonText key={index} />
+          ))}
+        </View>
+      ) : (
+        <>
+        <View className="flex-1">
+          <ChipSelector<FavoriteBrandsType, ExtractId<BrandsType, "brand_id">>
+            name="favorite_vehicle_brands"
+            control={control}
+            items={mapToId(brands, "brand_id")}
+            haveSearch={true}
+          />
       </View>
 
       <View className="absolute bottom-0 w-full px-4 pb-10 pt-4 bg-black z-50 inset-x-0">
         <Button
           variant="secondary"
-          label="Continuer"
-          disabled={!isValid || isSubmitting}
-          onPress={handleSubmit(onSubmit)}
-          />
-      </View>
+            label="Continuer"
+            disabled={!isValid || isSubmitting}
+            onPress={handleSubmit(onSubmit)}
+            />
+          </View>
+        </>
+      )}
     </View>
   );
 }
