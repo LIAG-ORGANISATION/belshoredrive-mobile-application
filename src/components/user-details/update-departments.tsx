@@ -1,5 +1,5 @@
 import { valibotResolver } from "@hookform/resolvers/valibot";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Text, View } from "react-native";
 
@@ -21,7 +21,7 @@ import {
 } from "@/network/user-profile";
 
 export type UpdateDepartmentsProps = {
-  title: string;
+  title?: string;
   onSubmitCallback: (data: RegionAndDepartmentsType) => void;
 }
 
@@ -64,10 +64,12 @@ export const UpdateDepartments = ({ title, onSubmitCallback }: UpdateDepartments
   if (deptsError) return <Text>Error: {deptsError.message}</Text>;
 
   return (
-    <View className="flex-1 bg-black relative px-2">
-      <Text className="text-white text-2xl font-bold py-4">
-        {title}
-      </Text>
+    <>
+      {title && (
+        <Text className="text-white text-2xl font-bold py-4">
+          {title}
+        </Text>
+      )}
 
       <View className="flex-1">
         <ChipSelector<
@@ -89,6 +91,6 @@ export const UpdateDepartments = ({ title, onSubmitCallback }: UpdateDepartments
           onPress={handleSubmit(onSubmit)}
         />
       </View>
-    </View>
+    </>
   );
 }

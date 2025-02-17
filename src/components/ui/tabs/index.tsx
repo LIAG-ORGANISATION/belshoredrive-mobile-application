@@ -2,15 +2,16 @@ import React, { useRef, useState } from "react";
 import { Animated, Dimensions, Pressable, View } from "react-native";
 import { v4 as uuidv4 } from "uuid";
 
-type TabsProps = {
+export type TabsProps = {
   tabs: {
     content: React.ReactNode;
     icon: React.ReactNode;
   }[];
+  initialTab?: number;
 };
 
-export const Tabs = ({ tabs }: TabsProps) => {
-  const [activeTab, setActiveTab] = useState(0);
+export const Tabs = ({ tabs, initialTab = 0 }: TabsProps) => {
+  const [activeTab, setActiveTab] = useState(initialTab);
   const translateX = useRef(new Animated.Value(0)).current;
 
   const animateBorder = (index: number) => {

@@ -18,7 +18,7 @@ import {
 } from "@/network/user-profile";
 
 export type UpdateServicesProps = {
-  title: string;
+  title?: string;
   onSubmitCallback: (data: UserServicesType) => void;
 }
 
@@ -62,17 +62,17 @@ export const UpdateServices = ({ title, onSubmitCallback }: UpdateServicesProps)
 
   return (
     <>
-      <View className="flex-1 px-safe-offset-6 ">
+      {title && (
         <Text className="text-white text-2xl font-bold py-4">
           {title}
         </Text>
+      )}
 
-        <ChipSelector<UserServicesType, ExtractId<ServicesType, "service_id">>
-          name="services"
-          control={control}
-          items={mapToId(services, "service_id")}
-        />
-      </View>
+      <ChipSelector<UserServicesType, ExtractId<ServicesType, "service_id">>
+        name="services"
+        control={control}
+        items={mapToId(services, "service_id")}
+      />
 
       <View className="bottom-0 w-full px-4 pb-10 pt-4 bg-black z-10 inset-x-0">
         <Button

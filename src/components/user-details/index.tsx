@@ -121,7 +121,7 @@ export const UserDetails = ({ userId }: { userId: string }) => {
           ))}
           {renderAddChip({ onPress: () => {
             // TODO: Create new view for adding services on profile service with back button
-            router.push("/complete-profile/services");
+            router.push("/update-services");
           } })}
         </View>
       </View>
@@ -139,7 +139,7 @@ export const UserDetails = ({ userId }: { userId: string }) => {
             />
           ))}
           {renderAddChip({ onPress: () => {
-            // TODO: Create new view for adding interests on profile interests with back button
+            router.push("/update-interests");
           } })}
         </View>
       </View>
@@ -157,7 +157,7 @@ export const UserDetails = ({ userId }: { userId: string }) => {
             />
           ))}
           {renderAddChip({ onPress: () => {
-            // TODO: Create new view for adding departments on profile departments with back button
+            router.push("/update-departments");
           } })}
         </View>
       </View>

@@ -241,6 +241,69 @@ export default function TabLayout() {
             ),
           }}
         />
+        <Tabs.Screen
+          name="update-services"
+          options={{
+            href: null,
+            headerShown: true,
+            headerTintColor: "white",
+            headerTitle: "Modifier mes services",
+            headerStyle: { backgroundColor: "#000" },
+            headerLeft: () => (
+              <Ionicons
+                name="chevron-back"
+                size={24}
+                color="white"
+                onPress={() => router.push({
+                  pathname: "/(tabs)/profile",
+                  params: { initialTab: 1 }
+                })}
+              />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="update-interests"
+          options={{
+            href: null,
+            headerShown: true,
+            headerTintColor: "white",
+            headerTitle: "Modifier mes centres d'intérêts",
+            headerStyle: { backgroundColor: "#000" },
+            headerLeft: () => (
+              <Ionicons
+                name="chevron-back"
+                size={24}
+                color="white"
+                onPress={() => router.push({
+                  pathname: "/(tabs)/profile",
+                  params: { initialTab: 1 }
+                })}
+              />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="update-departments"
+          options={{
+            href: null,
+            headerShown: true,
+            headerTintColor: "white",
+            headerTitle: "Modifier mes départements",
+            headerStyle: { backgroundColor: "#000" },
+            headerLeft: () => (
+              <Ionicons
+                name="chevron-back"
+                size={24}
+                color="white"
+                onPress={() => router.push({
+                  pathname: "/(tabs)/profile",
+                  params: { initialTab: 1 }
+                })}
+              />
+            ),
+          }}
+        />
       </Tabs>
 
       {/* Drawer Menu */}

@@ -18,7 +18,7 @@ import {
 } from "@/network/user-profile";
 
 export type UpdateInterestsProps = {
-  title: string;
+  title?: string;
   onSubmitCallback: (data: FavoriteInterestsType) => void;
 }
 
@@ -62,9 +62,11 @@ export const UpdateInterests = ({ title, onSubmitCallback }: UpdateInterestsProp
 
   return (
     <>
-      <Text className="text-white text-2xl font-bold py-4">
-        {title}
-      </Text>
+      {title && (
+        <Text className="text-white text-2xl font-bold py-4">
+          {title}
+        </Text>
+      )}
 
       <View className="flex-1">
         <ChipSelector<
