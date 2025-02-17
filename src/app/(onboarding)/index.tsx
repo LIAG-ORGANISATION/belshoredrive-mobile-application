@@ -73,16 +73,16 @@ export default function Onboarding() {
           items={mapToId(departments, "department_id")}
           haveSearch={true}
         />
-    </View>
+      </View>
 
-    <View className="absolute bottom-0 w-full px-4 pb-10 pt-4 bg-black z-50 inset-x-0">
-      <Button
-        variant="secondary"
-        label="Continuer"
-        disabled={!isValid || isSubmitting}
-        onPress={handleSubmit(onSubmit)}
-      />
-    </View>
+      <View className="absolute bottom-0 w-full px-4 pb-10 pt-4 bg-black z-50 inset-x-0">
+        <Button
+          variant="secondary"
+          label="Continuer"
+          disabled={!isValid || isSubmitting}
+          onPress={handleSubmit(onSubmit)}
+        />
+      </View>
     </View>
   );
 }

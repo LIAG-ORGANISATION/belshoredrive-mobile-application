@@ -1,13 +1,14 @@
 import { Chip } from "@/components/ui/chip";
 import { SearchIcon } from "@/components/vectors/search";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import {
   type Control,
   type FieldValues,
   type Path,
   useController,
 } from "react-hook-form";
-import { FlatList, Text, View } from "react-native";
+import { FlatList, View } from "react-native";
+import { SkeletonText } from "../ui/skeleton-text";
 import { Input } from "../ui/text-input";
 
 type DefaultItemType = {
@@ -43,26 +44,25 @@ export const ChipSelector = <
 
   const [types, setTypes] = useState<string[]>([]);
   const [selectedType, setSelectedType] = useState("all");
-  const [itemsByType, setItemsByType] = useState<Record<string, ItemType[]>>(
-    {},
-  );
+  const [itemsByType, setItemsByType] = useState<Record<string, ItemType[]>>({});
   const [searchQuery, setSearchQuery] = useState("");
 
-  const toggleItem = (itemId: string) => {
+  const toggleItem = useCallback((itemId: string) => {
     const currentSelection = field.value || ([] as string[]);
     const newSelection = currentSelection.includes(itemId)
       ? currentSelection.filter((id: string) => id !== itemId)
       : [...currentSelection, itemId];
 
     field.onChange(newSelection);
-  };
+  }, [field]);
 
-  const toggleType = (type: string) => {
+  const toggleType = useCallback((type: string) => {
     setSelectedType(type.toLowerCase());
-  };
+  }, []);
 
   useEffect(() => {
     const typeMap: Record<string, ItemType[]> = {};
+
     for (const item of items) {
       if (item.type) {
         if (!typeMap[item.type]) {
@@ -72,6 +72,7 @@ export const ChipSelector = <
       }
     }
     setItemsByType({ ...typeMap, all: items });
+
     setTypes([
       "all",
       ...Object.keys(typeMap).map(
@@ -80,7 +81,7 @@ export const ChipSelector = <
     ]);
   }, [items]);
 
-  const TypeFilters = () => (
+  const TypeFilters = React.memo(() => (
     <FlatList
       data={types}
       contentContainerClassName="h-full flex flex-row flex-nowrap gap-3 mb-6"
@@ -98,10 +99,11 @@ export const ChipSelector = <
       )}
       keyExtractor={(item) => item as string}
     />
-  );
+  ));
 
-  const filterItems = (itemsToFilter: ItemType[] | undefined) => {
+  const filterItems = useCallback((itemsToFilter: ItemType[] | undefined) => {
     if (!itemsToFilter) return itemsByType[selectedType];
+
     return itemsToFilter.filter(
       (item) =>
         item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -109,10 +111,48 @@ export const ChipSelector = <
           searchQuery.toLowerCase(),
         ),
     );
+  }, [itemsByType, selectedType, searchQuery]);
+
+  const filteredData = useMemo(() => 
+    filterItems(items[0]?.type ? itemsByType[selectedType] : items),
+    [items, itemsByType, selectedType, filterItems]
+  );
+
+  const renderItem = useCallback(({ item }: { item: ItemType }) => (
+    <Chip
+      key={item.id}
+      label={
+        item.department_number
+          ? `${item.department_number} - ${item.name || "Unnamed department"}`
+          : item.name
+      }
+      isSelected={(field.value || ([] as string[])).includes(item.id)}
+      onPress={() => toggleItem(item.id)}
+    />
+  ), [field.value, toggleItem]);
+
+  const flatListProps = {
+    removeClippedSubviews: true,
+    maxToRenderPerBatch: 10,
+    windowSize: 5,
+    initialNumToRender: 10,
+    getItemLayout: (data, index) => ({
+      length: 40, // Approximate height of each item
+      offset: 40 * index,
+      index,
+    }),
   };
 
+  if (items.length === 0) {
+    return (
+      <View className="flex-1">
+        <SkeletonText />
+      </View>
+    );
+  }
+
   return (
-    <View className="h-full pb-24">
+    <View className="flex-1">
       {haveSearch && (
         <Input
           name="search"
@@ -123,24 +163,16 @@ export const ChipSelector = <
           icon={<SearchIcon />}
         />
       )}
-      {items[0].type && <TypeFilters />}
+
+      {items[0]?.type && <TypeFilters />}
+
       <FlatList
-        data={filterItems(items[0].type ? itemsByType[selectedType] : items)}
+        data={filteredData}
         contentContainerClassName="flex flex-row flex-wrap gap-2 pb-4"
         numColumns={1}
-        renderItem={({ item }) => (
-          <Chip
-            key={item.id}
-            label={
-              item.department_number
-                ? `${item.department_number} - ${item.name || "Unnamed department"}`
-                : item.name
-            }
-            isSelected={(field.value || ([] as string[])).includes(item.id)}
-            onPress={() => toggleItem(item.id)}
-          />
-        )}
+        renderItem={renderItem}
         keyExtractor={(item) => item.id}
+        {...flatListProps}
       />
     </View>
   );

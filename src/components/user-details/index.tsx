@@ -6,16 +6,69 @@ import dayjs from "dayjs";
 import { Link } from "expo-router";
 import { Text, View } from "react-native";
 import { Chip } from "../ui/chip";
+import { SkeletonChip } from "../ui/skeleton-chip";
+import { SkeletonText } from "../ui/skeleton-text";
 
 export const UserDetails = ({ userId }: { userId: string }) => {
-  const { data: user } = useFetchUserProfileById(userId);
-  const { data: interests } = useFetchUserInterests(
+  const { data: user, isLoading: loadingUser } = useFetchUserProfileById(userId);
+  const { data: interests, isLoading: loadingInterests } = useFetchUserInterests(
     user?.interests as string[],
   );
-  const { data: departments } = useFetchUserDepartments(
+  const { data: departments, isLoading: loadingDepartments } = useFetchUserDepartments(
     user?.viewable_departments as string[],
   );
-  const { data: services } = useFetchUserServices(user?.services as string[]);
+  const { data: services, isLoading: loadingServices } = useFetchUserServices(
+    user?.services as string[],
+  );
+
+  const isLoading = loadingUser || loadingInterests || loadingDepartments || loadingServices;
+
+  if (isLoading) {
+    return (
+      <View className="flex flex-col gap-4 h-full pb-10">
+        <View className="flex flex-row gap-2">
+          <View className="flex-1 flex flex-col gap-2">
+            <SkeletonText width="w-16" />
+            <SkeletonText width="w-24" />
+          </View>
+          <View className="flex-1 flex flex-col gap-2">
+            <SkeletonText width="w-32" />
+            <SkeletonText width="w-40" />
+          </View>
+        </View>
+
+        {/* Services Section */}
+        <View className="flex-col w-full gap-1">
+          <SkeletonText width="w-48" />
+          <View className="flex-row flex-wrap gap-2 mt-4">
+            {[1, 2, 3].map((i) => (
+              <SkeletonChip key={i} />
+            ))}
+          </View>
+        </View>
+
+        {/* Interests Section */}
+        <View className="flex-col w-full gap-1">
+          <SkeletonText width="w-40" />
+          <View className="flex-row flex-wrap gap-2 mt-4">
+            {[1, 2, 3].map((i) => (
+              <SkeletonChip key={i} />
+            ))}
+          </View>
+        </View>
+
+        {/* Location Section */}
+        <View className="flex-col w-full gap-1">
+          <SkeletonText width="w-32" />
+          <View className="flex-row flex-wrap gap-2 mt-4">
+            {[1, 2].map((i) => (
+              <SkeletonChip key={i} />
+            ))}
+          </View>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View className="flex flex-col gap-4 h-full pb-10">

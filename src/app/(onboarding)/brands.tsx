@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 
 import { ChipSelector } from "@/components/chip-selector";
 import { Button } from "@/components/ui/button";
+import { SkeletonText } from "@/components/ui/skeleton-text";
 import type { ExtractId } from "@/lib/helpers/extract-id";
 import { mapToId } from "@/lib/helpers/map-to-id";
 import {
@@ -52,7 +53,13 @@ export default function Onboarding() {
     reset(profile || {});
   }, [profile]);
 
-  if (loadingBrands || loadingProfile) return <Text>Loading...</Text>;
+  if (loadingBrands || loadingProfile)
+    return (
+      <View className="flex-1">
+        <SkeletonText />
+      </View>
+    );
+
   if (brandsError) return <Text>Error: {brandsError.message}</Text>;
 
   return (
@@ -76,7 +83,7 @@ export default function Onboarding() {
           label="Continuer"
           disabled={!isValid || isSubmitting}
           onPress={handleSubmit(onSubmit)}
-        />
+          />
       </View>
     </View>
   );
