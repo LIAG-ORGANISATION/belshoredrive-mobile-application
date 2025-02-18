@@ -1,6 +1,7 @@
 import { useFetchUserDepartments } from "@/network/departments";
 import { useFetchUserInterests } from "@/network/interests";
 import { useFetchUserServices } from "@/network/services";
+import { useGetSession } from "@/network/session";
 import { useFetchUserProfileById } from "@/network/user-profile";
 import dayjs from "dayjs";
 import { router } from "expo-router";
@@ -24,6 +25,7 @@ interface ChipProps {
 }
 
 export const UserDetails = ({ userId }: { userId: string }) => {
+	const { data: session } = useGetSession();
 	const { data: user, isLoading: isLoadingUser } =
 		useFetchUserProfileById(userId);
 	const { data: interests, isLoading: isLoadingInterests } =
@@ -44,6 +46,8 @@ export const UserDetails = ({ userId }: { userId: string }) => {
 			enabled: !!user?.services,
 		},
 	);
+
+	const isCurrentUser = session?.user.id === userId;
 
 	const renderAddChip = ({ onPress }: { onPress: () => void }) => {
 		return (
@@ -82,7 +86,7 @@ export const UserDetails = ({ userId }: { userId: string }) => {
 	) => (
 		<View className="flex-row flex-wrap gap-2">
 			{items?.map((item) => renderChip({ item }))}
-			{renderAddChip({ onPress: onAddPress })}
+			{isCurrentUser && renderAddChip({ onPress: onAddPress })}
 		</View>
 	);
 

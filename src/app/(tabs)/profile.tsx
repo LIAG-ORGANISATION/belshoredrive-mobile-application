@@ -12,6 +12,9 @@ import { QrCodeIcon } from "@/components/vectors/qr-code-icon";
 import { ShareIcon } from "@/components/vectors/share-icon";
 import { WheelIcon } from "@/components/vectors/wheel-icon";
 import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
+import { useFollowUser, useFollowingCount, useIsFollowing, useUnfollowUser } from "@/network/follows";
+import { useFollowersCount } from "@/network/follows";
+import { useGetSession } from "@/network/session";
 import { useFetchUserProfileById } from "@/network/user-profile";
 import { useUserVehicles } from "@/network/vehicles";
 import { Ionicons } from "@expo/vector-icons";
@@ -31,12 +34,18 @@ import {
 import QRCode from "react-native-qrcode-svg";
 
 export default function TabOneScreen() {
-	const { userId } = useLocalSearchParams();
+	const { initialTab, userId } = useLocalSearchParams();
+	const { data: session } = useGetSession();
 	const { data: profile } = useFetchUserProfileById(userId as string);
 	const { data: vehicles } = useUserVehicles(userId as string);
+	const { data: followersCount } = useFollowersCount(userId as string);
+	const { data: followingCount } = useFollowingCount(userId as string);
+	const { mutate: followUser } = useFollowUser();
+	const { mutate: unfollowUser } = useUnfollowUser();
+	const { data: isFollowing } = useIsFollowing(userId as string);
 	const { width } = Dimensions.get("window");
-	const { initialTab } = useLocalSearchParams();
 	const [isQrModalOpen, setIsQrModalOpen] = useState(false);
+	const isCurrentUser = session?.user.id === userId;
 
 	if (!profile) {
 		return (
@@ -49,18 +58,20 @@ export default function TabOneScreen() {
 	}
 
 	return (
-		<ScrollView className="w-full flex-1  bg-black text-white">
+		<ScrollView className="w-full flex-1 bg-black text-white">
 			{/* profile details */}
 			<View className="w-full flex flex-col gap-2">
 				<View className="flex flex-row gap-2">
 					<View className="flex items-center justify-start">
 						<Pressable
-							onPress={() =>
-								router.push({
-									pathname: "/(tabs)/update-avatar",
-									params: { userId },
-								})
-							}
+							onPress={() => {
+								if (session?.user.id === userId) {
+									router.push({
+										pathname: "/(tabs)/update-avatar",
+										params: { userId },
+									});
+								}
+							}}
 						>
 							{profile?.profile_picture_url ? (
 								<Image
@@ -107,18 +118,33 @@ export default function TabOneScreen() {
 
 				<View className="w-full flex flex-row gap-2 my-2">
 					<View className="flex-1 ">
-						<Button
-							variant="secondary"
-							label="Modifier"
-							onPress={() => {
+						{isCurrentUser ? (
+							<Button
+								variant="secondary"
+								label="Modifier"
+								onPress={() => {
 								router.push({
 									pathname: "/(tabs)/update-pseudo",
 									params: { userId },
 								});
-							}}
-							className="gap-2"
-							icon={<EditIcon />}
-						/>
+								}}
+								className="gap-2"
+								icon={<EditIcon />}
+							/>
+						) : (
+							<Button
+								variant="secondary"
+								label={isFollowing ? "Suivi" : "Suivre"}
+								onPress={() => {
+									if (isFollowing) {
+										unfollowUser(userId as string);
+									} else {
+										followUser(userId as string);
+									}
+								}}
+								className="gap-2"
+							/>
+						)}
 					</View>
 					<View className="flex-1">
 						<Button
@@ -216,12 +242,28 @@ export default function TabOneScreen() {
 				<View className="w-full flex flex-row gap-2">
 					<View className="flex-1 items-center justify-center px-2 py-2 border border-gray-700 rounded-lg">
 						<Text className="text-lg font-semibold text-white">
-							105 suivi(e)s
+							<Pressable onPress={() => {
+								router.push({
+									pathname: "/(tabs)/following",
+									params: { userId },
+								});
+							}}
+							>
+								<Text className="text-white">{followingCount} suivi(e)s</Text>
+							</Pressable>
 						</Text>
 					</View>
 					<View className="flex-1 items-center justify-center px-2 py-2 border border-gray-700 rounded-lg">
 						<Text className="text-lg font-semibold text-white">
-							0 followers
+							<Pressable onPress={() => {
+								router.push({
+									pathname: "/(tabs)/followers",
+									params: { userId },
+								});
+							}}
+							>
+								<Text className="text-white">{followersCount} followers</Text>
+							</Pressable>
 						</Text>
 					</View>
 				</View>

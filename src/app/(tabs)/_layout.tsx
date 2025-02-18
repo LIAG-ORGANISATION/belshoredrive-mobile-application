@@ -396,6 +396,54 @@ export default function TabLayout() {
 						),
 					}}
 				/>
+
+				<Tabs.Screen
+					name="followers"
+					options={{
+						href: null,
+						headerShown: true,
+						headerTintColor: "white",
+						headerTitle: "Suivi",
+						headerStyle: { backgroundColor: "#000" },
+						headerLeft: () => (
+							<Ionicons
+								name="chevron-back"
+								size={24}
+								color="white"
+								onPress={() =>
+									router.push({
+										pathname: "/(tabs)/profile",
+										params: { initialTab: 1, userId: profile?.user_id },
+									})
+								}
+							/>
+						),
+					}}
+				/>
+
+				<Tabs.Screen
+					name="following"
+					options={{
+						href: null,
+						headerShown: true,
+						headerTintColor: "white",
+						headerTitle: "Suivi",
+						headerStyle: { backgroundColor: "#000" },
+						headerLeft: () => (
+							<Ionicons
+								name="chevron-back"
+								size={24}
+								color="white"
+								onPress={() =>
+									router.push({
+										pathname: "/(tabs)/profile",
+										params: { initialTab: 1, userId: profile?.user_id },
+									})
+								}
+							/>
+						),
+					}}
+				/>
 			</Tabs>
 
 			{/* Drawer Menu */}

@@ -7,6 +7,7 @@ import { useFetchDepartments } from "@/network/departments";
 import { useVehicles } from "@/network/vehicles";
 import type { Tables } from "@/types/supabase";
 import { useQuery } from "@tanstack/react-query";
+import { router } from "expo-router";
 import { useState } from "react";
 import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
 
@@ -107,7 +108,10 @@ export default function SearchScreen() {
 							<TouchableOpacity
 								className="flex-row items-center gap-3 py-3 px-4 border-b border-gray-800"
 								onPress={() => {
-									console.log("Navigate to profile:", item.user_id);
+									router.push({
+										pathname: "/(tabs)/profile",
+										params: { userId: item.user_id },
+									});
 								}}
 							>
 								<Image
