@@ -323,8 +323,8 @@ export default function TabLayout() {
                 size={24}
                 color="white"
                 onPress={() => router.push({
-                  pathname: "/(tabs)/profile",
-                  params: { initialTab: 1 }
+                  pathname: "/(tabs)/update-pseudo",
+                  params: { userId: profile?.user_id }
                 })}
               />
             ),
@@ -346,7 +346,7 @@ export default function TabLayout() {
                 color="white"
                 onPress={() => router.push({
                   pathname: "/(tabs)/profile",
-                  params: { initialTab: 1 }
+                  params: { initialTab: 1, userId: profile?.user_id }
                 })}
               />
             ),
@@ -368,7 +368,7 @@ export default function TabLayout() {
                 color="white"
                 onPress={() => router.push({
                   pathname: "/(tabs)/profile",
-                  params: { initialTab: 1 }
+                  params: { initialTab: 1, userId: profile?.user_id }
                 })}
               />
             ),
