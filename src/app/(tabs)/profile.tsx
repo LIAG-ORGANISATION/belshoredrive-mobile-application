@@ -34,9 +34,9 @@ export default function TabOneScreen() {
   const { userId } = useLocalSearchParams();
   const { data: profile } = useFetchUserProfileById(userId as string);
   const { data: vehicles } = useUserVehicles(userId as string);
-  const [isQrModalOpen, setIsQrModalOpen] = useState(false);
   const { width } = Dimensions.get("window");
   const { initialTab } = useLocalSearchParams();
+  const [isQrModalOpen, setIsQrModalOpen] = useState(false);
 
   if (!profile) {
     return (
@@ -54,9 +54,13 @@ export default function TabOneScreen() {
       <View className="w-full flex flex-col gap-2">
         <View className="flex flex-row gap-2">
           <View className="flex items-center justify-start">
-            {profile?.profile_picture_url ? (
-              <Image
-              source={{
+            <Pressable onPress={() => router.push({
+              pathname: "/(tabs)/update-avatar",
+              params: { userId },
+            })}>
+              {profile?.profile_picture_url ? (
+                <Image
+                source={{
                 uri: formatPicturesUri(
                   "profile_pictures",
                   profile?.profile_picture_url as string,
@@ -69,6 +73,7 @@ export default function TabOneScreen() {
                 <Ionicons name="image" size={20} color="white" />
               </View>
             )}
+            </Pressable>
           </View>
           <View className="flex flex-col gap-1 justify-center">
             <Text className="text-2xl text-white font-bold">
