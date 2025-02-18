@@ -41,5 +41,8 @@
 		"formatter": {
 			"quoteStyle": "double"
 		}
+	},
+	"files": {
+		"ignore": [".storybook/**/*", "node_modules/**/*", ".vscode/**/*"]
 	}
 }

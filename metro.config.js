@@ -7,9 +7,9 @@ const config = getDefaultConfig(__dirname);
 
 // Chain the withNativeWind and withStorybook configurations
 module.exports = withStorybook(
-  withNativeWind(config, { input: "./src/global.css" }),
-  {
-    enabled: true,
-    configPath: path.resolve(__dirname, "./.storybook"),
-  },
+	withNativeWind(config, { input: "./src/global.css" }),
+	{
+		enabled: true,
+		configPath: path.resolve(__dirname, "./.storybook"),
+	},
 );
