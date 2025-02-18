@@ -1,24 +1,23 @@
 import { supabase } from "@/lib/supabase";
 import { useQuery } from "@tanstack/react-query";
-import { useGetSession } from "./session";
 
 export const useFetchServices = () => {
-  const { data: session } = useGetSession();
   const { data, isLoading, error } = useQuery({
     queryKey: ["services"],
     queryFn: () => fetchServices(),
-    enabled: !!session,
   });
 
   return { data, isLoading, error };
 };
 
-export const useFetchUserServices = (ids: string[]) => {
-  const { data: session } = useGetSession();
+export const useFetchUserServices = ({
+  ids,
+  enabled,
+}: { ids: string[] | undefined; enabled: boolean }) => {
   const { data, isLoading, error } = useQuery({
     queryKey: ["userServices"],
-    queryFn: () => fetchUserServices(ids),
-    enabled: !!session,
+    queryFn: () => fetchUserServices(ids ?? []),
+    enabled,
   });
 
   return { data, isLoading, error };

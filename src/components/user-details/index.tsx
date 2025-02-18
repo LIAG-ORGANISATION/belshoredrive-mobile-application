@@ -9,23 +9,30 @@ import { v4 as uuidv4 } from 'uuid';
 import { Chip } from "../ui/chip";
 import { SkeletonChip } from "../ui/skeleton-chip";
 import { SkeletonText } from "../ui/skeleton-text";
+
 export const UserDetails = ({ userId }: { userId: string }) => {
   const { data: user, isLoading: loadingUser } = useFetchUserProfileById(userId);
 
   const { data: interests, isLoading: loadingInterests } = useFetchUserInterests(
-    user?.interests ?? [],
+    {
+      ids: user?.interests ?? [],
+      enabled: !!user?.interests,
+    },
   );
 
   const { data: departments, isLoading: loadingDepartments } = useFetchUserDepartments(
-    user?.viewable_departments ?? [],
+    {
+      ids: user?.viewable_departments ?? [],
+      enabled: !!user?.viewable_departments,
+    },
   );
 
   const { data: services, isLoading: loadingServices } = useFetchUserServices(
-    user?.services ?? [],
+    {
+      ids: user?.services ?? [],
+      enabled: !!user?.services,
+    },
   );
-
-  const isDataLoading = loadingUser ||
-    (!!user && (loadingInterests || loadingDepartments || loadingServices));
 
   const renderAddChip = ({ onPress }: { onPress: () => void }) => {
     return (
@@ -42,41 +49,6 @@ export const UserDetails = ({ userId }: { userId: string }) => {
       ))}
     </View>
   );
-
-  if (isDataLoading) {
-    return (
-      <View className="flex flex-col gap-4 h-full pb-10">
-        <View className="flex flex-row gap-2">
-          <View className="flex-1 flex flex-col gap-2">
-            <SkeletonText width="w-16" />
-            <SkeletonText width="w-24" />
-          </View>
-          <View className="flex-1 flex flex-col gap-2">
-            <SkeletonText width="w-32" />
-            <SkeletonText width="w-40" />
-          </View>
-        </View>
-
-        {/* Services Section */}
-        <View className="flex-col w-full gap-1">
-          <SkeletonText width="w-48" />
-          {renderSkeletonChips({ count: 3 })}
-        </View>
-
-        {/* Interests Section */}
-        <View className="flex-col w-full gap-1">
-          <SkeletonText width="w-40" />
-          {renderSkeletonChips({ count: 3 })}
-        </View>
-
-        {/* Location Section */}
-        <View className="flex-col w-full gap-1">
-          <SkeletonText width="w-32" />
-          {renderSkeletonChips({ count: 2 })}
-        </View>
-      </View>
-    );
-  }
 
   const renderChip = ({ item, onPress = () => {} }) => (
     <Chip
@@ -100,7 +72,7 @@ export const UserDetails = ({ userId }: { userId: string }) => {
         <View className="flex-1 flex flex-col gap-2">
           <Text className="text-sm text-gray-500 font-semibold">AGE</Text>
           <Text className="text-lg font-bold text-white ">
-            {new Date().getFullYear() - (user?.birth_year ?? 0)} ans
+            {loadingUser ? <SkeletonText /> : new Date().getFullYear() - (user?.birth_year ?? 0)} ans
           </Text>
         </View>
         <View className="flex-1 flex flex-col gap-2">
@@ -108,7 +80,7 @@ export const UserDetails = ({ userId }: { userId: string }) => {
             INSCRIT DEPUIS
           </Text>
           <Text className="text-lg font-bold text-white ">
-            {user?.created_at
+            {loadingUser ? <SkeletonText /> : user?.created_at
               ? dayjs(user.created_at).format("DD MMMM YYYY")
               : ""}
           </Text>
@@ -119,10 +91,12 @@ export const UserDetails = ({ userId }: { userId: string }) => {
         <Text className="text-white/70 text-lg font-semibold my-4">
           COMPÉTENCES & SERVICES
         </Text>
-        {renderChips(
+        {!loadingServices ? renderChips(
           services || [],
           (item) => item.service_id,
           () => router.push("/update-services")
+        ) : (
+          renderSkeletonChips({ count: 3 })
         )}
       </View>
 
@@ -130,10 +104,12 @@ export const UserDetails = ({ userId }: { userId: string }) => {
         <Text className="text-white/70 text-lg font-semibold my-4">
           CENTRES D'INTÉRÊTS
         </Text>
-        {renderChips(
+        {!loadingInterests ? renderChips(
           interests || [],
           (item) => item.interest_id,
           () => router.push("/update-interests")
+        ) : (
+          renderSkeletonChips({ count: 3 })
         )}
       </View>
 
@@ -141,10 +117,12 @@ export const UserDetails = ({ userId }: { userId: string }) => {
         <Text className="text-white/70 text-lg font-semibold my-4">
           LOCALISATION
         </Text>
-        {renderChips(
+        {!loadingDepartments ? renderChips(
           departments || [],
           (item) => item.department_id,
           () => router.push("/update-departments")
+        ) : (
+          renderSkeletonChips({ count: 2 })
         )}
       </View>
     </View>

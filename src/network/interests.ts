@@ -3,26 +3,27 @@ import { useQuery } from "@tanstack/react-query";
 import { useGetSession } from "./session";
 
 export const useFetchInterests = () => {
-  const { data: session } = useGetSession();
   const { data, isLoading, error } = useQuery({
     queryKey: ["interests"],
     queryFn: () => fetchInterests(),
-    enabled: !!session,
   });
 
   return { data, isLoading, error };
 };
 
-export const useFetchUserInterests = (ids: string[]) => {
-  const { data: session } = useGetSession();
+export const useFetchUserInterests = ({
+  ids,
+  enabled,
+}: { ids: string[] | undefined; enabled: boolean }) => {
   const { data, isLoading, error } = useQuery({
     queryKey: ["userInterests"],
-    queryFn: () => fetchUserInterests(ids),
-    enabled: !!session,
+    queryFn: () => fetchUserInterests(ids ?? []),
+    enabled,
   });
 
   return { data, isLoading, error };
 };
+
 export type InterestsType = {
   interest_id: string;
   name: string;

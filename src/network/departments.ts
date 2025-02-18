@@ -1,6 +1,5 @@
 import { supabase } from "@/lib/supabase";
 import { useQuery } from "@tanstack/react-query";
-import { useGetSession } from "./session";
 
 export const useFetchDepartments = () => {
   const { data, isLoading, error } = useQuery({
@@ -11,12 +10,14 @@ export const useFetchDepartments = () => {
   return { data, isLoading, error };
 };
 
-export const useFetchUserDepartments = (ids: string[]) => {
-  const { data: session } = useGetSession();
+export const useFetchUserDepartments = ({
+  ids,
+  enabled,
+}: { ids: string[] | undefined; enabled: boolean }) => {
   const { data, isLoading, error } = useQuery({
     queryKey: ["userDepartments"],
-    queryFn: () => fetchUserDepartments(ids),
-    enabled: !!session,
+    queryFn: () => fetchUserDepartments(ids ?? []),
+    enabled,
   });
 
   return { data, isLoading, error };
