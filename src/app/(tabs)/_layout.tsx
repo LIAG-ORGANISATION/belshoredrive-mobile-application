@@ -216,6 +216,10 @@ export default function TabLayout() {
                 </Pressable>
               </View>
             ),
+            href: {
+              pathname: "/(tabs)/profile",
+              params: { userId: profile?.user_id }
+            },
             tabBarIcon: ({ color, focused }) => (
               <View className="flex-1 items-center justify-center">
                 {profile?.profile_picture_url ? (
@@ -290,6 +294,72 @@ export default function TabLayout() {
             headerShown: true,
             headerTintColor: "white",
             headerTitle: "Modifier mes départements",
+            headerStyle: { backgroundColor: "#000" },
+            headerLeft: () => (
+              <Ionicons
+                name="chevron-back"
+                size={24}
+                color="white"
+                onPress={() => router.push({
+                  pathname: "/(tabs)/profile",
+                  params: { initialTab: 1 }
+                })}
+              />
+            ),
+          }}
+        />
+
+        <Tabs.Screen
+          name="update-profile"
+          options={{
+            href: null,
+            headerShown: true,
+            headerTintColor: "white",
+            headerTitle: "Modifier mes informations",
+            headerStyle: { backgroundColor: "#000" },
+            headerLeft: () => (
+              <Ionicons
+                name="chevron-back"
+                size={24}
+                color="white"
+                onPress={() => router.push({
+                  pathname: "/(tabs)/profile",
+                  params: { initialTab: 1 }
+                })}
+              />
+            ),
+          }}
+        />
+
+        <Tabs.Screen
+          name="update-pseudo"
+          options={{
+            href: null,
+            headerShown: true,
+            headerTintColor: "white",
+            headerTitle: "Modifier mon pseudo",
+            headerStyle: { backgroundColor: "#000" },
+            headerLeft: () => (
+              <Ionicons
+                name="chevron-back"
+                size={24}
+                color="white"
+                onPress={() => router.push({
+                  pathname: "/(tabs)/profile",
+                  params: { initialTab: 1 }
+                })}
+              />
+            ),
+          }}
+        />
+
+        <Tabs.Screen
+          name="update-avatar"
+          options={{
+            href: null,
+            headerShown: true,
+            headerTintColor: "white",
+            headerTitle: "Modifier mon avatar",
             headerStyle: { backgroundColor: "#000" },
             headerLeft: () => (
               <Ionicons

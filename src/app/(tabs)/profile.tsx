@@ -12,8 +12,7 @@ import { QrCodeIcon } from "@/components/vectors/qr-code-icon";
 import { ShareIcon } from "@/components/vectors/share-icon";
 import { WheelIcon } from "@/components/vectors/wheel-icon";
 import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
-import { supabase } from "@/lib/supabase";
-import { useFetchUserProfile } from "@/network/user-profile";
+import { useFetchUserProfileById } from "@/network/user-profile";
 import { useUserVehicles } from "@/network/vehicles";
 import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
@@ -32,23 +31,12 @@ import {
 import QRCode from "react-native-qrcode-svg";
 
 export default function TabOneScreen() {
-  const { data: profile } = useFetchUserProfile();
-  const { data: vehicles } = useUserVehicles(profile?.user_id as string);
+  const { userId } = useLocalSearchParams();
+  const { data: profile } = useFetchUserProfileById(userId as string);
+  const { data: vehicles } = useUserVehicles(userId as string);
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
   const { width } = Dimensions.get("window");
   const { initialTab } = useLocalSearchParams();
-
-  const handleLogout = async () => {
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-
-      // After successful logout, redirect to auth screen
-      router.replace("/auth");
-    } catch (error) {
-      console.error("Error logging out:", error);
-    }
-  };
 
   if (!profile) {
     return (
@@ -114,7 +102,10 @@ export default function TabOneScreen() {
               variant="secondary"
               label="Modifier"
               onPress={() => {
-                router.replace("/complete-profile");
+                router.push({
+                  pathname: "/(tabs)/update-pseudo",
+                  params: { userId },
+                });
               }}
               className="gap-2"
               icon={<EditIcon />}
