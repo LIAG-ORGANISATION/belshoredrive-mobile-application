@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import { Text, View } from "react-native";
 
 import { valibotResolver } from "@hookform/resolvers/valibot";
@@ -70,7 +70,7 @@ export const UpdateBrands = ({
 	if (brandsError) return <Text>Error: {brandsError.message}</Text>;
 
 	return (
-		<>
+		<Fragment>
 			<Text className="text-white text-2xl font-bold py-4">{title}</Text>
 
 			{/* TODO: Make it as generic components for all screen that needs this */}
@@ -81,7 +81,7 @@ export const UpdateBrands = ({
 					))}
 				</View>
 			) : (
-				<>
+				<Fragment>
 					<View className="flex-1">
 						<ChipSelector<FavoriteBrandsType, ExtractId<BrandsType, "brand_id">>
 							name="favorite_vehicle_brands"
@@ -99,8 +99,8 @@ export const UpdateBrands = ({
 							onPress={handleSubmit(onSubmit)}
 						/>
 					</View>
-				</>
+				</Fragment>
 			)}
-		</>
+		</Fragment>
 	);
 };

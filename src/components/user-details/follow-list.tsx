@@ -2,6 +2,7 @@ import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
 import { useUserFollowers, useUserFollowing } from "@/network/follows";
 import { router } from "expo-router";
 import { Image, Pressable, Text, View } from "react-native";
+import { v4 as uuidv4 } from "uuid";
 
 export const FollowList = ({
   userId,
@@ -20,12 +21,12 @@ export const FollowList = ({
 			{data?.map((item) => {
 				return (
           <Pressable
-            key={item.follower_id}
+            key={uuidv4()}
             className="flex-row items-center p-4 border-b border-gray-800"
             onPress={() => {
               router.push({
                 pathname: "/(tabs)/profile",
-                params: { userId: item.follower_id },
+                params: { userId: type === "followers" ? item.follower_id : item.followee_id },
               });
             }}
           >
@@ -50,4 +51,4 @@ export const FollowList = ({
       })}
     </View>
   );
-}; 
+};
