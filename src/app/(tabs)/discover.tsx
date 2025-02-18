@@ -1,3 +1,4 @@
+import { SkeletonGrid } from '@/components/ui/skeleton-grid';
 import { Input } from '@/components/ui/text-input';
 import { formatPicturesUri } from '@/lib/helpers/format-pictures-uri';
 import { supabase } from '@/lib/supabase';
@@ -28,7 +29,7 @@ export default function SearchScreen() {
     types: [],
   });
 
-  const { data: vehiclesPages, isLoading } = useVehicles();
+  const { data: vehiclesPages, isLoading: isVehiclesLoading } = useVehicles();
   const { data: brands = [], isLoading: isLoadingBrands } = useFetchBrands();
   const { data: departments = [], isLoading: isLoadingDepartments } = useFetchDepartments();
   const [searchQuery, setSearchQuery] = useState("");
@@ -86,14 +87,6 @@ export default function SearchScreen() {
     </TouchableOpacity>
   );
 
-  if (isLoading || isLoadingBrands || isLoadingDepartments) {
-    return (
-      <View className="flex-1 items-center justify-center bg-black">
-        <Text className="text-white">Loading...</Text>
-      </View>
-    );
-  }
-
   return (
     <View className="flex-1 bg-black p-safe-offset-2">
       <Input
@@ -144,14 +137,20 @@ export default function SearchScreen() {
         </View>
       )}
 
-      <FlatList
-        data={vehicles}
-        renderItem={renderVehicle}
-        keyExtractor={(item) => item.vehicle_id}
-        numColumns={3}
-        className="flex-1 mt-4"
-        contentContainerStyle={{ paddingBottom: 20 }}
-      />
+      {isVehiclesLoading || isLoadingBrands || isLoadingDepartments ? (
+        <View className="flex-1 bg-black mt-4">
+          <SkeletonGrid items={12} />
+        </View>
+      ) : (
+        <FlatList
+          data={vehicles}
+          renderItem={renderVehicle}
+          keyExtractor={(item) => item.vehicle_id}
+          numColumns={3}
+          className="flex-1 mt-4"
+          contentContainerStyle={{ paddingBottom: 20 }}
+        />
+      )}
     </View>
   );
 }
