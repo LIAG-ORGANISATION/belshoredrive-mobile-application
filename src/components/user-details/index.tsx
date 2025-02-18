@@ -11,23 +11,22 @@ import { SkeletonChip } from "../ui/skeleton-chip";
 import { SkeletonText } from "../ui/skeleton-text";
 
 export const UserDetails = ({ userId }: { userId: string }) => {
-  const { data: user, isLoading: loadingUser } = useFetchUserProfileById(userId);
-
-  const { data: interests, isLoading: loadingInterests } = useFetchUserInterests(
+  const { data: user, isLoading: isLoadingUser } = useFetchUserProfileById(userId);
+  const { data: interests, isLoading: isLoadingInterests } = useFetchUserInterests(
     {
       ids: user?.interests ?? [],
       enabled: !!user?.interests,
     },
   );
 
-  const { data: departments, isLoading: loadingDepartments } = useFetchUserDepartments(
+  const { data: departments, isLoading: isLoadingDepartments } = useFetchUserDepartments(
     {
       ids: user?.viewable_departments ?? [],
       enabled: !!user?.viewable_departments,
     },
   );
 
-  const { data: services, isLoading: loadingServices } = useFetchUserServices(
+  const { data: services, isLoading: isLoadingServices } = useFetchUserServices(
     {
       ids: user?.services ?? [],
       enabled: !!user?.services,
@@ -72,7 +71,7 @@ export const UserDetails = ({ userId }: { userId: string }) => {
         <View className="flex-1 flex flex-col gap-2">
           <Text className="text-sm text-gray-500 font-semibold">AGE</Text>
           <Text className="text-lg font-bold text-white ">
-            {loadingUser ? <SkeletonText /> : new Date().getFullYear() - (user?.birth_year ?? 0)} ans
+            {isLoadingUser ? <SkeletonText /> : new Date().getFullYear() - (user?.birth_year ?? 0)} ans
           </Text>
         </View>
         <View className="flex-1 flex flex-col gap-2">
@@ -80,7 +79,7 @@ export const UserDetails = ({ userId }: { userId: string }) => {
             INSCRIT DEPUIS
           </Text>
           <Text className="text-lg font-bold text-white ">
-            {loadingUser ? <SkeletonText /> : user?.created_at
+            {isLoadingUser ? <SkeletonText /> : user?.created_at
               ? dayjs(user.created_at).format("DD MMMM YYYY")
               : ""}
           </Text>
@@ -91,12 +90,10 @@ export const UserDetails = ({ userId }: { userId: string }) => {
         <Text className="text-white/70 text-lg font-semibold my-4">
           COMPÉTENCES & SERVICES
         </Text>
-        {!loadingServices ? renderChips(
+        {isLoadingServices ? renderSkeletonChips({ count: 3 }) : renderChips(
           services || [],
           (item) => item.service_id,
           () => router.push("/update-services")
-        ) : (
-          renderSkeletonChips({ count: 3 })
         )}
       </View>
 
@@ -104,12 +101,10 @@ export const UserDetails = ({ userId }: { userId: string }) => {
         <Text className="text-white/70 text-lg font-semibold my-4">
           CENTRES D'INTÉRÊTS
         </Text>
-        {!loadingInterests ? renderChips(
+        {isLoadingInterests ? renderSkeletonChips({ count: 3 }) : renderChips(
           interests || [],
           (item) => item.interest_id,
           () => router.push("/update-interests")
-        ) : (
-          renderSkeletonChips({ count: 3 })
         )}
       </View>
 
@@ -117,12 +112,10 @@ export const UserDetails = ({ userId }: { userId: string }) => {
         <Text className="text-white/70 text-lg font-semibold my-4">
           LOCALISATION
         </Text>
-        {!loadingDepartments ? renderChips(
+        {isLoadingDepartments ? renderSkeletonChips({ count: 2 }) : renderChips(
           departments || [],
           (item) => item.department_id,
           () => router.push("/update-departments")
-        ) : (
-          renderSkeletonChips({ count: 2 })
         )}
       </View>
     </View>
