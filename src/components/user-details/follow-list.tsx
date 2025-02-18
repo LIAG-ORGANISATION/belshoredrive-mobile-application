@@ -1,7 +1,9 @@
 import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
 import { useUserFollowers, useUserFollowing } from "@/network/follows";
-import { router } from "expo-router";
-import { Image, Pressable, Text, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { router, useNavigation } from "expo-router";
+import { useEffect } from "react";
+import { ActivityIndicator, Image, Pressable, Text, View } from "react-native";
 import { v4 as uuidv4 } from "uuid";
 
 export const FollowList = ({
@@ -11,10 +13,31 @@ export const FollowList = ({
   userId: string;
   type: "followers" | "following";
 }) => {
-  const { data: followers } = useUserFollowers(userId);
-  const { data: following } = useUserFollowing(userId);
+  const navigation = useNavigation();
+  const { data: followers, isLoading: isLoadingFollowers } = useUserFollowers(userId);
+  const { data: following, isLoading: isLoadingFollowing } = useUserFollowing(userId);
 
   const data = type === "followers" ? followers : following;
+  const isLoading = type === "followers" ? isLoadingFollowers : isLoadingFollowing;
+
+  useEffect(() => {
+    navigation.setOptions({
+      title: type === "followers" ? "Followers" : "Following",
+      headerLeft: () => (
+        <Pressable onPress={() => router.push({ pathname: "/(tabs)/profile", params: { userId } })}>
+          <Ionicons name="chevron-back" size={24} color="white" />
+        </Pressable>
+      ),
+    });
+  }, [type, navigation, userId]);
+
+  if (isLoading) {
+    return (
+      <View className="flex-1 bg-black">
+        <ActivityIndicator size="large" color="white" />
+      </View>
+    );
+  }
 
 	return (
 		<View className="flex-1 bg-black text-white">

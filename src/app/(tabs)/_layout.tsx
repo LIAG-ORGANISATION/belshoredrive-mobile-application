@@ -207,7 +207,7 @@ export default function TabLayout() {
 					name="profile"
 					options={{
 						headerShown: true,
-						title: profile.pseudo || "",
+						title: "",
 						sceneStyle: {
 							backgroundColor: "#000",
 						},
@@ -405,19 +405,6 @@ export default function TabLayout() {
 						headerTintColor: "white",
 						headerTitle: "Suivi",
 						headerStyle: { backgroundColor: "#000" },
-						headerLeft: () => (
-							<Ionicons
-								name="chevron-back"
-								size={24}
-								color="white"
-								onPress={() =>
-									router.push({
-										pathname: "/(tabs)/profile",
-										params: { initialTab: 1, userId: profile?.user_id },
-									})
-								}
-							/>
-						),
 					}}
 				/>
 
@@ -429,19 +416,6 @@ export default function TabLayout() {
 						headerTintColor: "white",
 						headerTitle: "Suivi",
 						headerStyle: { backgroundColor: "#000" },
-						headerLeft: () => (
-							<Ionicons
-								name="chevron-back"
-								size={24}
-								color="white"
-								onPress={() =>
-									router.push({
-										pathname: "/(tabs)/profile",
-										params: { initialTab: 1, userId: profile?.user_id },
-									})
-								}
-							/>
-						),
 					}}
 				/>
 			</Tabs>

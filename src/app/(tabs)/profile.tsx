@@ -33,7 +33,8 @@ import {
 } from "react-native";
 import QRCode from "react-native-qrcode-svg";
 
-export default function TabOneScreen() {
+export default function ProfileScreen() {
+	const [isQrModalOpen, setIsQrModalOpen] = useState(false);
 	const { initialTab, userId } = useLocalSearchParams();
 	const { data: session } = useGetSession();
 	const { data: profile } = useFetchUserProfileById(userId as string);
@@ -44,7 +45,6 @@ export default function TabOneScreen() {
 	const { mutate: unfollowUser } = useUnfollowUser();
 	const { data: isFollowing } = useIsFollowing(userId as string);
 	const { width } = Dimensions.get("window");
-	const [isQrModalOpen, setIsQrModalOpen] = useState(false);
 	const isCurrentUser = session?.user.id === userId;
 
 	if (!profile) {
@@ -65,7 +65,7 @@ export default function TabOneScreen() {
 					<View className="flex items-center justify-start">
 						<Pressable
 							onPress={() => {
-								if (session?.user.id === userId) {
+								if (isCurrentUser) {
 									router.push({
 										pathname: "/(tabs)/update-avatar",
 										params: { userId },
@@ -152,7 +152,7 @@ export default function TabOneScreen() {
 							label="Partager"
 							onPress={() => {}}
 							className="gap-2"
-							icon={<ShareIcon fill="#ffffff50" width={16} height={16} />}
+							icon={<ShareIcon fill="#ffffff" width={16} height={16} />}
 						/>
 					</View>
 					<View className="w-fit">
