@@ -134,7 +134,7 @@ export const ProfileComponent = ({ userId, isCurrentUser }: { userId: string, is
 						) : (
 							<Button
 								variant="secondary"
-								label={isFollowing ? "Suivi" : "Suivre"}
+								label={isFollowing ? "Unfollow" : "Follow"}
 								onPress={() => {
 									if (isFollowing) {
 										unfollowUser(userId as string);

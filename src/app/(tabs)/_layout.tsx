@@ -222,7 +222,7 @@ export default function TabLayout() {
 						headerRight: () => (
 							<View className="flex-row items-center gap-2 rotate-90">
 								<Pressable onPress={toggleDrawer}>
-									<OptionsIcon fill="#fff" />
+									<Ionicons name="settings-outline" size={24} color="#fff" />
 								</Pressable>
 							</View>
 						),
