@@ -15,10 +15,5 @@ export default function FollowersScreen() {
 		);
 	}
 
-	return (
-		<FollowList
-			userId={userId as string}
-			type="followers"
-		/>
-	);
+	return <FollowList userId={userId as string} type="followers" />;
 }

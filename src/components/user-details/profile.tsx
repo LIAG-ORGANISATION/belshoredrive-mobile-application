@@ -12,7 +12,12 @@ import { QrCodeIcon } from "@/components/vectors/qr-code-icon";
 import { ShareIcon } from "@/components/vectors/share-icon";
 import { WheelIcon } from "@/components/vectors/wheel-icon";
 import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
-import { useFollowUser, useFollowingCount, useIsFollowing, useUnfollowUser } from "@/network/follows";
+import {
+	useFollowUser,
+	useFollowingCount,
+	useIsFollowing,
+	useUnfollowUser,
+} from "@/network/follows";
 import { useFollowersCount } from "@/network/follows";
 import { useFetchUserProfileById } from "@/network/user-profile";
 import { useUserVehicles } from "@/network/vehicles";
@@ -32,7 +37,10 @@ import {
 } from "react-native";
 import QRCode from "react-native-qrcode-svg";
 
-export const ProfileComponent = ({ userId, isCurrentUser }: { userId: string, isCurrentUser: boolean }) => {
+export const ProfileComponent = ({
+	userId,
+	isCurrentUser,
+}: { userId: string; isCurrentUser: boolean }) => {
 	const { initialTab } = useLocalSearchParams();
 	const [isQrModalOpen, setIsQrModalOpen] = useState(false);
 
@@ -42,10 +50,10 @@ export const ProfileComponent = ({ userId, isCurrentUser }: { userId: string, is
 	const { data: followingCount } = useFollowingCount(userId as string);
 	const { data: isFollowing } = useIsFollowing(userId as string);
 
-  const { mutate: followUser } = useFollowUser();
+	const { mutate: followUser } = useFollowUser();
 	const { mutate: unfollowUser } = useUnfollowUser();
 
-  const { width } = Dimensions.get("window");
+	const { width } = Dimensions.get("window");
 
 	if (!profile) {
 		return (
@@ -123,10 +131,10 @@ export const ProfileComponent = ({ userId, isCurrentUser }: { userId: string, is
 								variant="secondary"
 								label="Modifier"
 								onPress={() => {
-								router.replace({
-									pathname: "/(tabs)/update-pseudo",
-									params: { userId },
-								});
+									router.replace({
+										pathname: "/(tabs)/update-pseudo",
+										params: { userId },
+									});
 								}}
 								className="gap-2"
 								icon={<EditIcon />}
@@ -155,15 +163,15 @@ export const ProfileComponent = ({ userId, isCurrentUser }: { userId: string, is
 							icon={<ShareIcon fill="#ffffff" width={16} height={16} />}
 						/>
 					</View>
-          {isCurrentUser && (
-            <View className="w-fit">
-              <Button
-                variant="primary"
-                label=""
-                onPress={() => setIsQrModalOpen(true)}
-                icon={<QrCodeIcon />}
-              />
-            </View>
+					{isCurrentUser && (
+						<View className="w-fit">
+							<Button
+								variant="primary"
+								label=""
+								onPress={() => setIsQrModalOpen(true)}
+								icon={<QrCodeIcon />}
+							/>
+						</View>
 					)}
 					<Modal
 						visible={isQrModalOpen}
@@ -244,12 +252,16 @@ export const ProfileComponent = ({ userId, isCurrentUser }: { userId: string, is
 				<View className="w-full flex flex-row gap-2">
 					<View className="flex-1 items-center justify-center px-2 py-2 border border-gray-700 rounded-lg">
 						<Text className="text-lg font-semibold text-white">
-							<Pressable onPress={() => {
-								router.replace({
-									pathname: "/(tabs)/following",
-									params: { userId, previousScreen: isCurrentUser ? "profile" : "user" },
-								});
-							}}
+							<Pressable
+								onPress={() => {
+									router.replace({
+										pathname: "/(tabs)/following",
+										params: {
+											userId,
+											previousScreen: isCurrentUser ? "profile" : "user",
+										},
+									});
+								}}
 							>
 								<Text className="text-white">{followingCount} suivi(e)s</Text>
 							</Pressable>
@@ -257,12 +269,16 @@ export const ProfileComponent = ({ userId, isCurrentUser }: { userId: string, is
 					</View>
 					<View className="flex-1 items-center justify-center px-2 py-2 border border-gray-700 rounded-lg">
 						<Text className="text-lg font-semibold text-white">
-							<Pressable onPress={() => {
-								router.replace({
-									pathname: "/(tabs)/followers",
-									params: { userId, previousScreen: isCurrentUser ? "profile" : "user" },
-								});
-							}}
+							<Pressable
+								onPress={() => {
+									router.replace({
+										pathname: "/(tabs)/followers",
+										params: {
+											userId,
+											previousScreen: isCurrentUser ? "profile" : "user",
+										},
+									});
+								}}
 							>
 								<Text className="text-white">{followersCount} followers</Text>
 							</Pressable>
@@ -302,7 +318,7 @@ export const ProfileComponent = ({ userId, isCurrentUser }: { userId: string, is
 			/>
 		</ScrollView>
 	);
-}
+};
 
 const qrCodeLogoBase64 =
 	"data:image/png;base64,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";
