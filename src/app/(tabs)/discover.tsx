@@ -110,7 +110,7 @@ export default function SearchScreen() {
 								onPress={() => {
 									router.push({
 										pathname: "/(tabs)/user",
-										params: { userId: item.user_id },
+										params: { userId: item.user_id, previousScreen: "/(tabs)/discover" },
 									});
 								}}
 							>

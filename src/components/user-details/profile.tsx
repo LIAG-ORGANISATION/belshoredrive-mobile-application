@@ -58,10 +58,10 @@ export const ProfileComponent = ({ userId, isCurrentUser }: { userId: string, is
 	}
 
 	return (
-		<ScrollView className="w-full flex-1 bg-black text-white">
+		<ScrollView className="w-full flex-1 bg-black text-white pt-4">
 			{/* profile details */}
 			<View className="w-full flex flex-col gap-2">
-				<View className="flex flex-row gap-2">
+				<View className="flex flex-row gap-4">
 					<View className="flex items-center justify-start">
 						<Pressable
 							onPress={() => {

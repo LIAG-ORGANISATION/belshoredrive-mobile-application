@@ -207,7 +207,7 @@ export default function TabLayout() {
 					name="profile"
 					options={{
 						headerShown: true,
-						title: "",
+						title: "Mon profil",
 						sceneStyle: {
 							backgroundColor: "#000",
 						},
@@ -260,9 +260,9 @@ export default function TabLayout() {
 					name="user"
 					options={{
 						href: null,
+						title: "Utilisateur",
 						headerShown: true,
 						headerTintColor: "white",
-						headerTitle: "",
 						headerStyle: { backgroundColor: "#000" },
 					}}
 				/>

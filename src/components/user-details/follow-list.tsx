@@ -1,7 +1,7 @@
 import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
 import { useUserFollowers, useUserFollowing } from "@/network/follows";
 import { Ionicons } from "@expo/vector-icons";
-import { type RelativePathString, router, useLocalSearchParams, useNavigation } from "expo-router";
+import { type RelativePathString, router, useLocalSearchParams, useNavigation, usePathname } from "expo-router";
 import { useEffect } from "react";
 import { ActivityIndicator, Image, Pressable, Text, View } from "react-native";
 import { v4 as uuidv4 } from "uuid";
@@ -14,6 +14,7 @@ export const FollowList = ({
   type: "followers" | "following";
 }) => {
   const navigation = useNavigation();
+  const pathname = usePathname();
   const { previousScreen } = useLocalSearchParams();
 
   const { data: followers, isLoading: isLoadingFollowers } = useUserFollowers(userId);
@@ -49,9 +50,9 @@ export const FollowList = ({
             key={uuidv4()}
             className="flex-row items-center p-4 border-b border-gray-800"
             onPress={() => {
-              router.push({
-                pathname: "/(tabs)/profile",
-                params: { userId: type === "followers" ? item.follower_id : item.followee_id },
+              router.replace({
+                pathname: "/(tabs)/user",
+                params: { userId: type === "followers" ? item.follower_id : item.followee_id, previousScreen: pathname },
               });
             }}
           >
