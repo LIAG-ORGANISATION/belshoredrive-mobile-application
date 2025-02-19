@@ -255,6 +255,18 @@ export default function TabLayout() {
 						),
 					}}
 				/>
+
+				<Tabs.Screen
+					name="user"
+					options={{
+						href: null,
+						headerShown: true,
+						headerTintColor: "white",
+						headerTitle: "",
+						headerStyle: { backgroundColor: "#000" },
+					}}
+				/>
+
 				<Tabs.Screen
 					name="update-services"
 					options={{

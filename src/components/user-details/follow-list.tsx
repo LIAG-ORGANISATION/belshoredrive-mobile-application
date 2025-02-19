@@ -1,7 +1,7 @@
 import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
 import { useUserFollowers, useUserFollowing } from "@/network/follows";
 import { Ionicons } from "@expo/vector-icons";
-import { router, useNavigation } from "expo-router";
+import { type RelativePathString, router, useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect } from "react";
 import { ActivityIndicator, Image, Pressable, Text, View } from "react-native";
 import { v4 as uuidv4 } from "uuid";
@@ -14,6 +14,8 @@ export const FollowList = ({
   type: "followers" | "following";
 }) => {
   const navigation = useNavigation();
+  const { previousScreen } = useLocalSearchParams();
+
   const { data: followers, isLoading: isLoadingFollowers } = useUserFollowers(userId);
   const { data: following, isLoading: isLoadingFollowing } = useUserFollowing(userId);
 
@@ -24,7 +26,7 @@ export const FollowList = ({
     navigation.setOptions({
       title: type === "followers" ? "Followers" : "Following",
       headerLeft: () => (
-        <Pressable onPress={() => router.push({ pathname: "/(tabs)/profile", params: { userId } })}>
+        <Pressable onPress={() => router.replace({ pathname: previousScreen as RelativePathString, params: { userId } })}>
           <Ionicons name="chevron-back" size={24} color="white" />
         </Pressable>
       ),

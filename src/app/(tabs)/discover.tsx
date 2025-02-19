@@ -109,7 +109,7 @@ export default function SearchScreen() {
 								className="flex-row items-center gap-3 py-3 px-4 border-b border-gray-800"
 								onPress={() => {
 									router.push({
-										pathname: "/(tabs)/profile",
+										pathname: "/(tabs)/user",
 										params: { userId: item.user_id },
 									});
 								}}
