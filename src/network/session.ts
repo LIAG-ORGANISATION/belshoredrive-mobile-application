@@ -2,11 +2,12 @@ import { supabase } from "@/lib/supabase";
 import type { Session } from "@supabase/supabase-js";
 import type { UseQueryResult } from "@tanstack/react-query";
 
+import { QueryKeys } from "@/lib/query-keys";
 import { useQuery } from "@tanstack/react-query";
 
 export function useGetSession(): UseQueryResult<Session> {
 	return useQuery({
-		queryKey: ["session"],
+		queryKey: QueryKeys.SESSION,
 		queryFn: async () => {
 			const {
 				data: { session },

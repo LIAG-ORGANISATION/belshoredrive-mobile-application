@@ -1,3 +1,4 @@
+import { QueryKeys } from "@/lib/query-keys";
 import { supabase } from "@/lib/supabase";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import {
@@ -71,7 +72,7 @@ export function useFetchConversations(): UseQueryResult<
 	}, [queryClient]);
 
 	return useQuery({
-		queryKey: ["conversations"],
+		queryKey: QueryKeys.CONVERSATIONS,
 		queryFn: async () => {
 			const {
 				data: { user },
@@ -156,7 +157,7 @@ export function useFetchConversations(): UseQueryResult<
 // Fetch messages for a specific conversation
 export function useFetchMessages(conversationId: string) {
 	return useQuery({
-		queryKey: ["messages", conversationId],
+		queryKey: QueryKeys.MESSAGES(conversationId),
 		queryFn: async () => {
 			const { data, error } = await supabase
 				.from("messages")
@@ -194,7 +195,9 @@ export function useHasUnreadMessages() {
 				},
 				() => {
 					// Invalidate the query to refresh unread status
-					queryClient.invalidateQueries({ queryKey: ["unreadMessages"] });
+					queryClient.invalidateQueries({
+						queryKey: QueryKeys.UNREAD_MESSAGES,
+					});
 				},
 			)
 			.subscribe();
@@ -205,7 +208,7 @@ export function useHasUnreadMessages() {
 	}, [queryClient]);
 
 	return useQuery({
-		queryKey: ["unreadMessages"],
+		queryKey: QueryKeys.UNREAD_MESSAGES,
 		queryFn: async () => {
 			const {
 				data: { user },
@@ -242,7 +245,7 @@ export function useHasUnreadMessagesInConversation(conversationId: string) {
 				() => {
 					// Invalidate the query to refresh unread status for this conversation
 					queryClient.invalidateQueries({
-						queryKey: ["unreadMessages", conversationId],
+						queryKey: QueryKeys.UNREAD_MESSAGES_CONVERSATION(conversationId),
 					});
 				},
 			)
@@ -254,7 +257,7 @@ export function useHasUnreadMessagesInConversation(conversationId: string) {
 	}, [conversationId, queryClient]);
 
 	return useQuery({
-		queryKey: ["unreadMessages", conversationId],
+		queryKey: QueryKeys.UNREAD_MESSAGES_CONVERSATION(conversationId),
 		queryFn: async () => {
 			const {
 				data: { user },

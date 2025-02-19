@@ -7,6 +7,7 @@ import {
 	useQueryClient,
 } from "@tanstack/react-query";
 import "react-native-get-random-values";
+import { QueryKeys } from "@/lib/query-keys";
 import { decode } from "base64-arraybuffer";
 import { v4 as uuidv4 } from "uuid";
 import { useGetSession } from "./session";
@@ -14,7 +15,7 @@ import { useGetSession } from "./session";
 export function useFetchUserProfile(): UseQueryResult<Tables<"user_profiles">> {
 	const { data: session } = useGetSession();
 	return useQuery({
-		queryKey: ["userProfile"],
+		queryKey: QueryKeys.USER_PROFILE,
 		queryFn: async () => {
 			if (!session) throw new Error("User not authenticated");
 
@@ -36,7 +37,7 @@ export function useFetchUserProfileById(
 	userId: string,
 ): UseQueryResult<Tables<"user_profiles">> {
 	return useQuery({
-		queryKey: ["userProfile", userId],
+		queryKey: QueryKeys.USER_PROFILE_BY_ID(userId),
 		queryFn: async () => {
 			const { data: profile, error } = await supabase
 				.from("user_profiles")
@@ -71,7 +72,7 @@ export function useUpdateUserProfile() {
 			return data;
 		},
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+			queryClient.invalidateQueries({ queryKey: QueryKeys.USER_PROFILE });
 		},
 	});
 }
@@ -131,6 +132,6 @@ export function useUploadUserProfileMedia() {
 		},
 		onError: (error) => console.error("Error uploading file:", error),
 		onSuccess: () =>
-			queryClient.invalidateQueries({ queryKey: ["userProfile"] }),
+			queryClient.invalidateQueries({ queryKey: QueryKeys.USER_PROFILE }),
 	});
 }

@@ -1,3 +1,4 @@
+import { QueryKeys } from "@/lib/query-keys";
 import { supabase } from "@/lib/supabase";
 import type { Tables } from "@/types/supabase";
 import {
@@ -39,7 +40,7 @@ type PaginatedComments = {
 // Separate hook for fetching paginated comments
 export function useVehicleComments(vehicleId: string, page = 0) {
 	return useQuery({
-		queryKey: ["vehicleComments", vehicleId, page],
+		queryKey: QueryKeys.VEHICLE_COMMENTS(vehicleId, page),
 		queryFn: async (): Promise<PaginatedComments> => {
 			// First, get total count of comments
 			const { count, error: countError } = await supabase
@@ -78,7 +79,7 @@ export function useVehicle(
 	vehicleId: string,
 ): UseQueryResult<Omit<VehicleWithComments, "vehicle_comments">> {
 	return useQuery({
-		queryKey: ["vehicle", vehicleId],
+		queryKey: QueryKeys.VEHICLE(vehicleId),
 		queryFn: async () => {
 			const { data, error } = await supabase
 				.from("vehicles")
@@ -104,7 +105,7 @@ export function useVehicle(
 // Fetch all vehicles with pagination
 export function useVehicles() {
 	return useInfiniteQuery({
-		queryKey: ["vehicles"],
+		queryKey: QueryKeys.VEHICLES,
 		initialPageParam: 0,
 		queryFn: async ({ pageParam = 0 }) => {
 			const { data, error } = await supabase
@@ -138,7 +139,7 @@ export function useUserVehicles(
 	userId: string,
 ): UseQueryResult<VehicleWithComments[]> {
 	return useQuery({
-		queryKey: ["userVehicles", userId],
+		queryKey: QueryKeys.USER_VEHICLES(userId),
 		queryFn: async () => {
 			const { data, error } = await supabase
 				.from("vehicles")
@@ -183,8 +184,8 @@ export function useCreateVehicle() {
 			return data;
 		},
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["vehicles"] });
-			queryClient.invalidateQueries({ queryKey: ["userVehicles"] });
+			queryClient.invalidateQueries({ queryKey: QueryKeys.VEHICLES });
+			queryClient.invalidateQueries({ queryKey: QueryKeys.USER_VEHICLES });
 		},
 	});
 }
@@ -212,9 +213,11 @@ export function useUpdateVehicle() {
 			return data;
 		},
 		onSuccess: (data) => {
-			queryClient.invalidateQueries({ queryKey: ["vehicle", data.vehicle_id] });
-			queryClient.invalidateQueries({ queryKey: ["vehicles"] });
-			queryClient.invalidateQueries({ queryKey: ["userVehicles"] });
+			queryClient.invalidateQueries({
+				queryKey: QueryKeys.VEHICLE(data.vehicle_id),
+			});
+			queryClient.invalidateQueries({ queryKey: QueryKeys.VEHICLES });
+			queryClient.invalidateQueries({ queryKey: QueryKeys.USER_VEHICLES });
 		},
 	});
 }
@@ -233,8 +236,8 @@ export function useDeleteVehicle() {
 			if (error) throw error;
 		},
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["vehicles"] });
-			queryClient.invalidateQueries({ queryKey: ["userVehicles"] });
+			queryClient.invalidateQueries({ queryKey: QueryKeys.VEHICLES });
+			queryClient.invalidateQueries({ queryKey: QueryKeys.USER_VEHICLES });
 		},
 	});
 }
@@ -242,7 +245,7 @@ export function useDeleteVehicle() {
 // Search vehicles (will be replaced with Algolia)
 export function useSearchVehicles(query: string) {
 	return useQuery({
-		queryKey: ["vehicleSearch", query],
+		queryKey: QueryKeys.VEHICLE_SEARCH(query),
 		queryFn: async () => {
 			const { data, error } = await supabase
 				.from("vehicles")
@@ -274,7 +277,7 @@ export function useSearchVehicles(query: string) {
 // TODO: The average should be computed on Supabase
 export function useVehicleRating(vehicleId: string) {
 	return useQuery({
-		queryKey: ["vehicleRating", vehicleId],
+		queryKey: QueryKeys.VEHICLE_RATING(vehicleId),
 		queryFn: async () => {
 			const { data, error } = await supabase
 				.from("vehicle_ratings")
@@ -334,7 +337,7 @@ export function useRateVehicle() {
 		},
 		onSuccess: (_, variables) => {
 			queryClient.invalidateQueries({
-				queryKey: ["vehicleRating", variables.vehicleId],
+				queryKey: QueryKeys.VEHICLE_RATING(variables.vehicleId),
 			});
 		},
 	});
@@ -388,7 +391,7 @@ export function useUploadVehicleMedia() {
 			return mediaUUIDs;
 		},
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["vehicles"] });
+			queryClient.invalidateQueries({ queryKey: QueryKeys.VEHICLES });
 		},
 	});
 }
@@ -405,7 +408,7 @@ export function useDeleteVehicleMedia() {
 			if (error) throw error;
 		},
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["vehicles"] });
+			queryClient.invalidateQueries({ queryKey: QueryKeys.VEHICLES });
 		},
 	});
 }

@@ -1,3 +1,4 @@
+import { QueryKeys } from "@/lib/query-keys";
 import { supabase } from "@/lib/supabase";
 import type { Tables } from "@/types/supabase";
 import {
@@ -20,7 +21,7 @@ export function useUserFollowers(
 	userId: string,
 ): UseQueryResult<FollowerResult[]> {
 	return useQuery({
-		queryKey: ["followers", userId],
+		queryKey: QueryKeys.FOLLOWERS(userId),
 		queryFn: async () => {
 			const { data, error } = await supabase
 				.from("user_follows")
@@ -56,7 +57,7 @@ export function useUserFollowing(
 	userId: string,
 ): UseQueryResult<FollowingResult[]> {
 	return useQuery({
-		queryKey: ["following", userId],
+		queryKey: QueryKeys.FOLLOWING(userId),
 		queryFn: async () => {
 			const { data, error } = await supabase
 				.from("user_follows")
@@ -80,7 +81,7 @@ export function useUserFollowing(
 // Check if current user follows a specific user
 export function useIsFollowing(targetUserId: string) {
 	return useQuery({
-		queryKey: ["isFollowing", targetUserId],
+		queryKey: QueryKeys.IS_FOLLOWING(targetUserId),
 		queryFn: async () => {
 			const {
 				data: { user },
@@ -125,10 +126,15 @@ export function useFollowUser() {
 			return data;
 		},
 		onSuccess: (_, targetUserId) => {
-			queryClient.invalidateQueries({ queryKey: ["followers", targetUserId] });
-			queryClient.invalidateQueries({ queryKey: ["following"] });
 			queryClient.invalidateQueries({
-				queryKey: ["isFollowing", targetUserId],
+				queryKey: QueryKeys.FOLLOWERS(targetUserId),
+			});
+			queryClient.invalidateQueries({
+				queryKey: QueryKeys.USER_PROFILE_BY_ID(targetUserId),
+			});
+			queryClient.invalidateQueries({ queryKey: QueryKeys.FOLLOWING });
+			queryClient.invalidateQueries({
+				queryKey: QueryKeys.IS_FOLLOWING(targetUserId),
 			});
 		},
 	});
@@ -154,10 +160,15 @@ export function useUnfollowUser() {
 			if (error) throw error;
 		},
 		onSuccess: (_, targetUserId) => {
-			queryClient.invalidateQueries({ queryKey: ["followers", targetUserId] });
-			queryClient.invalidateQueries({ queryKey: ["following"] });
 			queryClient.invalidateQueries({
-				queryKey: ["isFollowing", targetUserId],
+				queryKey: QueryKeys.FOLLOWERS(targetUserId),
+			});
+			queryClient.invalidateQueries({
+				queryKey: QueryKeys.USER_PROFILE_BY_ID(targetUserId),
+			});
+			queryClient.invalidateQueries({ queryKey: QueryKeys.FOLLOWING });
+			queryClient.invalidateQueries({
+				queryKey: QueryKeys.IS_FOLLOWING(targetUserId),
 			});
 		},
 	});
@@ -166,7 +177,7 @@ export function useUnfollowUser() {
 // Get followers count for a user
 export function useFollowersCount(userId: string) {
 	return useQuery({
-		queryKey: ["followersCount", userId],
+		queryKey: QueryKeys.FOLLOWERS_COUNT(userId),
 		queryFn: async () => {
 			const { count, error } = await supabase
 				.from("user_follows")
@@ -182,7 +193,7 @@ export function useFollowersCount(userId: string) {
 // Get following count for a user
 export function useFollowingCount(userId: string) {
 	return useQuery({
-		queryKey: ["followingCount", userId],
+		queryKey: QueryKeys.FOLLOWING_COUNT(userId),
 		queryFn: async () => {
 			const { count, error } = await supabase
 				.from("user_follows")

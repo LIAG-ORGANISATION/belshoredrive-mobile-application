@@ -1,16 +1,15 @@
+import { QueryKeys } from "@/lib/query-keys";
 import { supabase } from "@/lib/supabase";
 import { useQuery } from "@tanstack/react-query";
 import { useGetSession } from "./session";
 
 export const useFetchBrands = () => {
 	const { data: session } = useGetSession();
-	const { data, isLoading, error } = useQuery({
-		queryKey: ["brands"],
+	return useQuery({
+		queryKey: QueryKeys.BRANDS,
 		queryFn: () => fetchBrands(),
 		enabled: !!session,
 	});
-
-	return { data, isLoading, error };
 };
 
 export type BrandsType = {

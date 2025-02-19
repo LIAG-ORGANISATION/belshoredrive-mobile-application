@@ -1,26 +1,23 @@
+import { QueryKeys } from "@/lib/query-keys";
 import { supabase } from "@/lib/supabase";
 import { useQuery } from "@tanstack/react-query";
 
 export const useFetchServices = () => {
-	const { data, isLoading, error } = useQuery({
-		queryKey: ["services"],
+	return useQuery({
+		queryKey: QueryKeys.SERVICES,
 		queryFn: () => fetchServices(),
 	});
-
-	return { data, isLoading, error };
 };
 
 export const useFetchUserServices = ({
 	ids,
 	enabled,
 }: { ids: string[] | undefined; enabled: boolean }) => {
-	const { data, isLoading, error } = useQuery({
-		queryKey: ["userServices"],
+	return useQuery({
+		queryKey: QueryKeys.USER_SERVICES,
 		queryFn: () => fetchUserServices(ids ?? []),
 		enabled,
 	});
-
-	return { data, isLoading, error };
 };
 export type ServicesType = {
 	service_id: string;

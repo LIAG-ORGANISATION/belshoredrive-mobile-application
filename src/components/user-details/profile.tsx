@@ -26,7 +26,6 @@ import { BlurView } from "expo-blur";
 import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import {
-	ActivityIndicator,
 	Dimensions,
 	Image,
 	Modal,
@@ -54,16 +53,6 @@ export const ProfileComponent = ({
 	const { mutate: unfollowUser } = useUnfollowUser();
 
 	const { width } = Dimensions.get("window");
-
-	if (!profile) {
-		return (
-			<View className="flex-1 items-center justify-center bg-black">
-				<Text className="text-white">
-					<ActivityIndicator size="large" color="#ffffff" />
-				</Text>
-			</View>
-		);
-	}
 
 	return (
 		<ScrollView className="w-full flex-1 bg-black text-white pt-4">

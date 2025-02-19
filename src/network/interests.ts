@@ -1,26 +1,23 @@
+import { QueryKeys } from "@/lib/query-keys";
 import { supabase } from "@/lib/supabase";
 import { useQuery } from "@tanstack/react-query";
 
 export const useFetchInterests = () => {
-	const { data, isLoading, error } = useQuery({
-		queryKey: ["interests"],
+	return useQuery({
+		queryKey: QueryKeys.INTERESTS,
 		queryFn: () => fetchInterests(),
 	});
-
-	return { data, isLoading, error };
 };
 
 export const useFetchUserInterests = ({
 	ids,
 	enabled,
 }: { ids: string[] | undefined; enabled: boolean }) => {
-	const { data, isLoading, error } = useQuery({
-		queryKey: ["userInterests"],
+	return useQuery({
+		queryKey: QueryKeys.USER_INTERESTS,
 		queryFn: () => fetchUserInterests(ids ?? []),
 		enabled,
 	});
-
-	return { data, isLoading, error };
 };
 
 export type InterestsType = {
