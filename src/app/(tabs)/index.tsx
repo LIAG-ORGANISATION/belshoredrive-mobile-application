@@ -1,4 +1,5 @@
 import { CompleteProfileCta } from "@/components/ui/complete-profile-cta";
+import { SkeletonVehicleCard } from "@/components/ui/skeleton-vehicle-card";
 import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
 import { useVehicles } from "@/network/vehicles";
 import { LinearGradient } from "expo-linear-gradient";
@@ -6,7 +7,6 @@ import { useLocalSearchParams } from "expo-router";
 import { cssInterop } from "nativewind";
 import { FlatList, Image, RefreshControl, Text, View } from "react-native";
 
-// Add this before the component
 cssInterop(LinearGradient, {
 	className: {
 		target: "style",
@@ -27,8 +27,16 @@ export default function TabOneScreen() {
 
 	if (isLoading) {
 		return (
-			<View className="flex-1 items-center justify-center bg-black">
-				<Text className="text-white">Loading...</Text>
+			<View className="flex-1 bg-black text-white mt-5">
+				{isProfileComplete !== "true" && (
+					<CompleteProfileCta step={isProfileComplete as string} />
+				)}
+				<FlatList
+					data={[1, 2, 3]} // Show 3 skeleton items
+					className={`w-full ${isProfileComplete ? "mt-0" : "mt-3"}`}
+					renderItem={() => <SkeletonVehicleCard />}
+					keyExtractor={(_, index) => `skeleton-${index}`}
+				/>
 			</View>
 		);
 	}
