@@ -5,6 +5,7 @@ import { useVehicles } from "@/network/vehicles";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams } from "expo-router";
 import { cssInterop } from "nativewind";
+import { Fragment } from "react";
 import { FlatList, Image, RefreshControl, Text, View } from "react-native";
 
 cssInterop(LinearGradient, {
@@ -71,7 +72,7 @@ export default function TabOneScreen() {
 				renderItem={({ item }) => (
 					<View className="rounded-2xl mb-4 relative h-[500px]">
 						{item.media && item.media.length > 0 && (
-							<>
+							<Fragment>
 								<Image
 									source={{
 										uri: formatPicturesUri("vehicles", item.media[0]),
@@ -83,7 +84,7 @@ export default function TabOneScreen() {
 									colors={["transparent", "rgba(0,0,0,0.8)"]}
 									className="absolute bottom-0 w-full h-1/3 rounded-b-lg"
 								/>
-							</>
+							</Fragment>
 						)}
 						<View className="absolute bottom-4 left-4 right-4">
 							{item.nickname && (
