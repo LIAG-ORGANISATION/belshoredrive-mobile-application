@@ -49,7 +49,7 @@ const ChatListComponent = () => {
 				data={conversations}
 				renderItem={({ item }) => (
 					<Link href={`/(chats)/details/${item.id}`} asChild>
-						<TouchableOpacity className="p-4 border-b border-gray-600 flex flex-row justify-between items-center">
+						<TouchableOpacity className="p-4 flex flex-row justify-between items-center">
 							<View className="flex flex-row items-center gap-4">
 								<Image
 									source={{
@@ -60,7 +60,7 @@ const ChatListComponent = () => {
 									}}
 									className="w-10 h-10 rounded-full"
 								/>
-								<Text className="text-white text-lg">
+								<Text className="text-white text-sm font-semibold">
 									{getConversationTitle(item)}
 								</Text>
 							</View>

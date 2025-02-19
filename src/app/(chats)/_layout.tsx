@@ -31,7 +31,7 @@ export default function ChatsLayout() {
 						name="index"
 						options={{
 							headerShown: true,
-							headerTitle: "Conversations",
+							headerTitle: "Messages",
 							headerStyle: { backgroundColor: "#000" },
 							headerLeft: () => (
 								<Ionicons

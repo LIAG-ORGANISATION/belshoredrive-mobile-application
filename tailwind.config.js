@@ -9,6 +9,14 @@ module.exports = {
 			colors: {
 				primary: "#4aa8ba",
 			},
+			fontFamily: {
+				sans: ["Poppins", "sans-serif"],
+				serif: ["Poppins", "serif"],
+				pins: ["Poppins", "sans-serif"],
+				"pins-bold": ["PoppinsBold", "sans-serif"],
+				"pins-semibold": ["PoppinsSemiBold", "sans-serif"],
+				"pins-medium": ["PoppinsMedium", "sans-serif"],
+			},
 		},
 	},
 	plugins: [],
