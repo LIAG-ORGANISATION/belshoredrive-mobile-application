@@ -23,13 +23,15 @@ import { useFollowersCount } from "@/network/follows";
 import { useFetchUserProfileById } from "@/network/user-profile";
 import { useUserVehicles } from "@/network/vehicles";
 import { Ionicons } from "@expo/vector-icons";
-import { BlurView } from "expo-blur";
+import BottomSheet, {
+	BottomSheetScrollView,
+	BottomSheetView,
+} from "@gorhom/bottom-sheet";
 import { router, useLocalSearchParams } from "expo-router";
-import { useState } from "react";
+import { useCallback, useRef } from "react";
 import {
 	Dimensions,
 	Image,
-	Modal,
 	Pressable,
 	ScrollView,
 	Text,
@@ -41,20 +43,25 @@ export const ProfileComponent = ({
 	userId,
 	isCurrentUser,
 }: { userId: string; isCurrentUser: boolean }) => {
+	const bottomSheetRef = useRef<BottomSheet>(null);
+
 	const { initialTab } = useLocalSearchParams();
-	const [isQrModalOpen, setIsQrModalOpen] = useState(false);
 
 	const { data: profile } = useFetchUserProfileById(userId as string);
 	const { data: vehicles } = useUserVehicles(userId as string);
 	const { data: followersCount } = useFollowersCount(userId as string);
 	const { data: followingCount } = useFollowingCount(userId as string);
 	const { data: isFollowing } = useIsFollowing(userId as string);
-	const { mutate: createChat, isPending } = useCreateConversation();
+	const { mutate: createChat } = useCreateConversation();
 
 	const { mutate: followUser } = useFollowUser();
 	const { mutate: unfollowUser } = useUnfollowUser();
 
 	const { width } = Dimensions.get("window");
+
+	const handleSheetChanges = useCallback((index: number) => {
+		console.log("handleSheetChanges", index);
+	}, []);
 
 	const handleCreate = () => {
 		createChat(
@@ -70,6 +77,13 @@ export const ProfileComponent = ({
 		);
 	};
 
+	const handleOpenBottomSheet = useCallback(() => {
+		bottomSheetRef.current?.expand();
+	}, []);
+
+	const handleCloseBottomSheet = useCallback(() => {
+		bottomSheetRef.current?.close();
+	}, []);
 
 	return (
 		<ScrollView className="w-full flex-1 bg-black text-white pt-4">
@@ -180,86 +194,11 @@ export const ProfileComponent = ({
 							<Button
 								variant="primary"
 								label=""
-								onPress={() => setIsQrModalOpen(true)}
+								onPress={handleOpenBottomSheet}
 								icon={<QrCodeIcon />}
 							/>
 						</View>
 					)}
-					<Modal
-						visible={isQrModalOpen}
-						transparent={true}
-						animationType="slide"
-					>
-						<View className="flex-1 justify-end bg-black/50 rounded-t-2xl backdrop-blur-2xl">
-							<View className="bg-[#1f1f1f]/80 w-full rounded-t-2xl overflow-hidden pb-safe-offset-2">
-								<BlurView intensity={35} tint="dark">
-									<View className="flex-row justify-end  p-4 border-b">
-										<Pressable onPress={() => setIsQrModalOpen(false)}>
-											<Text className="text-white font-bold">Fermer</Text>
-										</Pressable>
-									</View>
-									<View className="w-full flex-col gap-4 justify-center items-center py-8 px-4">
-										<View className="w-full items-center rounded-lg bg-[#0E57C1] py-8 px-4">
-											<QRCode
-												size={width * 0.8}
-												color={"white"}
-												value={`https://www.belshoredrive.com/${profile?.pseudo}`}
-												backgroundColor="#0E57C1"
-												logo={{
-													uri: qrCodeLogoBase64,
-												}}
-												logoSize={90}
-											/>
-										</View>
-										<CopyInput
-											value={`https://www.belshoredrive.com/${profile?.pseudo}`}
-										/>
-										<View className="w-full flex flex-col gap-2">
-											<Button
-												variant="primary"
-												label="Télécharger en PDF"
-												className=" !justify-start gap-4"
-												icon={
-													<Ionicons
-														name="download-outline"
-														size={24}
-														color="white"
-													/>
-												}
-												onPress={() => {}}
-											/>
-											<Button
-												variant="primary"
-												label="Télécharger en image PNG"
-												className=" !justify-start gap-4"
-												icon={
-													<Ionicons
-														name="image-outline"
-														size={24}
-														color="white"
-													/>
-												}
-												onPress={() => {}}
-											/>
-											<Button
-												variant="primary"
-												label="Imprimer"
-												className=" !justify-start gap-4"
-												icon={
-													<Ionicons
-														name="print-outline"
-														size={24}
-														color="white"
-													/>
-												}
-												onPress={() => {}}
-											/>
-										</View>
-									</View>
-								</BlurView>
-							</View>
-						</View>
-					</Modal>
 				</View>
 				<View className="w-full flex flex-row gap-2">
 					<View className="flex-1 items-center justify-center px-2 py-2 border border-gray-700 rounded-lg">
@@ -328,6 +267,77 @@ export const ProfileComponent = ({
 					},
 				]}
 			/>
+
+			<BottomSheet
+				ref={bottomSheetRef}
+				onChange={handleSheetChanges}
+				snapPoints={["100%"]}
+				enablePanDownToClose
+				index={1}
+				enableDynamicSizing
+				backgroundStyle={{
+					backgroundColor: "#1f1f1f",
+				}}
+				handleIndicatorStyle={{
+					backgroundColor: "#fff",
+				}}
+			>
+				<BottomSheetView className="flex-1">
+					<BottomSheetScrollView
+						className="bg-[#1f1f1f] w-full"
+						contentContainerStyle={{
+							paddingBottom: 40,
+						}}
+					>
+						<View className="w-full flex-col gap-4 justify-center items-center py-8 px-4">
+							<View className="w-full items-center rounded-lg bg-[#0E57C1] py-8 px-4">
+								<QRCode
+									size={width * 0.8}
+									color={"white"}
+									value={`https://www.belshoredrive.com/${profile?.pseudo}`}
+									backgroundColor="#0E57C1"
+									logo={{
+										uri: qrCodeLogoBase64,
+									}}
+									logoSize={90}
+								/>
+							</View>
+							<CopyInput
+								value={`https://www.belshoredrive.com/${profile?.pseudo}`}
+							/>
+							<View className="w-full flex flex-col gap-2">
+								<Button
+									variant="primary"
+									label="Télécharger en PDF"
+									className=" !justify-start gap-4"
+									icon={
+										<Ionicons name="download-outline" size={24} color="white" />
+									}
+									onPress={() => {}}
+								/>
+								<Button
+									variant="primary"
+									label="Télécharger en image PNG"
+									className=" !justify-start gap-4"
+									icon={
+										<Ionicons name="image-outline" size={24} color="white" />
+									}
+									onPress={() => {}}
+								/>
+								<Button
+									variant="primary"
+									label="Imprimer"
+									className=" !justify-start gap-4"
+									icon={
+										<Ionicons name="print-outline" size={24} color="white" />
+									}
+									onPress={() => {}}
+								/>
+							</View>
+						</View>
+					</BottomSheetScrollView>
+				</BottomSheetView>
+			</BottomSheet>
 		</ScrollView>
 	);
 };

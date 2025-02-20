@@ -10,7 +10,8 @@ import { useFonts } from "expo-font";
 import { Stack, router } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-import { AppState, View, } from "react-native";
+import { AppState, View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export { ErrorBoundary } from "expo-router";
 
@@ -84,6 +85,7 @@ function RootLayoutNav() {
 	}, []);
 
 	return (
+		<GestureHandlerRootView style={{ flex: 1 }}>
 			<QueryClientProvider client={queryClient}>
 				<ThemeProvider value={DefaultTheme}>
 					<View className="flex-1 bg-black font-sans">
@@ -129,7 +131,9 @@ function RootLayoutNav() {
 								options={{
 									headerShown: true,
 									headerStyle: { backgroundColor: "#000" },
-									headerTitle: () => <ProgressBar currentStep={0} totalSteps={4} />,
+									headerTitle: () => (
+										<ProgressBar currentStep={0} totalSteps={4} />
+									),
 									headerLeft: () => (
 										<Ionicons
 											name="chevron-back"
@@ -145,7 +149,9 @@ function RootLayoutNav() {
 								options={{
 									headerShown: true,
 									headerStyle: { backgroundColor: "#000" },
-									headerTitle: () => <ProgressBar currentStep={0} totalSteps={4} />,
+									headerTitle: () => (
+										<ProgressBar currentStep={0} totalSteps={4} />
+									),
 									headerLeft: () => (
 										<Ionicons
 											name="chevron-back"
@@ -161,7 +167,9 @@ function RootLayoutNav() {
 								options={{
 									headerShown: true,
 									headerStyle: { backgroundColor: "#000" },
-									headerTitle: () => <ProgressBar currentStep={1} totalSteps={4} />,
+									headerTitle: () => (
+										<ProgressBar currentStep={1} totalSteps={4} />
+									),
 									headerLeft: () => (
 										<Ionicons
 											name="chevron-back"
@@ -185,7 +193,9 @@ function RootLayoutNav() {
 								options={{
 									headerShown: true,
 									headerStyle: { backgroundColor: "#000" },
-									headerTitle: () => <ProgressBar currentStep={0} totalSteps={5} />,
+									headerTitle: () => (
+										<ProgressBar currentStep={0} totalSteps={5} />
+									),
 									headerLeft: () => (
 										<Ionicons
 											name="chevron-back"
@@ -207,7 +217,9 @@ function RootLayoutNav() {
 								options={{
 									headerShown: true,
 									headerStyle: { backgroundColor: "#000" },
-									headerTitle: () => <ProgressBar currentStep={1} totalSteps={5} />,
+									headerTitle: () => (
+										<ProgressBar currentStep={1} totalSteps={5} />
+									),
 									headerLeft: () => (
 										<Ionicons
 											name="chevron-back"
@@ -230,7 +242,9 @@ function RootLayoutNav() {
 								options={{
 									headerShown: true,
 									headerStyle: { backgroundColor: "#000" },
-									headerTitle: () => <ProgressBar currentStep={2} totalSteps={5} />,
+									headerTitle: () => (
+										<ProgressBar currentStep={2} totalSteps={5} />
+									),
 									headerLeft: () => (
 										<Ionicons
 											name="chevron-back"
@@ -252,7 +266,9 @@ function RootLayoutNav() {
 								options={{
 									headerShown: true,
 									headerStyle: { backgroundColor: "#000" },
-									headerTitle: () => <ProgressBar currentStep={3} totalSteps={5} />,
+									headerTitle: () => (
+										<ProgressBar currentStep={3} totalSteps={5} />
+									),
 									headerLeft: () => (
 										<Ionicons
 											name="chevron-back"
@@ -293,7 +309,8 @@ function RootLayoutNav() {
 							/>
 						</Stack>
 					</View>
-			</ThemeProvider>
-		</QueryClientProvider>
+				</ThemeProvider>
+			</QueryClientProvider>
+		</GestureHandlerRootView>
 	);
 }
