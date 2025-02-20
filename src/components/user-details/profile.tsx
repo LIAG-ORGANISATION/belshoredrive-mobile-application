@@ -38,6 +38,7 @@ import {
 } from "react-native";
 import QRCode from "react-native-qrcode-svg";
 import { CopyInput } from "../ui/copy-input";
+import { SkeletonText } from "../ui/skeleton-text";
 
 export const ProfileComponent = ({
 	userId,
@@ -47,7 +48,7 @@ export const ProfileComponent = ({
 
 	const { initialTab } = useLocalSearchParams();
 
-	const { data: profile } = useFetchUserProfileById(userId as string);
+	const { data: profile, isLoading: isProfileLoading } = useFetchUserProfileById(userId as string);
 	const { data: vehicles } = useUserVehicles(userId as string);
 	const { data: followersCount } = useFollowersCount(userId as string);
 	const { data: followingCount } = useFollowingCount(userId as string);
@@ -120,15 +121,27 @@ export const ProfileComponent = ({
 					</View>
 					<View className="flex flex-col gap-1 justify-center">
 						<Text className="text-2xl text-white font-bold">
-							{profile?.pseudo}
+							{isProfileLoading ? (
+								<SkeletonText width="w-24" />
+							) : (
+								profile?.pseudo
+							)}
 						</Text>
 						<Text className="text-sm text-gray-400 text-ellipsis">
-							{profile?.postal_address}
+							{isProfileLoading ? (
+								<SkeletonText width="w-32" />
+							) : (
+								profile?.postal_address
+							)}
 						</Text>
 					</View>
 				</View>
 				<Text className="text-sm text-white font-semibold">
-					{profile?.biography}
+					{isProfileLoading ? (
+						<SkeletonText width="w-full" />
+					) : (
+						profile?.biography
+					)}
 				</Text>
 				<View className="flex flex-row gap-2">
 					<ExternalLink
