@@ -99,9 +99,8 @@ export const UserDetails = ({ userId }: { userId: string }) => {
 						{isLoadingUser ? (
 							<SkeletonText />
 						) : (
-							new Date().getFullYear() - (user?.birth_year ?? 0)
+							`${new Date().getFullYear() - (user?.birth_year ?? 0)} ans`
 						)}{" "}
-						ans
 					</Text>
 				</View>
 				<View className="flex-1 flex flex-col gap-2">
