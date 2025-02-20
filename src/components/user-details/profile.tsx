@@ -12,6 +12,7 @@ import { QrCodeIcon } from "@/components/vectors/qr-code-icon";
 import { ShareIcon } from "@/components/vectors/share-icon";
 import { WheelIcon } from "@/components/vectors/wheel-icon";
 import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
+import { useCreateConversation } from "@/network/chat";
 import {
 	useFollowUser,
 	useFollowingCount,
@@ -48,11 +49,27 @@ export const ProfileComponent = ({
 	const { data: followersCount } = useFollowersCount(userId as string);
 	const { data: followingCount } = useFollowingCount(userId as string);
 	const { data: isFollowing } = useIsFollowing(userId as string);
+	const { mutate: createChat, isPending } = useCreateConversation();
 
 	const { mutate: followUser } = useFollowUser();
 	const { mutate: unfollowUser } = useUnfollowUser();
 
 	const { width } = Dimensions.get("window");
+
+	const handleCreate = () => {
+		createChat(
+			{
+				title: undefined,
+				participantIds: [userId],
+			},
+			{
+				onSuccess: (conversation) => {
+					router.push(`/(chats)/details/${conversation.id}`);
+				},
+			},
+		);
+	};
+
 
 	return (
 		<ScrollView className="w-full flex-1 bg-black text-white pt-4">
@@ -146,8 +163,14 @@ export const ProfileComponent = ({
 					<View className="flex-1">
 						<Button
 							variant="primary"
-							label="Partager"
-							onPress={() => {}}
+							label={isCurrentUser ? "Partager" : "Message"}
+							onPress={() => {
+								if (isCurrentUser) {
+									// Open Share Modal from OS Generic
+								} else {
+									handleCreate();
+								}
+							}}
 							className="gap-2"
 							icon={<ShareIcon fill="#ffffff" width={16} height={16} />}
 						/>

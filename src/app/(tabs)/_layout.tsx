@@ -78,10 +78,14 @@ export default function TabLayout() {
 						backgroundColor: "#1F1F1F",
 						borderTopWidth: 1,
 						borderTopColor: "#2F2F2F",
-						flexDirection: "row",
-						justifyContent: "space-between",
-						alignItems: "center",
-						paddingHorizontal: 20,
+						height: 80,
+						paddingTop: 10,
+					},
+					tabBarItemStyle: {
+						width: "20%",
+						height: 80,
+						padding: 0,
+						margin: 0,
 					},
 				}}
 			>
@@ -162,12 +166,13 @@ export default function TabLayout() {
 						headerStyle: { backgroundColor: "#000" },
 						headerTitle: "",
 						tabBarIcon: ({ color }) => (
-							<View className="flex-1 items-center justify-center">
-								<Link href="/(tabs)/discover" asChild>
-									<Pressable>
-										<SearchIcon color={color} fill={color} />
-									</Pressable>
-								</Link>
+							<View className="w-full">
+								<Pressable
+									onPress={() => router.replace("/discover")}
+									className="flex-1 items-center justify-center h-[80px] bg-red-500"
+								>
+									<SearchIcon color={color} fill={color} />
+								</Pressable>
 							</View>
 						),
 						tabBarShowLabel: false,
@@ -178,13 +183,14 @@ export default function TabLayout() {
 					options={{
 						tabBarShowLabel: false,
 						tabBarIcon: (props) => (
-							<View className="relative w-16">
-								<Pressable onPress={() => router.replace("/create-vehicle")}>
-									<View className="absolute w-16 h-16 bottom-1/2 right-0 left-0 mx-auto bg-[#4AA8BA] rounded-full flex items-center justify-center">
-										<AddIcon />
-									</View>
-								</Pressable>
-							</View>
+							<Pressable
+								onPress={() => router.replace("/create-vehicle")}
+								className="flex-1 items-center justify-center h-full relative"
+							>
+								<View className="absolute bottom-1 p-4 mx-auto bg-[#4AA8BA] rounded-full flex items-center justify-center">
+									<AddIcon />
+								</View>
+							</Pressable>
 						),
 					}}
 				/>
@@ -192,13 +198,12 @@ export default function TabLayout() {
 					name="calendar"
 					options={{
 						tabBarIcon: ({ color }) => (
-							<View className="flex-1 items-center justify-center">
-								<Link href="/(tabs)/calendar" asChild>
-									<Pressable>
-										<IconCalendar color={color} fill={color} />
-									</Pressable>
-								</Link>
-							</View>
+							<Pressable
+								onPress={() => router.replace("/calendar")}
+								className="flex-1 items-center justify-center"
+							>
+								<IconCalendar color={color} fill={color} />
+							</Pressable>
 						),
 						tabBarShowLabel: false,
 					}}
@@ -231,7 +236,15 @@ export default function TabLayout() {
 							params: { userId: profile?.user_id },
 						},
 						tabBarIcon: ({ color, focused }) => (
-							<View className="flex-1 items-center justify-center">
+							<Pressable
+								onPress={() =>
+									router.push({
+										pathname: "/(tabs)/profile",
+										params: { userId: profile?.user_id },
+									})
+								}
+								className="flex-1 items-center justify-center"
+							>
 								{profile?.profile_picture_url ? (
 									<Image
 										source={{
@@ -251,7 +264,7 @@ export default function TabLayout() {
 										</Text>
 									</View>
 								)}
-							</View>
+							</Pressable>
 						),
 					}}
 				/>
