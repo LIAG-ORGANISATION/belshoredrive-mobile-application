@@ -272,7 +272,7 @@ export const ProfileComponent = ({
 				onChange={handleSheetChanges}
 				snapPoints={["100%"]}
 				enablePanDownToClose
-				index={1}
+				index={-1}
 				backgroundStyle={{
 					backgroundColor: "#1f1f1f",
 				}}

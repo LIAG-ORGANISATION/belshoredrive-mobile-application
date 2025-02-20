@@ -29,7 +29,7 @@ export default function SearchScreen() {
 	const { data: departments = [], isLoading: isLoadingDepartments } =
 		useFetchDepartments();
 	const [searchQuery, setSearchQuery] = useState("");
-	const [isInputFocused, setIsInputFocused] = useState(false);
+	const [isSearchActive, setIsSearchActive] = useState(false);
 
 	const { data: searchResults, isLoading: isLoadingSearchResults } = useQuery({
 		queryKey: ["userSearch", searchQuery],
@@ -84,22 +84,20 @@ export default function SearchScreen() {
 	);
 
 	return (
-		<View className="flex-1 bg-black p-safe-offset-2">
+		<View className="flex-1 bg-black p-safe-offset-2 relative">
 			<Input
 				name="search"
 				placeholder="Rechercher un utilisateur..."
 				value={searchQuery}
 				onChangeText={setSearchQuery}
 				placeholderTextColor="#757575"
-				onFocus={() => setIsInputFocused(true)}
-				onBlur={() => setIsInputFocused(false)}
+				onFocus={() => setIsSearchActive(true)}
 				classes="w-full"
 			/>
 
-			{isInputFocused && (
-				<View
-					className="absolute left-0 right-0 top-16 bottom-0 bg-black h-screen z-50"
-					style={{ transform: [{ translateY: 70 }] }}
+			{isSearchActive && (
+				<View 
+					className="absolute left-0 right-0 top-[110px] bottom-0 bg-black z-50"
 				>
 					<FlatList
 						data={searchResults}
@@ -108,6 +106,7 @@ export default function SearchScreen() {
 							<TouchableOpacity
 								className="flex-row items-center gap-3 py-3 px-4 border-b border-gray-800"
 								onPress={() => {
+									setIsSearchActive(false);
 									router.push({
 										pathname: "/(tabs)/user",
 										params: {

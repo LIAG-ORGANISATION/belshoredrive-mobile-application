@@ -19,15 +19,17 @@ const ChatListComponent = () => {
 	const [searchQuery, setSearchQuery] = useState("");
 
 	const filteredConversations = useMemo(() => {
-		if (!searchQuery.trim() || !conversations) return conversations;
+		if (!conversations) return [];
+		if (!searchQuery.trim()) return conversations;
 
 		return conversations.filter((conversation) => {
 			const otherParticipants = conversation.participants
 				.filter((p) => p.user_id !== currentUserProfile?.user_id)
-				.map((p) => p.pseudo?.toLowerCase() || "");
+				.map((p) => p.pseudo || "")
+				.filter(pseudo => pseudo !== "");  // Filter out empty pseudos
 
 			return otherParticipants.some((pseudo) =>
-				pseudo.includes(searchQuery.toLowerCase()),
+				pseudo.toLowerCase().includes(searchQuery.toLowerCase())
 			);
 		});
 	}, [conversations, searchQuery, currentUserProfile?.user_id]);
