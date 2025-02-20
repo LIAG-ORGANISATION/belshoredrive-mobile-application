@@ -22,12 +22,12 @@ export const Tabs = ({ tabs, initialTab = 0 }: TabsProps) => {
 	};
 
 	return (
-		<View className="flex-1 mt-2 flex flex-col">
-			<View className="flex-row w-full relative">
+		<View className="flex-1 mt-2 flex flex-col pb-10">
+			<View className="flex-row w-full relative mb-4">
 				{tabs.map((tab, index) => (
 					<Pressable
 						key={`${uuidv4()}-${index}`}
-						className="flex-1 justify-center items-center px-8 py-4 h-fit"
+						className="flex-1 justify-center items-center px-8 py-4 h-fit border-b-2 border-gray-700"
 						onPress={() => {
 							animateBorder(index);
 							setActiveTab(index);

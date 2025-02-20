@@ -10,7 +10,7 @@ import { TikTokIcon } from "../vectors/tiktok-icon";
 
 export const Socials = ({ user }: { user: Tables<"user_profiles"> }) => {
 	return (
-		<ScrollView className="w-full flex-1 bg-black text-white pt-4 pb-40">
+		<ScrollView className="w-full flex-1 bg-black text-white pb-40">
 			{/* profile details */}
 			<View className="w-full flex flex-col gap-2">
 				{user.instagram && (
