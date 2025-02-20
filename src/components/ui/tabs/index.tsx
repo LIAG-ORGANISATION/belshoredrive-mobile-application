@@ -22,7 +22,7 @@ export const Tabs = ({ tabs, initialTab = 0 }: TabsProps) => {
 	};
 
 	return (
-		<View className="w-full mt-2 h-full flex flex-col">
+		<View className="flex-1 mt-2 flex flex-col">
 			<View className="flex-row w-full relative">
 				{tabs.map((tab, index) => (
 					<Pressable

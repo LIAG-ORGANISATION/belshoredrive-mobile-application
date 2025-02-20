@@ -1,5 +1,5 @@
 import type { Tables } from "@/types/supabase";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { Text } from "react-native";
 import { ExternalLink } from "../ExternalLink";
 
@@ -7,11 +7,14 @@ import { FacebookIcon } from "../vectors/facebookIcon";
 import { IconX } from "../vectors/icon-x";
 import { InstagramIcon } from "../vectors/instagram-icon";
 import { TikTokIcon } from "../vectors/tiktok-icon";
+
 export const Socials = ({ user }: { user: Tables<"user_profiles"> }) => {
 	return (
-		<View className="flex flex-col gap-4">
-			{user.instagram && (
-				<ExternalLink
+		<ScrollView className="w-full flex-1 bg-black text-white pt-4 pb-40">
+			{/* profile details */}
+			<View className="w-full flex flex-col gap-2">
+				{user.instagram && (
+					<ExternalLink
 					href={`https://instagram.com/${user.instagram}`}
 					className="w-full flex flex-row p-4 bg-black !justify-center items-center gap-4 border-white/20 border-2 rounded-md"
 				>
@@ -62,8 +65,9 @@ export const Socials = ({ user }: { user: Tables<"user_profiles"> }) => {
 							Join me on TikTok
 						</Text>
 					</View>
-				</ExternalLink>
-			)}
-		</View>
+					</ExternalLink>
+				)}
+			</View>
+		</ScrollView>
 	);
 };

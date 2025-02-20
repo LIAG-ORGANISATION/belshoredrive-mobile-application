@@ -1,6 +1,5 @@
 import { ExternalLink } from "@/components/ExternalLink";
 import { Button } from "@/components/ui/button";
-import { CopyInput } from "@/components/ui/copy-input";
 import { Tabs } from "@/components/ui/tabs";
 import { VehicleCard } from "@/components/ui/vehicle-card";
 import { UserDetails } from "@/components/user-details";
@@ -38,6 +37,7 @@ import {
 	View,
 } from "react-native";
 import QRCode from "react-native-qrcode-svg";
+import { CopyInput } from "../ui/copy-input";
 
 export const ProfileComponent = ({
 	userId,
@@ -81,9 +81,9 @@ export const ProfileComponent = ({
 		bottomSheetRef.current?.expand();
 	}, []);
 
-	const handleCloseBottomSheet = useCallback(() => {
-		bottomSheetRef.current?.close();
-	}, []);
+	// const handleCloseBottomSheet = useCallback(() => {
+	// 	bottomSheetRef.current?.close();
+	// }, []);
 
 	return (
 		<ScrollView className="w-full flex-1 bg-black text-white pt-4">
@@ -267,14 +267,12 @@ export const ProfileComponent = ({
 					},
 				]}
 			/>
-
 			<BottomSheet
 				ref={bottomSheetRef}
 				onChange={handleSheetChanges}
 				snapPoints={["100%"]}
 				enablePanDownToClose
 				index={1}
-				enableDynamicSizing
 				backgroundStyle={{
 					backgroundColor: "#1f1f1f",
 				}}
@@ -285,9 +283,6 @@ export const ProfileComponent = ({
 				<BottomSheetView className="flex-1">
 					<BottomSheetScrollView
 						className="bg-[#1f1f1f] w-full"
-						contentContainerStyle={{
-							paddingBottom: 40,
-						}}
 					>
 						<View className="w-full flex-col gap-4 justify-center items-center py-8 px-4">
 							<View className="w-full items-center rounded-lg bg-[#0E57C1] py-8 px-4">
