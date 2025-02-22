@@ -9,6 +9,7 @@ import {
 	useQueryClient,
 } from "@tanstack/react-query";
 import { decode } from "base64-arraybuffer";
+import { v4 as uuidv4 } from "uuid";
 // Types
 export type VehicleWithComments = Tables<"vehicles"> & {
 	vehicle_comments: (Tables<"vehicle_comments"> & {
@@ -167,7 +168,7 @@ export function useCreateVehicle() {
 
 	return useMutation({
 		mutationFn: async (
-			vehicleData: Omit<Tables<"vehicles">, "vehicle_id" | "user_id">,
+			vehicleData: Partial<Omit<Tables<"vehicles">, "vehicle_id" | "user_id">>,
 		) => {
 			const {
 				data: { user },
@@ -180,8 +181,11 @@ export function useCreateVehicle() {
 				.select()
 				.single();
 
-			if (error) throw error;
-			return data;
+			if (error) throw new Error(error.message);
+
+			if (data) {
+				return data;
+			}
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: QueryKeys.VEHICLES });
@@ -190,6 +194,46 @@ export function useCreateVehicle() {
 	});
 }
 
+//fetch Vehicle by id
+export function useFetchVehicleById(vehicleId: string) {
+	return useQuery({
+		queryKey: QueryKeys.VEHICLE(vehicleId),
+		queryFn: async () => {
+			const { data, error } = await supabase
+				.from("vehicles")
+				.select(`
+					*,
+					brands (
+						*
+					),
+					vehicle_statuses (
+						*
+					)
+				`)
+				.eq("vehicle_id", vehicleId)
+				.single();
+			if (error) {
+				console.error("error --------> ", error);
+				throw error;
+			}
+			return data;
+		},
+	});
+}
+
+// fetch vehicules statuses
+export function useFetchVehicleStatuses() {
+	return useQuery({
+		queryKey: QueryKeys.VEHICLE_STATUSES,
+		queryFn: async () => {
+			const { data, error } = await supabase
+				.from("vehicle_statuses")
+				.select("*");
+			if (error) throw error;
+			return data;
+		},
+	});
+}
 // Update a vehicle
 export function useUpdateVehicle() {
 	const queryClient = useQueryClient();
@@ -204,12 +248,16 @@ export function useUpdateVehicle() {
 		}) => {
 			const { data, error } = await supabase
 				.from("vehicles")
-				.update(updates)
+				.update({ ...updates })
 				.eq("vehicle_id", vehicleId)
 				.select()
 				.single();
 
-			if (error) throw error;
+			if (error) {
+				console.error("error --------> ", error);
+				throw error;
+			}
+
 			return data;
 		},
 		onSuccess: (data) => {
@@ -359,8 +407,8 @@ export function useUploadVehicleMedia() {
 					continue;
 				}
 
-				const fileUUID = crypto.randomUUID();
-				const filePath = `vehicle-media/${fileUUID}.${ext}`;
+				const fileUUID = uuidv4();
+				const filePath = `${fileUUID}.${ext}`;
 
 				try {
 					const arrayBuffer = decode(file.base64);
@@ -409,6 +457,67 @@ export function useDeleteVehicleMedia() {
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: QueryKeys.VEHICLES });
+		},
+	});
+}
+
+export type TagsType = {
+	tag_id: string;
+	created_id: string;
+	type_id: string;
+	name: string;
+};
+
+export function useFetchVehicleTags(vehicleId: string) {
+	return useQuery({
+		queryKey: QueryKeys.VEHICLE_TAGS,
+		queryFn: async () => {
+			const { data: vehicle, error: vehicleError } = await supabase
+				.from("vehicles")
+				// .select("type_id")
+				.select("*")
+				.eq("vehicle_id", vehicleId)
+				.single();
+
+			if (vehicleError) throw vehicleError;
+
+			const { data, error } = await supabase
+				.from("tags")
+				.select("*")
+				.eq("type_id", vehicle?.type_id);
+			if (error) {
+				console.error("error --------> ", error);
+				throw error;
+			}
+			return data;
+		},
+	});
+}
+
+export function useFetchMotorizationTypes(typeId: string) {
+	return useQuery({
+		queryKey: QueryKeys.MOTORIZATION_TYPES,
+		queryFn: async () => {
+			const { data, error } = await supabase
+				.from("motorization_types")
+				.select("*")
+				.eq("type_id", typeId);
+			if (error) throw error;
+			return data;
+		},
+	});
+}
+
+export function useFetchTransmissionTypes(typeId: string) {
+	return useQuery({
+		queryKey: QueryKeys.TRANSMISSION_TYPES,
+		queryFn: async () => {
+			const { data, error } = await supabase
+				.from("transmission_types")
+				.select("*")
+				.eq("type_id", typeId);
+			if (error) throw error;
+			return data;
 		},
 	});
 }

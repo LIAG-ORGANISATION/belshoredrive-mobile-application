@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { CameraIcon } from "@/components/vectors/camera-icon";
 import { GalleryIcon } from "@/components/vectors/gallery-icon";
-import { useUploadVehicleMedia } from "@/network/vehicles";
+import { useCreateVehicle, useUploadVehicleMedia } from "@/network/vehicles";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImageManipulator from "expo-image-manipulator";
 import { SaveFormat } from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
 import type { ImagePickerAsset } from "expo-image-picker";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { useState } from "react";
 import {
 	Dimensions,
@@ -32,7 +32,9 @@ export default function CreateVehicle() {
 	//   const [image, setImage] = useState<ImagePickerAsset | null>(null);
 	const [selectedIndex, setSelectedIndex] = useState<number>(0);
 	const [isLoading, setIsLoading] = useState(false);
-	const { mutate: uploadMedia } = useUploadVehicleMedia();
+	const [mediaIds, setMediaIds] = useState<string[]>([]);
+	const { mutate: uploadMedia, data: mediaData } = useUploadVehicleMedia();
+	const { mutate: createVehicle, data: vehicleData } = useCreateVehicle();
 	const { width, height } = Dimensions.get("window");
 
 	const [images, setImages] = useState<ImagePickerAsset[]>([
@@ -44,7 +46,7 @@ export default function CreateVehicle() {
 	]);
 	const [imageConfig, setImageConfig] = useState<
 		Record<
-			string,
+			number,
 			{
 				scale: SharedValue<number>;
 				savedScale: SharedValue<number>;
@@ -55,7 +57,7 @@ export default function CreateVehicle() {
 			}
 		>
 	>({
-		"0": {
+		0: {
 			scale: useSharedValue(1),
 			savedScale: useSharedValue(1),
 			translateX: useSharedValue(0),
@@ -63,7 +65,7 @@ export default function CreateVehicle() {
 			translateY: useSharedValue(0),
 			savedTranslateY: useSharedValue(0),
 		},
-		"1": {
+		1: {
 			scale: useSharedValue(1),
 			savedScale: useSharedValue(1),
 			translateX: useSharedValue(0),
@@ -71,7 +73,7 @@ export default function CreateVehicle() {
 			translateY: useSharedValue(0),
 			savedTranslateY: useSharedValue(0),
 		},
-		"2": {
+		2: {
 			scale: useSharedValue(1),
 			savedScale: useSharedValue(1),
 			translateX: useSharedValue(0),
@@ -79,7 +81,7 @@ export default function CreateVehicle() {
 			translateY: useSharedValue(0),
 			savedTranslateY: useSharedValue(0),
 		},
-		"3": {
+		3: {
 			scale: useSharedValue(1),
 			savedScale: useSharedValue(1),
 			translateX: useSharedValue(0),
@@ -87,7 +89,7 @@ export default function CreateVehicle() {
 			translateY: useSharedValue(0),
 			savedTranslateY: useSharedValue(0),
 		},
-		"4": {
+		4: {
 			scale: useSharedValue(1),
 			savedScale: useSharedValue(1),
 			translateX: useSharedValue(0),
@@ -95,7 +97,7 @@ export default function CreateVehicle() {
 			translateY: useSharedValue(0),
 			savedTranslateY: useSharedValue(0),
 		},
-		"5": {
+		5: {
 			scale: useSharedValue(1),
 			savedScale: useSharedValue(1),
 			translateX: useSharedValue(0),
@@ -198,7 +200,9 @@ export default function CreateVehicle() {
 		setIsLoading(true);
 		const uploadedImagesIds: string[] = [];
 
-		for (const [index, image] of images.entries()) {
+		let index = 0;
+		for (const image of images) {
+			if (!image.uri) continue;
 			try {
 				const center = {
 					x: image.width / 2,
@@ -243,12 +247,9 @@ export default function CreateVehicle() {
 							(imageConfig[index].savedTranslateY.value * targetHeight) /
 							((imageConfig[index].scale.value - 1) * height);
 					}
-
-					// Set final crop dimensions to maintain 9:16 ratio
 					cropWidth = targetWidth;
 					cropHeight = targetHeight;
 				} else {
-					// When not scaled, still maintain 9:16 aspect ratio
 					const targetAspectRatio = 9 / 16;
 					const imageAspectRatio = image.width / image.height;
 
@@ -284,24 +285,33 @@ export default function CreateVehicle() {
 
 				uploadedImagesIds.push(manipulatedImage.base64 || "");
 
-				//   await uploadMedia({
-				//     file: manipulatedImage.base64 || "",
-				//     fileExt: image.uri.split(".")[1],
-				//   });
 				setIsLoading(false);
-				console.log(manipulatedImage.uri);
-				//   router.push("/complete-profile/profile-details");
+				index++;
 			} catch (error) {
 				console.error("Error cropping image:", error);
 			}
 		}
-
-		console.log(uploadedImagesIds);
 		uploadMedia(
 			uploadedImagesIds.map((base64) => ({
 				base64,
 				fileExt: "jpg",
 			})),
+			{
+				onSuccess: (media) => {
+					createVehicle(
+						{
+							// brand_id: "1",
+							// model: "Model 1",
+							media: media,
+						},
+						{
+							onSuccess: (vehicle) => {
+								router.push(`/create-vehicle/${vehicle.vehicle_id}`);
+							},
+						},
+					);
+				},
+			},
 		);
 	};
 

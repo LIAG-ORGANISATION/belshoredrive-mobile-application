@@ -48,7 +48,8 @@ export const ProfileComponent = ({
 
 	const { initialTab } = useLocalSearchParams();
 
-	const { data: profile, isLoading: isProfileLoading } = useFetchUserProfileById(userId as string);
+	const { data: profile, isLoading: isProfileLoading } =
+		useFetchUserProfileById(userId as string);
 	const { data: vehicles } = useUserVehicles(userId as string);
 	const { data: followersCount } = useFollowersCount(userId as string);
 	const { data: followingCount } = useFollowingCount(userId as string);
@@ -294,9 +295,7 @@ export const ProfileComponent = ({
 				}}
 			>
 				<BottomSheetView className="flex-1">
-					<BottomSheetScrollView
-						className="bg-[#1f1f1f] w-full"
-					>
+					<BottomSheetScrollView className="bg-[#1f1f1f] w-full">
 						<View className="w-full flex-col gap-4 justify-center items-center py-8 px-4">
 							<View className="w-full items-center rounded-lg bg-[#0E57C1] py-8 px-4">
 								<QRCode

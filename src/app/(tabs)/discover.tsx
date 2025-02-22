@@ -96,9 +96,7 @@ export default function SearchScreen() {
 			/>
 
 			{isSearchActive && (
-				<View 
-					className="absolute left-0 right-0 top-[110px] bottom-0 bg-black z-50"
-				>
+				<View className="absolute left-0 right-0 top-[110px] bottom-0 bg-black z-50">
 					<FlatList
 						data={searchResults}
 						keyExtractor={(item) => item.user_id}

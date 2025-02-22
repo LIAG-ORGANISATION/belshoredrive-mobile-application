@@ -26,10 +26,10 @@ const ChatListComponent = () => {
 			const otherParticipants = conversation.participants
 				.filter((p) => p.user_id !== currentUserProfile?.user_id)
 				.map((p) => p.pseudo || "")
-				.filter(pseudo => pseudo !== "");  // Filter out empty pseudos
+				.filter((pseudo) => pseudo !== ""); // Filter out empty pseudos
 
 			return otherParticipants.some((pseudo) =>
-				pseudo.toLowerCase().includes(searchQuery.toLowerCase())
+				pseudo.toLowerCase().includes(searchQuery.toLowerCase()),
 			);
 		});
 	}, [conversations, searchQuery, currentUserProfile?.user_id]);

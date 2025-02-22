@@ -4,9 +4,17 @@ import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
 import { useVehicles } from "@/network/vehicles";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams } from "expo-router";
+import { router } from "expo-router";
 import { cssInterop } from "nativewind";
 import { Fragment } from "react";
-import { FlatList, Image, RefreshControl, Text, View } from "react-native";
+import {
+	FlatList,
+	Image,
+	Pressable,
+	RefreshControl,
+	Text,
+	View,
+} from "react-native";
 
 cssInterop(LinearGradient, {
 	className: {
@@ -70,7 +78,15 @@ export default function TabOneScreen() {
 					/>
 				}
 				renderItem={({ item }) => (
-					<View className="rounded-2xl mb-4 relative h-[500px]">
+					<Pressable
+						className="rounded-2xl mb-4 relative h-[500px]"
+						onPress={() => {
+							router.replace({
+								pathname: "/create-vehicle/[vehicleId]",
+								params: { vehicleId: item.vehicle_id },
+							});
+						}}
+					>
 						{item.media && item.media.length > 0 && (
 							<Fragment>
 								<Image
@@ -114,7 +130,7 @@ export default function TabOneScreen() {
 								</Text>
 							</View>
 						</View>
-					</View>
+					</Pressable>
 				)}
 				keyExtractor={(item) => item.vehicle_id}
 				onEndReached={() => fetchNextPage()}

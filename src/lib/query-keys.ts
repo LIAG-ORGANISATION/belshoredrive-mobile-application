@@ -22,6 +22,10 @@ export const QueryKeys = {
 	VEHICLE_RATING: (vehicleId: string) => ["vehicleRating", vehicleId] as const,
 	VEHICLE_COMMENTS: (vehicleId: string, page?: number) =>
 		["vehicleComments", vehicleId, page] as const,
+	VEHICLE_STATUSES: ["vehicleStatuses"] as const,
+	VEHICLE_TAGS: ["vehicleTags"] as const,
+	MOTORIZATION_TYPES: ["motorizationTypes"] as const,
+	TRANSMISSION_TYPES: ["transmissionTypes"] as const,
 
 	// Chat
 	MESSAGES: (conversationId: string) => ["messages", conversationId] as const,

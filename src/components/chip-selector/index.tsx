@@ -26,6 +26,7 @@ type ChipSelectorProps<
 	control: Control<T>;
 	items: ItemType[];
 	haveSearch?: boolean;
+	selectingType?: "multiple" | "single";
 };
 
 export const ChipSelector = <
@@ -36,6 +37,7 @@ export const ChipSelector = <
 	control,
 	items,
 	haveSearch = false,
+	selectingType = "multiple",
 }: ChipSelectorProps<T, ItemType>) => {
 	const { field } = useController<T>({
 		name,
@@ -52,9 +54,12 @@ export const ChipSelector = <
 	const toggleItem = useCallback(
 		(itemId: string) => {
 			const currentSelection = field.value || ([] as string[]);
-			const newSelection = currentSelection.includes(itemId)
-				? currentSelection.filter((id: string) => id !== itemId)
-				: [...currentSelection, itemId];
+			const newSelection =
+				selectingType === "multiple"
+					? currentSelection.includes(itemId)
+						? currentSelection.filter((id: string) => id !== itemId)
+						: [...currentSelection, itemId]
+					: itemId;
 
 			field.onChange(newSelection);
 		},
