@@ -1,5 +1,7 @@
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/text-input";
 import { type PhoneLoginType, phoneLoginSchema } from "@/lib/schemas/auth";
+import { supabase } from "@/lib/supabase";
 import Ionicons from "@expo/vector-icons/build/Ionicons";
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import { router } from "expo-router";
@@ -17,7 +19,8 @@ export default function Phone() {
 	const [selectedCountry, setSelectedCountry] = useState<ICountry>();
 	const [fullNumber, setFullNumber] = useState<string>("");
 	const [isValid, setIsValid] = useState<boolean>(false);
-
+	const [codeSent, setCodeSent] = useState<boolean>(false);
+	const [code, setCode] = useState<string>("");
 	const {
 		control,
 		handleSubmit,
@@ -50,11 +53,34 @@ export default function Phone() {
 
 	const handleVerification = async (values: PhoneLoginType) => {
 		const check = phone(fullNumber);
-		// const verificationId = await sendVerificationCode(check);
-		// if (!verificationId) {
-		//   return;
-		// }
-		router.push("/auth/verification");
+
+		if (!check.isValid) {
+			return;
+		}
+
+		const { data, error } = await supabase.auth.signInWithOtp({
+			phone: check.phoneNumber,
+		});
+
+		if (error) {
+			console.error(error);
+		}
+
+		setCodeSent(true);
+	};
+
+	const handleVerificationCode = async () => {
+		const { data, error } = await supabase.auth.verifyOtp({
+			phone: fullNumber,
+			token: code,
+			type: "sms",
+		});
+
+		if (error) {
+			console.error(error);
+		}
+
+		router.push("/(tabs)");
 	};
 
 	return (
@@ -156,17 +182,43 @@ export default function Phone() {
 						<Text className="text-red-500 text-sm">
 							{errors.countryCode?.message || errors.phoneNumber?.message}
 						</Text>
-					</View>
-				</View>
 
-				<View className="w-full">
-					<Button
-						variant="secondary"
+						<Button
+							variant="secondary"
+							label="Continuer"
+							disabled={!isValid || isSubmitting || codeSent}
+							onPress={handleSubmit(handleVerification)}
+						/>
+					</View>
+
+					{codeSent && (
+						<View className="w-full">
+							<Text className="text-white text-sm">
+								Un code de vérification a été envoyé à votre numéro de téléphone.
+							</Text>
+
+							<Input
+								name="code"
+								placeholder="Code de vérification"
+								className="mt-4"
+								keyboardType="numeric"
+								secureTextEntry
+								value={code}
+								onChangeText={setCode}
+							/>
+						</View>
+					)}
+				</View>
+				{codeSent && (
+					<View className="w-full">
+						<Button
+							variant="secondary"
 						label="Continuer"
 						disabled={!isValid || isSubmitting}
-						onPress={handleSubmit(handleVerification)}
-					/>
-				</View>
+						onPress={handleVerificationCode}
+						/>
+					</View>
+				)}
 			</View>
 		</KeyboardAvoidingView>
 	);
