@@ -13,7 +13,6 @@ import { KeyboardAvoidingView, Platform, Text, View } from "react-native";
 import PhoneInput, {
 	type ICountry,
 } from "react-native-international-phone-number";
-// import { sendVerificationCode } from "@/lib/prelude";
 
 export default function Phone() {
 	const [selectedCountry, setSelectedCountry] = useState<ICountry>();
@@ -194,7 +193,8 @@ export default function Phone() {
 					{codeSent && (
 						<View className="w-full">
 							<Text className="text-white text-sm">
-								Un code de vérification a été envoyé à votre numéro de téléphone.
+								Un code de vérification a été envoyé à votre numéro de
+								téléphone.
 							</Text>
 
 							<Input
@@ -213,9 +213,9 @@ export default function Phone() {
 					<View className="w-full">
 						<Button
 							variant="secondary"
-						label="Continuer"
-						disabled={!isValid || isSubmitting}
-						onPress={handleVerificationCode}
+							label="Continuer"
+							disabled={!isValid || isSubmitting}
+							onPress={handleVerificationCode}
 						/>
 					</View>
 				)}
