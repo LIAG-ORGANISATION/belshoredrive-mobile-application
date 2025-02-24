@@ -18,7 +18,7 @@ export const createVehicleSchema = object({
 	model: pipe(string(), minLength(1), maxLength(100)),
 	year: pipe(number(), minValue(1850), maxValue(new Date().getFullYear())),
 	nickname: optional(pipe(string(), minLength(1), maxLength(100))),
-	description: optional(pipe(string(), minLength(1), maxLength(100))),
+	description: optional(pipe(string(), minLength(1), maxLength(300))),
 	status_id: optional(pipe(string(), minLength(1), maxLength(100))),
 });
 
@@ -65,7 +65,6 @@ export const vehicleDetailsSchema = object({
 	),
 	transmission_id: optional(pipe(string(), minLength(1), maxLength(100))),
 	motorization_id: optional(pipe(string(), minLength(1), maxLength(100))),
-	// max_speed: optional(pipe(number(), minValue(0), maxValue(1000000))),
 	max_speed: optional(
 		custom<string | number>(
 			checksForNumericValue,
@@ -77,3 +76,13 @@ export const vehicleDetailsSchema = object({
 });
 
 export type VehicleDetailsType = InferOutput<typeof vehicleDetailsSchema>;
+
+export const partsDetailsSchema = object({
+	motorization: optional(pipe(string(), minLength(1), maxLength(200))),
+	chassis: optional(pipe(string(), minLength(1), maxLength(200))),
+	braking: optional(pipe(string(), minLength(1), maxLength(200))),
+	exterior: optional(pipe(string(), minLength(1), maxLength(200))),
+	technical_document: optional(pipe(string(), minLength(0), maxLength(200))),
+});
+
+export type PartsDetailsType = InferOutput<typeof partsDetailsSchema>;

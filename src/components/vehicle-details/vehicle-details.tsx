@@ -62,7 +62,9 @@ export const VehicleDetails = ({
 				transmission_id: vehicle.transmission_id || "",
 				motorization_id: vehicle.motorization_id || "",
 				max_speed: vehicle.max_speed ? vehicle.max_speed.toString() : 0,
-				purchase_date: vehicle.purchase_date || "",
+				purchase_date: vehicle.purchase_date
+					? `${new Date(vehicle.purchase_date).getFullYear()}-01-01`
+					: "",
 				driving_side: vehicle.driving_side || "",
 			});
 		}
@@ -84,7 +86,7 @@ export const VehicleDetails = ({
 						transmission_id: data.transmission_id,
 						motorization_id: data.motorization_id,
 						max_speed: data.max_speed,
-						purchase_date: data.purchase_date,
+						purchase_date: new Date(data.purchase_date as string).toISOString(),
 						driving_side: data.driving_side,
 					},
 				},
@@ -447,7 +449,9 @@ export const VehicleDetails = ({
 													!value ? "text-white/50" : "text-white"
 												}`}
 											>
-												{value?.toString().slice(-4) || "Date d'achat"}
+												{value === "" || value === null
+													? "Date d'achat"
+													: new Date(value as string).getFullYear()}
 											</Text>
 											<Ionicons name="chevron-down" size={24} color="white" />
 										</Pressable>
@@ -462,8 +466,8 @@ export const VehicleDetails = ({
 														<Pressable
 															onPress={() => {
 																setShowPurchaseDatePicker(false);
-																if (value === 0) {
-																	onChange(new Date().getFullYear());
+																if (value === "" || value === null) {
+																	onChange(`${new Date().getFullYear()}-01-01`);
 																}
 															}}
 														>
@@ -488,7 +492,7 @@ export const VehicleDetails = ({
 															<Picker.Item
 																key={`${new Date().getFullYear() - i}`}
 																label={`${new Date().getFullYear() - i}`}
-																value={`1-1-${new Date().getFullYear() - i}`}
+																value={`${new Date().getFullYear() - i}-01-01`}
 															/>
 														))}
 													</Picker>
@@ -512,7 +516,7 @@ export const VehicleDetails = ({
 						onPress={handleSubmit(onSubmit)}
 					/>
 				</View>
-				<Link href="/(tabs)" asChild>
+				<Link href={`/create-vehicle/${vehicleId}/parts-details`} asChild>
 					<Text className="text-white text-sm text-center font-semibold">
 						Passer cette étape
 					</Text>

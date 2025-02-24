@@ -1,4 +1,4 @@
-import { VehicleDetails } from "@/components/vehicle-details/vehicle-details";
+import { PartsDetails } from "@/components/vehicle-details/parts-detail";
 import { useLocalSearchParams } from "expo-router";
 import { router } from "expo-router";
 import { Text, View } from "react-native";
@@ -10,13 +10,10 @@ export default function ChooseBrandScreen() {
 			<Text className="text-white text-2xl font-bold py-4">
 				Donnez plus de détails sur ce véhicule
 			</Text>
-			<VehicleDetails
+			<PartsDetails
 				vehicleId={vehicleId as string}
 				onSuccess={() => {
-					router.push({
-						pathname: "/create-vehicle/[vehicleId]/parts-details",
-						params: { vehicleId: vehicleId as string },
-					});
+					router.replace("/(tabs)");
 				}}
 			/>
 		</View>

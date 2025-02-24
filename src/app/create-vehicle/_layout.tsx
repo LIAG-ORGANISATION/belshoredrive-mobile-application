@@ -85,6 +85,22 @@ export default function CreateVehicleLayout() {
 					),
 				}}
 			/>
+			<Stack.Screen
+				name="[vehicleId]/parts-details"
+				options={{
+					headerShown: true,
+					headerStyle: { backgroundColor: "#000" },
+					headerTitle: () => <ProgressBar currentStep={4} totalSteps={5} />,
+					headerLeft: () => (
+						<Ionicons
+							name="arrow-back"
+							size={24}
+							color="white"
+							onPress={() => router.back()}
+						/>
+					),
+				}}
+			/>
 		</Stack>
 	);
 }
