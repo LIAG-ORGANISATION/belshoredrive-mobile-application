@@ -57,11 +57,11 @@ export const VehicleDetails = ({
 	useEffect(() => {
 		if (vehicle) {
 			reset({
-				mileage: vehicle.mileage.toString() || 0,
-				power: vehicle.power.toString() || 0,
+				mileage: vehicle.mileage ? vehicle.mileage.toString() : 0,
+				power: vehicle.power ? vehicle.power.toString() : 0,
 				transmission_id: vehicle.transmission_id || "",
 				motorization_id: vehicle.motorization_id || "",
-				max_speed: vehicle.max_speed.toString() || 0,
+				max_speed: vehicle.max_speed ? vehicle.max_speed.toString() : 0,
 				purchase_date: vehicle.purchase_date || "",
 				driving_side: vehicle.driving_side || "",
 			});

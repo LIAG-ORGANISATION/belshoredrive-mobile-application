@@ -474,8 +474,7 @@ export function useFetchVehicleTags(vehicleId: string) {
 		queryFn: async () => {
 			const { data: vehicle, error: vehicleError } = await supabase
 				.from("vehicles")
-				// .select("type_id")
-				.select("*")
+				.select("*, brands(*, vehicle_types(*))")
 				.eq("vehicle_id", vehicleId)
 				.single();
 
@@ -484,7 +483,7 @@ export function useFetchVehicleTags(vehicleId: string) {
 			const { data, error } = await supabase
 				.from("tags")
 				.select("*")
-				.eq("type_id", vehicle?.type_id);
+				.eq("type_id", vehicle?.brands.type_id);
 			if (error) {
 				console.error("error --------> ", error);
 				throw error;

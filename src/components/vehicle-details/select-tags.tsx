@@ -62,6 +62,7 @@ export const SelectTags = ({
 				vehicleId,
 				updates: {
 					tags: data.tags,
+					type_id: vehicle?.brands.type_id,
 				},
 			});
 			onSubmitCallback(data);
