@@ -28,7 +28,7 @@ import Animated, {
 	type SharedValue,
 } from "react-native-reanimated";
 
-const MAX_IMAGES = 7;
+const MAX_IMAGES = 15;
 
 export default function CreateVehicle() {
 	//   const [image, setImage] = useState<ImagePickerAsset | null>(null);
