@@ -31,10 +31,8 @@ import Animated, {
 const MAX_IMAGES = 15;
 
 export default function CreateVehicle() {
-	//   const [image, setImage] = useState<ImagePickerAsset | null>(null);
 	const [selectedIndex, setSelectedIndex] = useState<number>(0);
 	const [isLoading, setIsLoading] = useState(false);
-	const [mediaIds, setMediaIds] = useState<string[]>([]);
 	const { mutate: uploadMedia, data: mediaData } = useUploadVehicleMedia();
 	const { mutate: createVehicle, data: vehicleData } = useCreateVehicle();
 	const { width, height } = Dimensions.get("window");
@@ -71,7 +69,6 @@ export default function CreateVehicle() {
 			}
 		>
 	>({
-		// >({});
 		0: {
 			scale: useSharedValue(1),
 			savedScale: useSharedValue(1),
