@@ -8,7 +8,7 @@ import { SaveFormat } from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
 import type { ImagePickerAsset } from "expo-image-picker";
 import { Link, router } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
 	Dimensions,
 	FlatList,
@@ -28,6 +28,8 @@ import Animated, {
 	type SharedValue,
 } from "react-native-reanimated";
 
+const MAX_IMAGES = 7;
+
 export default function CreateVehicle() {
 	//   const [image, setImage] = useState<ImagePickerAsset | null>(null);
 	const [selectedIndex, setSelectedIndex] = useState<number>(0);
@@ -37,12 +39,24 @@ export default function CreateVehicle() {
 	const { mutate: createVehicle, data: vehicleData } = useCreateVehicle();
 	const { width, height } = Dimensions.get("window");
 
-	const [images, setImages] = useState<ImagePickerAsset[]>([
+	const sharedValuePool = Array.from({ length: MAX_IMAGES }).map(() => ({
+		scale: useSharedValue(1),
+		savedScale: useSharedValue(1),
+		translateX: useSharedValue(0),
+		savedTranslateX: useSharedValue(0),
+		translateY: useSharedValue(0),
+		savedTranslateY: useSharedValue(0),
+	}));
+
+	const [images, setImages] = useState<
+		(ImagePickerAsset & { add?: boolean })[]
+	>([
 		{ uri: "", width: 0, height: 0, base64: "" },
 		{ uri: "", width: 0, height: 0, base64: "" },
 		{ uri: "", width: 0, height: 0, base64: "" },
 		{ uri: "", width: 0, height: 0, base64: "" },
 		{ uri: "", width: 0, height: 0, base64: "" },
+		{ uri: "", width: 0, height: 0, base64: "", add: true },
 	]);
 	const [imageConfig, setImageConfig] = useState<
 		Record<
@@ -57,6 +71,7 @@ export default function CreateVehicle() {
 			}
 		>
 	>({
+		// >({});
 		0: {
 			scale: useSharedValue(1),
 			savedScale: useSharedValue(1),
@@ -106,6 +121,52 @@ export default function CreateVehicle() {
 			savedTranslateY: useSharedValue(0),
 		},
 	});
+
+	useEffect(() => {
+		const initialConfig: typeof imageConfig = {};
+		for (let i = 0; i < 6; i++) {
+			initialConfig[i] = sharedValuePool[i];
+		}
+		setImageConfig(initialConfig);
+	}, []);
+
+	useEffect(() => {
+		if (selectedIndex === images.length - 1) {
+			addImage();
+		}
+	}, [selectedIndex]);
+
+	const addImage = (index?: number) => {
+		if (images.length >= MAX_IMAGES) {
+			console.warn("Reached maximum number of images");
+			images[images.length - 1].add = false;
+			return;
+		}
+		if (index) {
+			setSelectedIndex(index);
+		}
+		const newImages = [...images];
+		newImages[images.length - 1].add = false;
+		newImages.push({
+			uri: "",
+			width: 0,
+			height: 0,
+			base64: "",
+			add: images.length < MAX_IMAGES,
+		});
+		setImages(newImages);
+
+		// Use the next pre-initialized shared values from the pool
+		const newIndex = images.length;
+		if (newIndex < MAX_IMAGES) {
+			setImageConfig((prevConfig) => ({
+				...prevConfig,
+				[newIndex]: sharedValuePool[newIndex],
+			}));
+		} else {
+			console.warn("Reached maximum number of images");
+		}
+	};
 
 	const pickImage = async () => {
 		const result = await ImagePicker.launchImageLibraryAsync({
@@ -355,40 +416,49 @@ export default function CreateVehicle() {
 					showsHorizontalScrollIndicator={false}
 					renderItem={({ item, index }) => (
 						<Pressable
-							onPress={() => setSelectedIndex(index)}
+							onPress={() => {
+								if (index <= MAX_IMAGES) {
+									setSelectedIndex(index);
+								}
+							}}
 							className={`h-32 aspect-[10/16] mr-2 rounded-lg overflow-hidden ${
 								selectedIndex === index
-									? "border-2 border-white"
-									: "border-2 border-dashed border-white/40 bg-white/10"
+									? "border-2 border-primary opacity-100"
+									: "border-2 border-dashed border-white/40 bg-white/10 opacity-50"
 							}`}
 						>
-							{item.uri ? (
+							{item.uri.length > 0 ? (
 								<Image
 									source={{ uri: item.uri }}
 									className="w-full h-full"
-									//   style={[
-									//     {
-									//       transform: [
-									//         {
-									//           translateX: imageConfig[index].translateX.value,
-									//         },
-									//         {
-									//           translateY: imageConfig[index].translateY.value,
-									//         },
-									//         { scale: imageConfig[index].scale.value },
-									//       ],
-									//     },
-									//   ]}
 									resizeMode="cover"
 								/>
 							) : (
 								<View className="w-full h-full items-center justify-center bg-white/10">
-									<Ionicons name="camera-outline" size={24} color="white" />
+									{item.add ? (
+										<Text className="text-white text-sm font-semibold">
+											Ajouter
+										</Text>
+									) : (
+										<Ionicons name="camera-outline" size={24} color="white" />
+									)}
+								</View>
+							)}
+							{!item.add && (
+								<View
+									className={`absolute w-6 h-6 bottom-2 left-2 right-0  flex items-center justify-center rounded-full ${
+										selectedIndex === index ? "bg-primary " : "bg-black/50 "
+									}`}
+								>
+									<Text className="text-white text-sm font-semibold">
+										{index + 1}
+									</Text>
 								</View>
 							)}
 						</Pressable>
 					)}
 					keyExtractor={(_, index) => index.toString()}
+					extraData={images}
 				/>
 
 				<View className="w-full flex-row gap-4 pb-4">
