@@ -1,3 +1,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+	body {
+		@apply font-sans font-pins;
+	}
+}
+
+.blur {
+	-webkit-backdrop-filter: blur(36px);
+	backdrop-filter: blur(36px);
+}
