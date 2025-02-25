@@ -10,7 +10,6 @@ import {
 import { FlatList, View } from "react-native";
 import { SkeletonText } from "../ui/skeleton-text";
 import { Input } from "../ui/text-input";
-
 type DefaultItemType = {
 	id: string;
 	department_number?: string;

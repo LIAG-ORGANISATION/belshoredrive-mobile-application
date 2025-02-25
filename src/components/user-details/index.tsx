@@ -5,6 +5,7 @@ import { useGetSession } from "@/network/session";
 import { useFetchUserProfileById } from "@/network/user-profile";
 import dayjs from "dayjs";
 import { router } from "expo-router";
+import { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import { v4 as uuidv4 } from "uuid";
 import { Chip } from "../ui/chip";
@@ -25,6 +26,7 @@ interface ChipProps {
 }
 
 export const UserDetails = ({ userId }: { userId: string }) => {
+	const [isCurrentUser, setIsCurrentUser] = useState(false);
 	const { data: session } = useGetSession();
 	const { data: user, isLoading: isLoadingUser } =
 		useFetchUserProfileById(userId);
@@ -47,7 +49,9 @@ export const UserDetails = ({ userId }: { userId: string }) => {
 		},
 	);
 
-	const isCurrentUser = session?.user.id === userId;
+	useEffect(() => {
+		setIsCurrentUser(session?.user.id === userId);
+	}, [session, userId]);
 
 	const renderAddChip = ({ onPress }: { onPress: () => void }) => {
 		return (
@@ -89,7 +93,7 @@ export const UserDetails = ({ userId }: { userId: string }) => {
 			{isCurrentUser && renderAddChip({ onPress: onAddPress })}
 		</View>
 	);
-
+	console.log(isCurrentUser);
 	return (
 		<View className="flex flex-col gap-4 h-full pb-10">
 			<View className="flex flex-row gap-2">
@@ -128,7 +132,11 @@ export const UserDetails = ({ userId }: { userId: string }) => {
 					: renderChips(
 							services || [],
 							(item) => item.service_id ?? "",
-							() => router.push("/update-services"),
+							() =>
+								router.replace({
+									pathname: "/update-services",
+									params: { userId },
+								}),
 						)}
 			</View>
 
@@ -141,7 +149,11 @@ export const UserDetails = ({ userId }: { userId: string }) => {
 					: renderChips(
 							interests || [],
 							(item) => item.interest_id ?? "",
-							() => router.push("/update-interests"),
+							() =>
+								router.replace({
+									pathname: "/update-interests",
+									params: { userId },
+								}),
 						)}
 			</View>
 
@@ -154,7 +166,11 @@ export const UserDetails = ({ userId }: { userId: string }) => {
 					: renderChips(
 							departments || [],
 							(item) => item.department_id ?? "",
-							() => router.push("/update-departments"),
+							() =>
+								router.replace({
+									pathname: "/update-departments",
+									params: { userId },
+								}),
 						)}
 			</View>
 		</View>

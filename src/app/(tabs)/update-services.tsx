@@ -1,15 +1,17 @@
 import { UpdateServices } from "@/components/user-details/update-services";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { View } from "react-native";
 
 export default function UpdateServicesScreen() {
+	const { userId } = useLocalSearchParams();
+
 	return (
 		<View className="flex-1 bg-black pt-4">
 			<UpdateServices
 				onSubmitCallback={() => {
-					router.push({
+					router.replace({
 						pathname: "/(tabs)/profile",
-						params: { initialTab: 1 },
+						params: { initialTab: 1, userId: userId },
 					});
 				}}
 			/>

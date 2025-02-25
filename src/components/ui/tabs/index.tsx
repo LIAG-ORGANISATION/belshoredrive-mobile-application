@@ -1,11 +1,11 @@
 import React, { useRef, useState } from "react";
 import { Animated, Dimensions, Pressable, View } from "react-native";
-import { v4 as uuidv4 } from "uuid";
 
 export type TabsProps = {
 	tabs: {
 		content: React.ReactNode;
 		icon: React.ReactNode;
+		id: string;
 	}[];
 	initialTab?: number;
 };
@@ -26,7 +26,7 @@ export const Tabs = ({ tabs, initialTab = 0 }: TabsProps) => {
 			<View className="flex-row w-full relative mb-4">
 				{tabs.map((tab, index) => (
 					<Pressable
-						key={`${uuidv4()}-${index}`}
+						key={tab.id}
 						className="flex-1 justify-center items-center px-8 py-4 h-fit border-b-2 border-gray-700"
 						onPress={() => {
 							animateBorder(index);

@@ -61,6 +61,8 @@ export default function TabLayout() {
 		return <Text>No profile found</Text>;
 	}
 
+	console.log("profile", JSON.stringify(profile, null, 2));
+
 	return (
 		<View className="flex-1 w-full">
 			<Tabs
@@ -296,7 +298,7 @@ export default function TabLayout() {
 								onPress={() =>
 									router.push({
 										pathname: "/(tabs)/profile",
-										params: { initialTab: 1 },
+										params: { initialTab: 1, userId: profile.user_id },
 									})
 								}
 							/>
@@ -319,7 +321,7 @@ export default function TabLayout() {
 								onPress={() =>
 									router.push({
 										pathname: "/(tabs)/profile",
-										params: { initialTab: 1 },
+										params: { initialTab: 1, userId: profile?.user_id },
 									})
 								}
 							/>
@@ -342,7 +344,7 @@ export default function TabLayout() {
 								onPress={() =>
 									router.push({
 										pathname: "/(tabs)/profile",
-										params: { initialTab: 1 },
+										params: { initialTab: 1, userId: profile?.user_id },
 									})
 								}
 							/>

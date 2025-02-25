@@ -144,9 +144,10 @@ export const ProfileComponent = ({
 						profile?.biography
 					)}
 				</Text>
-				<View className="flex flex-row gap-2">
-					<ExternalLink
-						href={`https://${profile?.website}`}
+				{profile?.website && (
+					<View className="flex flex-row gap-2">
+						<ExternalLink
+							href={`https://${profile?.website}`}
 						className="text-sm text-gray-400"
 					>
 						<View className="flex flex-row gap-2 items-center">
@@ -155,8 +156,9 @@ export const ProfileComponent = ({
 								{profile?.website}
 							</Text>
 						</View>
-					</ExternalLink>
-				</View>
+						</ExternalLink>
+					</View>
+				)}
 
 				<View className="w-full flex flex-row gap-2 my-2">
 					<View className="flex-1 ">
@@ -270,14 +272,17 @@ export const ProfileComponent = ({
 							</View>
 						),
 						icon: <WheelIcon />,
+						id: "vehicles",
 					},
 					{
-						content: <UserDetails userId={profile?.user_id as string} />,
+						content: <UserDetails userId={userId} />,
 						icon: <IdentificationIcon />,
+						id: "user-details",
 					},
 					{
 						content: <Socials user={profile} />,
 						icon: <LinkIcon width={24} height={24} />,
+						id: "socials",
 					},
 				]}
 			/>

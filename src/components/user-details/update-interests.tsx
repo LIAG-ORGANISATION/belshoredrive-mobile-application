@@ -1,5 +1,5 @@
 import { valibotResolver } from "@hookform/resolvers/valibot";
-import { useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Text, View } from "react-native";
 
@@ -63,7 +63,7 @@ export const UpdateInterests = ({
 	if (interestsError) return <Text>Error: {interestsError.message}</Text>;
 
 	return (
-		<>
+		<Fragment>
 			{title && (
 				<Text className="text-white text-2xl font-bold py-4">{title}</Text>
 			)}
@@ -87,6 +87,6 @@ export const UpdateInterests = ({
 					onPress={handleSubmit(onSubmit)}
 				/>
 			</View>
-		</>
+		</Fragment>
 	);
 };
