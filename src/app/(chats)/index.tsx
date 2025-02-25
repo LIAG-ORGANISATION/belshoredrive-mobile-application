@@ -83,7 +83,7 @@ const ChatListComponent = () => {
 									source={{
 										uri: formatPicturesUri(
 											"profile_pictures",
-											item.participants[0].profile_picture_url,
+											item.participants[1].profile_picture_url,
 										),
 									}}
 									className="w-10 h-10 rounded-full"
