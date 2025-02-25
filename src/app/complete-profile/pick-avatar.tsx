@@ -6,7 +6,7 @@ export default function PickAvatarScreen() {
 	return (
 		<PickAvatar
 			title="Choisissez un avatar"
-			onSuccess={() => router.push("/complete-profile/profile-details")}
+			onSuccess={() => router.replace("/complete-profile/profile-details")}
 		/>
 	);
 }

@@ -83,10 +83,6 @@ export const ProfileComponent = ({
 		bottomSheetRef.current?.expand();
 	}, []);
 
-	// const handleCloseBottomSheet = useCallback(() => {
-	// 	bottomSheetRef.current?.close();
-	// }, []);
-
 	return (
 		<ScrollView className="w-full flex-1 bg-black text-white pt-4">
 			{/* profile details */}
@@ -153,7 +149,7 @@ export const ProfileComponent = ({
 						<View className="flex flex-row gap-2 items-center">
 							<LinkIcon />
 							<Text className="text-sm font-semibold text-[#A1BDCA]">
-								{profile?.website}
+								Visitez mon site web
 							</Text>
 						</View>
 						</ExternalLink>
@@ -280,7 +276,7 @@ export const ProfileComponent = ({
 						id: "user-details",
 					},
 					{
-						content: <Socials user={profile} />,
+						content: profile ? <Socials user={profile} /> : null,
 						icon: <LinkIcon width={24} height={24} />,
 						id: "socials",
 					},
