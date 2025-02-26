@@ -3,6 +3,7 @@ import { CameraIcon } from "@/components/vectors/camera-icon";
 import { GalleryIcon } from "@/components/vectors/gallery-icon";
 import { useCreateVehicle, useUploadVehicleMedia } from "@/network/vehicles";
 import { Ionicons } from "@expo/vector-icons";
+import { FlashList } from "@shopify/flash-list";
 import * as ImageManipulator from "expo-image-manipulator";
 import { SaveFormat } from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
@@ -11,7 +12,6 @@ import { Link, router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
 	Dimensions,
-	FlatList,
 	Image,
 	Pressable,
 	Text,
@@ -374,7 +374,7 @@ export default function CreateVehicle() {
 	};
 
 	return (
-		<View className="w-full h-fit max-h-screen flex-1 items-start justify-between pb-safe-offset-4 px-safe-offset-6 bg-black">
+		<View className="w-full h-fit max-h-screen flex-1 items-start justify-between pb-safe-offset-4 px-safe-offset-4 bg-black">
 			<Text className="text-white text-2xl font-bold">
 				Ajoutez les photos de votre véhicule
 			</Text>
@@ -406,11 +406,11 @@ export default function CreateVehicle() {
 					</View>
 				</GestureHandlerRootView>
 
-				<FlatList
+				<FlashList
 					data={images}
-					horizontal
-					className="max-h-32 w-full"
-					showsHorizontalScrollIndicator={false}
+					estimatedItemSize={128}
+					className="h-32 max-h-32"
+					horizontal={true}
 					renderItem={({ item, index }) => (
 						<Pressable
 							onPress={() => {
@@ -454,7 +454,6 @@ export default function CreateVehicle() {
 							)}
 						</Pressable>
 					)}
-					keyExtractor={(_, index) => index.toString()}
 					extraData={images}
 				/>
 

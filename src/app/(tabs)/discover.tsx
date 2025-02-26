@@ -6,10 +6,11 @@ import { useFetchBrands } from "@/network/brands";
 import { useFetchDepartments } from "@/network/departments";
 import { useVehicles } from "@/network/vehicles";
 import type { Tables } from "@/types/supabase";
+import { FlashList } from "@shopify/flash-list";
 import { useQuery } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { useState } from "react";
-import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 
 type Filters = {
 	brands: string[];
@@ -60,7 +61,7 @@ export default function SearchScreen() {
 
 	const renderVehicle = ({ item }: { item: Tables<"vehicles"> }) => (
 		<TouchableOpacity
-			className="w-1/3 aspect-square p-1"
+			className="w-full aspect-square p-0.5"
 			onPress={() => {
 				// Navigate to vehicle detail
 			}}
@@ -97,9 +98,9 @@ export default function SearchScreen() {
 
 			{isSearchActive && (
 				<View className="absolute left-0 right-0 top-[110px] bottom-0 bg-black z-50">
-					<FlatList
+					<FlashList
 						data={searchResults}
-						keyExtractor={(item) => item.user_id}
+						estimatedItemSize={70}
 						renderItem={({ item }) => (
 							<TouchableOpacity
 								className="flex-row items-center gap-3 py-3 px-4 border-b border-gray-800"
@@ -144,11 +145,11 @@ export default function SearchScreen() {
 					<SkeletonGrid items={12} />
 				</View>
 			) : (
-				<FlatList
+				<FlashList
 					data={vehicles}
 					renderItem={renderVehicle}
-					keyExtractor={(item) => item.vehicle_id}
 					numColumns={3}
+					estimatedItemSize={150}
 					className="flex-1 mt-4"
 					contentContainerStyle={{ paddingBottom: 20 }}
 				/>
