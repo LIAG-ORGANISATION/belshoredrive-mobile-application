@@ -54,6 +54,20 @@ const ChatListComponent = () => {
 		return otherParticipants || "Chat";
 	};
 
+	const getConversationPicture = (conversation: {
+		participants: {
+			profile_picture_url: string;
+		}[];
+	}) => {
+		const otherParticipants = conversation.participants
+			.filter(
+				(p: { user_id: string }) => p.user_id !== currentUserProfile?.user_id,
+			)
+			.map((p: { profile_picture_url: string }) => p.profile_picture_url);
+
+		return otherParticipants[0];
+	};
+
 	if (isLoading) {
 		return (
 			<View className="flex-1 bg-black items-center justify-center">
@@ -84,7 +98,7 @@ const ChatListComponent = () => {
 									source={{
 										uri: formatPicturesUri(
 											"profile_pictures",
-											item.participants[1].profile_picture_url,
+											getConversationPicture(item),
 										),
 									}}
 									className="w-10 h-10 rounded-full"
