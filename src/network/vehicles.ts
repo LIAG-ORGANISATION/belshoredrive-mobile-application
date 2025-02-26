@@ -119,6 +119,7 @@ export function useVehicles() {
             profile_picture_url
           )
         `)
+				.eq("is_published", true)
 				.range(pageParam * 10, (pageParam + 1) * 10 - 1)
 				.order("created_at", { ascending: false });
 
