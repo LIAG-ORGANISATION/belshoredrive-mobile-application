@@ -1,16 +1,24 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useLocalSearchParams, useNavigation } from "expo-router";
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
 	FlatList,
 	Image,
 	KeyboardAvoidingView,
+	Linking,
+	Modal,
 	Platform,
 	Text,
+	TouchableOpacity,
 	View,
 } from "react-native";
 import "dayjs/locale/fr";
+import * as DocumentPicker from 'expo-document-picker';
+import * as FileSystem from 'expo-file-system';
+import * as ImagePicker from 'expo-image-picker';
+import ImageView from "react-native-image-viewing";
+
+import Pdf from 'react-native-pdf';
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/text-input";
@@ -23,14 +31,26 @@ import {
 	useSendMessage,
 } from "@/network/chat";
 import { useFetchUserProfile } from "@/network/user-profile";
+import { Ionicons } from "@expo/vector-icons";
+import { useQuery } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 
 dayjs.locale("fr");
 
-const ChatComponent = () => {
+export default function ChatView() {
 	const navigation = useNavigation();
 	const queryClient = useQueryClient();
 	const [message, setMessage] = useState("");
+	const [isImageViewerVisible, setIsImageViewerVisible] = useState(false);
+	const [selectedImageUri, setSelectedImageUri] = useState("");
+	const [isPdfViewerVisible, setIsPdfViewerVisible] = useState(false);
+	const [selectedPdfUri, setSelectedPdfUri] = useState("");
+
+	const flatListRef = useRef<FlatList>(null);
+	const [isFirstLoad, setIsFirstLoad] = useState(true);
+
 	const { chatId } = useLocalSearchParams();
+	console.log("--------------> CHAT ID", chatId);
 	const { data: messages } = useFetchMessages(chatId as string);
 	const { data: profile } = useFetchUserProfile();
 	const { mutate: sendMessage } = useSendMessage();
@@ -78,9 +98,6 @@ const ChatComponent = () => {
 			};
 		},
 	});
-
-	const flatListRef = React.useRef<FlatList>(null);
-	const [isFirstLoad, setIsFirstLoad] = useState(true);
 
 	useLayoutEffect(() => {
 		if (conversation && profile) {
@@ -156,12 +173,105 @@ const ChatComponent = () => {
 		}, 100);
 	};
 
+	const handleAttachFile = async () => {
+		try {
+			const result = await DocumentPicker.getDocumentAsync({
+				type: "application/pdf",
+				copyToCacheDirectory: true,
+			});
+
+			if (result.assets?.[0]) {
+				const asset = result.assets[0];
+				// Convert file to base64
+				const base64 = await FileSystem.readAsStringAsync(asset.uri, {
+					encoding: FileSystem.EncodingType.Base64,
+				});
+
+				sendMessage({
+					conversationId: chatId as string,
+					content: "📎 PDF Document",
+					attachment: {
+						base64,
+						type: "pdf",
+						fileName: asset.name,
+					},
+				});
+			}
+		} catch (error) {
+			console.error("Error picking document:", error);
+		}
+	};
+
+	const handleAttachImage = async () => {
+		try {
+			const result = await ImagePicker.launchImageLibraryAsync({
+				mediaTypes: ImagePicker.MediaTypeOptions.Images,
+				base64: true,
+				quality: 0.7,
+			});
+
+			if (!result.canceled && result.assets[0]) {
+				const asset = result.assets[0];
+				sendMessage({
+					conversationId: chatId as string,
+					content: "📷 Image",
+					attachment: {
+						base64: asset.base64 || "",
+						type: "image",
+						fileName: `image_${Date.now()}.jpg`,
+					},
+				});
+			}
+		} catch (error) {
+			console.error("Error picking image:", error);
+		}
+	};
+
 	return (
 		<KeyboardAvoidingView
 			behavior={Platform.OS === "ios" ? "padding" : "height"}
 			className="flex-1 bg-black"
 			keyboardVerticalOffset={Platform.OS === "ios" ? 120 : 0}
 		>
+			<ImageView
+				images={[{ uri: selectedImageUri }]}
+				imageIndex={0}
+				visible={isImageViewerVisible}
+				onRequestClose={() => setIsImageViewerVisible(false)}
+			/>
+			<Modal
+				visible={isPdfViewerVisible}
+				onRequestClose={() => setIsPdfViewerVisible(false)}
+				animationType="slide"
+			>
+				<View className="flex-1 bg-black">
+					<View className="flex-row justify-between items-center p-4 bg-gray-800">
+						<TouchableOpacity 
+							onPress={() => setIsPdfViewerVisible(false)}
+							className="p-2"
+						>
+							<Ionicons name="close" size={24} color="white" />
+						</TouchableOpacity>
+						<TouchableOpacity 
+							onPress={() => Linking.openURL(selectedPdfUri)}
+							className="p-2"
+						>
+							<Ionicons name="download-outline" size={24} color="white" />
+						</TouchableOpacity>
+					</View>
+
+					<Pdf
+						source={{ uri: selectedPdfUri }}
+						style={{ flex: 1, backgroundColor: 'black' }}
+						onLoadComplete={(numberOfPages, filePath) => {
+							console.log(`Number of pages: ${numberOfPages}`);
+						}}
+						onError={(error) => {
+							console.log(error);
+						}}
+					/>
+				</View>
+			</Modal>
 			<View className="flex-1">
 				<FlatList
 					ref={flatListRef}
@@ -196,6 +306,35 @@ const ChatComponent = () => {
 								}`}
 							>
 								<Text className="text-white">{item.content}</Text>
+								{item.has_attachment && item.attachment_url && (
+									item.attachment_type === "image" ? (
+										<TouchableOpacity 
+											onPress={() => {
+												setSelectedImageUri(formatPicturesUri("conversations", item.attachment_url));
+												setIsImageViewerVisible(true);
+											}}
+										>
+											<Image
+												source={{
+													uri: formatPicturesUri("conversations", item.attachment_url),
+												}}
+												className="w-48 h-48 rounded-md"
+												resizeMode="cover"
+											/>
+										</TouchableOpacity>
+									) : (
+										<TouchableOpacity 
+											className="bg-gray-600 p-2 rounded-md"
+											onPress={() => {
+												const pdfUri = formatPicturesUri("conversations", item.attachment_url);
+												setSelectedPdfUri(pdfUri);
+												setIsPdfViewerVisible(true);
+											}}
+										>
+											<Text className="text-white">📎 View PDF</Text>
+										</TouchableOpacity>
+									)
+								)}
 								<Text
 									className={`text-xs ${
 										item.sender_id === profile?.user_id
@@ -213,6 +352,14 @@ const ChatComponent = () => {
 					keyExtractor={(item) => item.id}
 				/>
 				<View className="p-4 flex flex-row items-center gap-2">
+					<View className="flex-row gap-2">
+						<TouchableOpacity onPress={handleAttachImage}>
+							<Ionicons name="image" size={24} color="white" />
+						</TouchableOpacity>
+						<TouchableOpacity onPress={handleAttachFile}>
+							<Ionicons name="document" size={24} color="white" />
+						</TouchableOpacity>
+					</View>
 					<View className="flex-1">
 						<Input
 							name="inputMessage"
@@ -233,5 +380,3 @@ const ChatComponent = () => {
 		</KeyboardAvoidingView>
 	);
 };
-
-export default ChatComponent;
