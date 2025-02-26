@@ -55,8 +55,11 @@ const ChatListComponent = () => {
 	};
 
 	const getConversationPicture = (conversation: {
+		title: string;
 		participants: {
+			pseudo: string;
 			profile_picture_url: string;
+			user_id: string;
 		}[];
 	}) => {
 		const otherParticipants = conversation.participants
