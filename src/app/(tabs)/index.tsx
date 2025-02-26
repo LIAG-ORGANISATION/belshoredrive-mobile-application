@@ -66,75 +66,77 @@ export default function TabOneScreen() {
 				<CompleteProfileCta step={isProfileComplete as string} />
 			)}
 
-			<FlashList
-				data={vehicles}
-				estimatedItemSize={500}
-				className={`w-full ${isProfileComplete ? "mt-0" : "mt-3"}`}
-				refreshControl={
-					<RefreshControl
-						refreshing={isFetching}
-						onRefresh={refetch}
-						tintColor="white"
-					/>
-				}
-				renderItem={({ item }) => (
-					<Pressable
-						className="rounded-2xl mb-4 relative h-[500px] w-[100%]"
-						onPress={() => {
-							router.replace({
-								pathname: "/create-vehicle/[vehicleId]",
-								params: { vehicleId: item.vehicle_id },
-							});
-						}}
-					>
-						{item.media && item.media.length > 0 && (
-							<View className="w-full h-full">
-								<Image
-									source={{
-										uri: formatPicturesUri("vehicles", item.media[0]),
-									}}
-									className="w-full h-full rounded-2xl"
-									resizeMode="cover"
-								/>
-								<LinearGradient
-									colors={["transparent", "rgba(0,0,0,0.8)"]}
-									className="absolute bottom-0 w-full h-1/3 rounded-b-lg"
-								/>
-							</View>
-						)}
-						<View className="absolute bottom-4 left-4 right-4">
-							{item.nickname && (
-								<Text className="text-white font-semibold">
-									{item.nickname}
-								</Text>
-							)}
-							<Text className="text-white text-lg font-bold">
-								{item.year} {item.brands?.name} {item.model}
-							</Text>
-
-							{/* Add owner information */}
-							<View className="flex-row items-center mt-4">
-								{item.user_profiles?.profile_picture_url && (
+			<View className="w-full flex-1">
+				<FlashList
+					data={vehicles}
+					estimatedItemSize={500}
+					className={`w-full ${isProfileComplete ? "mt-0" : "mt-3"}`}
+					refreshControl={
+						<RefreshControl
+							refreshing={isFetching}
+							onRefresh={refetch}
+							tintColor="white"
+						/>
+					}
+					renderItem={({ item }) => (
+						<Pressable
+							className="rounded-2xl mb-4 relative h-[500px] w-[100%]"
+							onPress={() => {
+								router.replace({
+									pathname: "/create-vehicle/[vehicleId]",
+									params: { vehicleId: item.vehicle_id },
+								});
+							}}
+						>
+							{item.media && item.media.length > 0 && (
+								<View className="w-full h-full">
 									<Image
 										source={{
-											uri: formatPicturesUri(
-												"profile_pictures",
-												item.user_profiles.profile_picture_url,
-											),
+											uri: formatPicturesUri("vehicles", item.media[0]),
 										}}
-										className="w-6 h-6 rounded-full mr-2"
+										className="w-full h-full rounded-2xl"
+										resizeMode="cover"
 									/>
+									<LinearGradient
+										colors={["transparent", "rgba(0,0,0,0.8)"]}
+										className="absolute bottom-0 w-full h-1/3 rounded-b-lg"
+									/>
+								</View>
+							)}
+							<View className="absolute bottom-4 left-4 right-4">
+								{item.nickname && (
+									<Text className="text-white font-semibold">
+										{item.nickname}
+									</Text>
 								)}
-								<Text className="text-white text-sm">
-									{item.user_profiles?.pseudo || "Unknown User"}
+								<Text className="text-white text-lg font-bold">
+									{item.year} {item.brands?.name} {item.model}
 								</Text>
+
+								{/* Add owner information */}
+								<View className="flex-row items-center mt-4">
+									{item.user_profiles?.profile_picture_url && (
+										<Image
+											source={{
+												uri: formatPicturesUri(
+													"profile_pictures",
+													item.user_profiles.profile_picture_url,
+												),
+											}}
+											className="w-6 h-6 rounded-full mr-2"
+										/>
+									)}
+									<Text className="text-white text-sm">
+										{item.user_profiles?.pseudo || "Unknown User"}
+									</Text>
+								</View>
 							</View>
-						</View>
-					</Pressable>
-				)}
-				onEndReached={() => fetchNextPage()}
-				onEndReachedThreshold={0.5}
-			/>
+						</Pressable>
+					)}
+					onEndReached={() => fetchNextPage()}
+					onEndReachedThreshold={0.5}
+				/>
+			</View>
 		</View>
 	);
 }
