@@ -2,7 +2,6 @@ import dayjs from "dayjs";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
-	FlatList,
 	Image,
 	KeyboardAvoidingView,
 	Linking,
@@ -33,6 +32,7 @@ import {
 } from "@/network/chat";
 import { useFetchUserProfile } from "@/network/user-profile";
 import { Ionicons } from "@expo/vector-icons";
+import { FlashList } from "@shopify/flash-list";
 import { useQuery } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -47,8 +47,7 @@ export default function ChatView() {
 	const [isPdfViewerVisible, setIsPdfViewerVisible] = useState(false);
 	const [selectedPdfUri, setSelectedPdfUri] = useState("");
 
-	const flatListRef = useRef<FlatList>(null);
-	const [isFirstLoad, setIsFirstLoad] = useState(true);
+	const flashListRef = useRef<FlashList<any>>(null);
 
 	const { chatId } = useLocalSearchParams();
 	const { data: messages } = useFetchMessages(chatId as string);
@@ -151,11 +150,10 @@ export default function ChatView() {
 	}, [messages]);
 
 	useEffect(() => {
-		if (messages && messages.length > 0 && isFirstLoad) {
-			setTimeout(() => {
-				flatListRef.current?.scrollToEnd({ animated: false });
-				setIsFirstLoad(false);
-			}, 100);
+		if (messages && messages.length > 0) {
+			requestAnimationFrame(() => {
+				flashListRef.current?.scrollToEnd({ animated: false });
+			});
 		}
 	}, [messages]);
 
@@ -168,9 +166,9 @@ export default function ChatView() {
 		});
 
 		setMessage("");
-		setTimeout(() => {
-			flatListRef.current?.scrollToEnd({ animated: true });
-		}, 100);
+		requestAnimationFrame(() => {
+			flashListRef.current?.scrollToEnd({ animated: true });
+		});
 	};
 
 	const handleAttachFile = async () => {
@@ -273,9 +271,10 @@ export default function ChatView() {
 				</SafeAreaView>
 			</Modal>
 			<View className="flex-1">
-				<FlatList
-					ref={flatListRef}
+				<FlashList
+					ref={flashListRef}
 					data={messages}
+					estimatedItemSize={100}
 					keyboardShouldPersistTaps="handled"
 					automaticallyAdjustKeyboardInsets={true}
 					contentContainerStyle={{ paddingBottom: 20 }}

@@ -2,11 +2,11 @@ import { Input } from "@/components/ui/text-input";
 import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
 import { useFetchConversations } from "@/network/chat";
 import { useFetchUserProfile } from "@/network/user-profile";
+import { FlashList } from "@shopify/flash-list";
 import { Link } from "expo-router";
 import { useMemo, useState } from "react";
 import {
 	ActivityIndicator,
-	FlatList,
 	Image,
 	Text,
 	TouchableOpacity,
@@ -73,8 +73,9 @@ const ChatListComponent = () => {
 				/>
 			</View>
 
-			<FlatList
+			<FlashList
 				data={filteredConversations}
+				estimatedItemSize={70}
 				renderItem={({ item }) => (
 					<Link href={`/(chats)/details/${item.id}`} asChild>
 						<TouchableOpacity className="p-4 flex flex-row justify-between items-center">
@@ -100,7 +101,6 @@ const ChatListComponent = () => {
 						</TouchableOpacity>
 					</Link>
 				)}
-				keyExtractor={(item) => item.id}
 			/>
 		</View>
 	);
