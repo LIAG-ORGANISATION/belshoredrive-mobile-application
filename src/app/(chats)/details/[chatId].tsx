@@ -16,6 +16,7 @@ import "dayjs/locale/fr";
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import ImageView from "react-native-image-viewing";
 import Pdf from 'react-native-pdf';
@@ -243,8 +244,8 @@ export default function ChatView() {
 				onRequestClose={() => setIsPdfViewerVisible(false)}
 				animationType="slide"
 			>
-				<View className="flex-1 bg-black">
-					<View className="flex-row justify-between items-center p-4 bg-gray-800">
+				<SafeAreaView className="flex-1 bg-black pt-10">
+					<View className="flex-row justify-between items-center p-4">
 						<TouchableOpacity 
 							onPress={() => setIsPdfViewerVisible(false)}
 							className="p-2"
@@ -269,7 +270,7 @@ export default function ChatView() {
 							console.log(error);
 						}}
 					/>
-				</View>
+				</SafeAreaView>
 			</Modal>
 			<View className="flex-1">
 				<FlatList
