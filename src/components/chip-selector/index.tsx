@@ -1,13 +1,14 @@
 import { Chip } from "@/components/ui/chip";
 import { SearchIcon } from "@/components/vectors/search";
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import { FlashList, MasonryFlashList, } from "@shopify/flash-list";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
 	type Control,
 	type FieldValues,
 	type Path,
 	useController,
 } from "react-hook-form";
-import { FlatList, View } from "react-native";
+import { View } from "react-native";
 import { SkeletonText } from "../ui/skeleton-text";
 import { Input } from "../ui/text-input";
 type DefaultItemType = {
@@ -90,26 +91,6 @@ export const ChipSelector = <
 		]);
 	}, [items]);
 
-	const TypeFilters = React.memo(() => (
-		<FlatList
-			data={types}
-			contentContainerClassName="h-full flex flex-row flex-nowrap gap-3 mb-6"
-			horizontal
-			numColumns={1}
-			renderItem={({ item }) => (
-				<View key={item as string}>
-					<Chip
-						isFilter
-						label={item.charAt(0).toUpperCase() + item.slice(1)}
-						onPress={() => toggleType(item as string)}
-						isSelected={selectedType === item.toLowerCase()}
-					/>
-				</View>
-			)}
-			keyExtractor={(item) => item as string}
-		/>
-	));
-
 	const filterItems = useCallback(
 		(itemsToFilter: ItemType[] | undefined) => {
 			if (!itemsToFilter) return itemsByType[selectedType];
@@ -130,33 +111,19 @@ export const ChipSelector = <
 		[items, itemsByType, selectedType, filterItems],
 	);
 
-	const renderItem = useCallback(
-		({ item }: { item: ItemType }) => (
-			<Chip
-				key={item.id}
-				label={
-					item.department_number
-						? `${item.department_number} - ${item.name || "Unnamed department"}`
-						: item.name
-				}
-				isSelected={(field.value || ([] as string[])).includes(item.id)}
-				onPress={() => toggleItem(item.id)}
-			/>
-		),
-		[field.value, toggleItem],
+	const renderItem = ({ item }: { item: ItemType }) => (
+			<View className="mb-2 mx-1">
+				<Chip
+					label={
+						item.department_number
+							? `${item.department_number} - ${item.name || "Unnamed department"}`
+							: item.name
+					}
+					isSelected={(field.value || ([] as string[])).includes(item.id)}
+					onPress={() => toggleItem(item.id)}
+				/>
+			</View>
 	);
-
-	const flatListProps = {
-		removeClippedSubviews: true,
-		maxToRenderPerBatch: 10,
-		windowSize: 5,
-		initialNumToRender: 10,
-		getItemLayout: (data, index) => ({
-			length: 40, // Approximate height of each item
-			offset: 40 * index,
-			index,
-		}),
-	};
 
 	if (items.length === 0) {
 		return (
@@ -167,7 +134,7 @@ export const ChipSelector = <
 	}
 
 	return (
-		<View className="flex-1">
+		<View className="flex-1 w-full">
 			{haveSearch && (
 				<Input
 					name="search"
@@ -179,16 +146,35 @@ export const ChipSelector = <
 				/>
 			)}
 
-			{items[0]?.type && <TypeFilters />}
+			{items[0]?.type && (
+				<View className="flex flex-row flex-wrap gap-2 pb-4">
+					<FlashList
+						data={types}
+						horizontal
+						estimatedItemSize={100}
+						renderItem={({ item }) => (
+							<View className="mx-1">
+								<Chip
+									isFilter
+									label={item.charAt(0).toUpperCase() + item.slice(1)}
+									onPress={() => toggleType(item as string)}
+									isSelected={selectedType === item.toLowerCase()}
+								/>
+							</View>
+						)}
+					/>
+				</View>
+			)}
 
-			<FlatList
+			<MasonryFlashList
 				data={filteredData}
+				numColumns={3}
 				contentContainerClassName="flex flex-row flex-wrap gap-2 pb-4"
-				numColumns={1}
+				estimatedItemSize={40}
 				renderItem={renderItem}
 				keyExtractor={(item) => item.id}
-				{...flatListProps}
 			/>
+
 		</View>
 	);
 };

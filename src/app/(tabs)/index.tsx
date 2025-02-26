@@ -2,13 +2,12 @@ import { CompleteProfileCta } from "@/components/ui/complete-profile-cta";
 import { SkeletonVehicleCard } from "@/components/ui/skeleton-vehicle-card";
 import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
 import { useVehicles } from "@/network/vehicles";
+import { FlashList } from "@shopify/flash-list";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams } from "expo-router";
 import { router } from "expo-router";
 import { cssInterop } from "nativewind";
-import { Fragment } from "react";
 import {
-	FlatList,
 	Image,
 	Pressable,
 	RefreshControl,
@@ -36,15 +35,15 @@ export default function TabOneScreen() {
 
 	if (isLoading) {
 		return (
-			<View className="flex-1 bg-black text-white mt-5">
+			<View className="flex-1 bg-black text-white mt-5 w-full">
 				{isProfileComplete !== "true" && (
 					<CompleteProfileCta step={isProfileComplete as string} />
 				)}
-				<FlatList
+				<FlashList
 					data={[1, 2, 3]} // Show 3 skeleton items
-					className={`w-full ${isProfileComplete ? "mt-0" : "mt-3"}`}
+					estimatedItemSize={500}
+					className={`w-full h-[500px] ${isProfileComplete ? "mt-0" : "mt-3"}`}
 					renderItem={() => <SkeletonVehicleCard />}
-					keyExtractor={(_, index) => `skeleton-${index}`}
 				/>
 			</View>
 		);
@@ -62,13 +61,14 @@ export default function TabOneScreen() {
 	const vehicles = vehiclesPages?.pages.flat() ?? [];
 
 	return (
-		<View className="flex-1 items-center justify-start bg-black text-white mt-5">
+		<View className="flex-1 items-center justify-start bg-black text-white mt-5 w-full px-4">
 			{isProfileComplete !== "true" && (
 				<CompleteProfileCta step={isProfileComplete as string} />
 			)}
 
-			<FlatList
+			<FlashList
 				data={vehicles}
+				estimatedItemSize={500}
 				className={`w-full ${isProfileComplete ? "mt-0" : "mt-3"}`}
 				refreshControl={
 					<RefreshControl
@@ -79,7 +79,7 @@ export default function TabOneScreen() {
 				}
 				renderItem={({ item }) => (
 					<Pressable
-						className="rounded-2xl mb-4 relative h-[500px]"
+						className="rounded-2xl mb-4 relative h-[500px] w-[100%]"
 						onPress={() => {
 							router.replace({
 								pathname: "/create-vehicle/[vehicleId]",
@@ -88,7 +88,7 @@ export default function TabOneScreen() {
 						}}
 					>
 						{item.media && item.media.length > 0 && (
-							<Fragment>
+							<View className="w-full h-full">
 								<Image
 									source={{
 										uri: formatPicturesUri("vehicles", item.media[0]),
@@ -100,7 +100,7 @@ export default function TabOneScreen() {
 									colors={["transparent", "rgba(0,0,0,0.8)"]}
 									className="absolute bottom-0 w-full h-1/3 rounded-b-lg"
 								/>
-							</Fragment>
+							</View>
 						)}
 						<View className="absolute bottom-4 left-4 right-4">
 							{item.nickname && (
@@ -132,7 +132,6 @@ export default function TabOneScreen() {
 						</View>
 					</Pressable>
 				)}
-				keyExtractor={(item) => item.vehicle_id}
 				onEndReached={() => fetchNextPage()}
 				onEndReachedThreshold={0.5}
 			/>

@@ -82,14 +82,12 @@ export const UpdateBrands = ({
 				</View>
 			) : (
 				<Fragment>
-					<View className="flex-1">
-						<ChipSelector<FavoriteBrandsType, ExtractId<BrandsType, "brand_id">>
-							name="favorite_vehicle_brands"
-							control={control}
-							items={mapToId(brands, "brand_id")}
-							haveSearch={true}
-						/>
-					</View>
+					<ChipSelector<FavoriteBrandsType, ExtractId<BrandsType, "brand_id">>
+						name="favorite_vehicle_brands"
+						control={control}
+						items={mapToId(brands, "brand_id")}
+						haveSearch={true}
+					/>
 
 					<View className="absolute bottom-0 w-full px-4 pb-10 pt-4 bg-black z-50 inset-x-0">
 						<Button
