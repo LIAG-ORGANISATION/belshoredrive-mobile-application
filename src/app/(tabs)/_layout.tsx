@@ -165,6 +165,10 @@ export default function TabLayout() {
 						headerShown: false,
 						headerStyle: { backgroundColor: "#000" },
 						headerTitle: "",
+						sceneStyle: {
+							paddingHorizontal: 12,
+							backgroundColor: "#000",
+						},
 						tabBarIcon: ({ color }) => (
 							<View className="w-full">
 								<Pressable
@@ -214,6 +218,7 @@ export default function TabLayout() {
 						headerShown: true,
 						title: "Mon profil",
 						sceneStyle: {
+							paddingHorizontal: 12,
 							backgroundColor: "#000",
 						},
 						headerTitleAlign: "center",

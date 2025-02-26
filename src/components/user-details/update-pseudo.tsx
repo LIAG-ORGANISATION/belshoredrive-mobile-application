@@ -76,7 +76,7 @@ export const UpdatePseudo = ({
 			behavior={Platform.OS === "ios" ? "padding" : "height"}
 			className="flex-1"
 		>
-			<View className="w-full flex-1 items-start justify-between pt-2 pb-safe-offset-20 px-safe-offset-6 bg-black">
+			<View className="w-full flex-1 items-start justify-between pt-2 pb-safe-offset-20 bg-black px-3">
 				<View className="w-full flex-1 gap-2">
 					{title && (
 						<Text className="text-white text-2xl font-bold">{title}</Text>

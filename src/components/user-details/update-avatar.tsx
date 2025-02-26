@@ -185,7 +185,7 @@ export const PickAvatar = ({
 	};
 
 	return (
-		<View className="w-full h-fit max-h-screen flex-1 items-start justify-between pb-safe-offset-4 px-2 bg-black">
+		<View className="w-full h-fit max-h-screen flex-1 items-start justify-between pb-safe-offset-4 bg-black">
 			{title && <Text className="text-white text-2xl font-bold">{title}</Text>}
 			<View className="w-full flex-1 flex-col items-center justify-between gap-4">
 				<GestureHandlerRootView className="w-full aspect-square">

@@ -86,7 +86,7 @@ export const UpdateProfile = ({
 	return (
 		<View
 			className={
-				"w-full h-fit max-h-screen flex-1 items-start justify-between pb-safe-offset-4 px-safe-offset-6 bg-black"
+				"w-full h-fit max-h-screen flex-1 items-start justify-between pb-safe-offset-4 bg-black px-3"
 			}
 		>
 			<View className="w-full flex-col items-start justify-between gap-4">

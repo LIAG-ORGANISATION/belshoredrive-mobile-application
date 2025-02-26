@@ -85,7 +85,7 @@ export default function SearchScreen() {
 	);
 
 	return (
-		<View className="flex-1 bg-black p-safe-offset-2 relative">
+		<View className="flex-1 bg-black py-safe-offset-2 relative">
 			<Input
 				name="search"
 				placeholder="Rechercher un utilisateur..."
