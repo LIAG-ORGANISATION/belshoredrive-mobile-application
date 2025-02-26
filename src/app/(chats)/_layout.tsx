@@ -1,4 +1,3 @@
-
 import { useFetchUserProfile } from "@/network/user-profile";
 import { Ionicons } from "@expo/vector-icons";
 import { Stack, router, useLocalSearchParams } from "expo-router";
@@ -50,13 +49,11 @@ export default function ChatsLayout() {
 							headerShown: true,
 							headerStyle: { backgroundColor: "#000" },
 							headerTintColor: "white",
-							headerTitle: ({ children }) => {
-								return (
-									<Text className="text-white text-lg font-bold">
-										{params.title || children}
-									</Text>
-								);
-							},
+							headerTitle: ({ children }) => (
+								<Text className="text-white text-lg font-bold">
+									{params.title || children}
+								</Text>
+							),
 							headerLeft: () => (
 								<Ionicons
 									name="chevron-back"

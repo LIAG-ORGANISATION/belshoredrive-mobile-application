@@ -15,9 +15,9 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export { ErrorBoundary } from "expo-router";
 
-// import { LogBox } from "react-native";
+import { LogBox } from "react-native";
 
-// LogBox.ignoreLogs(["new NativeEventEmitter"]);
+LogBox.ignoreLogs(["new NativeEventEmitter"]);
 
 export const unstable_settings = {
 	initialRouteName: "/index",

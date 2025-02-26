@@ -93,7 +93,7 @@ export const UserDetails = ({ userId }: { userId: string }) => {
 			{isCurrentUser && renderAddChip({ onPress: onAddPress })}
 		</View>
 	);
-	console.log(isCurrentUser);
+
 	return (
 		<View className="flex flex-col gap-4 h-full pb-10">
 			<View className="flex flex-row gap-2">

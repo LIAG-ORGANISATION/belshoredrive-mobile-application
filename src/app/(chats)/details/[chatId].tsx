@@ -16,8 +16,8 @@ import "dayjs/locale/fr";
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
-import ImageView from "react-native-image-viewing";
 
+import ImageView from "react-native-image-viewing";
 import Pdf from 'react-native-pdf';
 
 import { Button } from "@/components/ui/button";
@@ -50,7 +50,6 @@ export default function ChatView() {
 	const [isFirstLoad, setIsFirstLoad] = useState(true);
 
 	const { chatId } = useLocalSearchParams();
-	console.log("--------------> CHAT ID", chatId);
 	const { data: messages } = useFetchMessages(chatId as string);
 	const { data: profile } = useFetchUserProfile();
 	const { mutate: sendMessage } = useSendMessage();

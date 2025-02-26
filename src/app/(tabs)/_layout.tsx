@@ -61,8 +61,6 @@ export default function TabLayout() {
 		return <Text>No profile found</Text>;
 	}
 
-	console.log("profile", JSON.stringify(profile, null, 2));
-
 	return (
 		<View className="flex-1 w-full">
 			<Tabs
