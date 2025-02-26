@@ -43,17 +43,18 @@ import { SkeletonText } from "../ui/skeleton-text";
 export const ProfileComponent = ({
 	userId,
 	isCurrentUser,
-}: { userId: string; isCurrentUser: boolean }) => {
+	showDraftVehicles,
+}: { userId: string; isCurrentUser: boolean; showDraftVehicles: boolean }) => {
 	const bottomSheetRef = useRef<BottomSheet>(null);
 
 	const { initialTab } = useLocalSearchParams();
 
 	const { data: profile, isLoading: isProfileLoading } =
 		useFetchUserProfileById(userId as string);
-	const { data: vehicles } = useUserVehicles(userId as string);
-	const { data: followersCount } = useFollowersCount(userId as string);
-	const { data: followingCount } = useFollowingCount(userId as string);
-	const { data: isFollowing } = useIsFollowing(userId as string);
+	const { data: vehicles } = useUserVehicles(userId, showDraftVehicles);
+	const { data: followersCount } = useFollowersCount(userId);
+	const { data: followingCount } = useFollowingCount(userId);
+	const { data: isFollowing } = useIsFollowing(userId);
 	const { mutate: createChat } = useCreateConversation();
 
 	const { mutate: followUser } = useFollowUser();
@@ -144,14 +145,14 @@ export const ProfileComponent = ({
 					<View className="flex flex-row gap-2">
 						<ExternalLink
 							href={`https://${profile?.website}`}
-						className="text-sm text-gray-400"
-					>
-						<View className="flex flex-row gap-2 items-center">
-							<LinkIcon />
-							<Text className="text-sm font-semibold text-[#A1BDCA]">
-								Visitez mon site web
-							</Text>
-						</View>
+							className="text-sm text-gray-400"
+						>
+							<View className="flex flex-row gap-2 items-center">
+								<LinkIcon />
+								<Text className="text-sm font-semibold text-[#A1BDCA]">
+									Visitez mon site web
+								</Text>
+							</View>
 						</ExternalLink>
 					</View>
 				)}
@@ -259,11 +260,7 @@ export const ProfileComponent = ({
 									<Text className="text-white">Aucun véhicule trouvé</Text>
 								)}
 								{vehicles?.map((item) => (
-									<VehicleCard
-										key={item.vehicle_id}
-										item={item}
-										user={profile}
-									/>
+									<VehicleCard key={item.vehicle_id} item={item} />
 								))}
 							</View>
 						),

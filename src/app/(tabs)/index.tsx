@@ -7,13 +7,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams } from "expo-router";
 import { router } from "expo-router";
 import { cssInterop } from "nativewind";
-import {
-	Image,
-	Pressable,
-	RefreshControl,
-	Text,
-	View,
-} from "react-native";
+import { Image, Pressable, RefreshControl, Text, View } from "react-native";
 
 cssInterop(LinearGradient, {
 	className: {

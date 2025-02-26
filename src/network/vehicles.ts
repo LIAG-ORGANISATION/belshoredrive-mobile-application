@@ -139,11 +139,12 @@ export function useVehicles() {
 // Fetch vehicles by user
 export function useUserVehicles(
 	userId: string,
+	showDraftVehicles: boolean,
 ): UseQueryResult<VehicleWithComments[]> {
 	return useQuery({
 		queryKey: QueryKeys.USER_VEHICLES(userId),
 		queryFn: async () => {
-			const { data, error } = await supabase
+			let query = supabase
 				.from("vehicles")
 				.select(`
           *,
@@ -156,6 +157,13 @@ export function useUserVehicles(
         `)
 				.eq("user_id", userId)
 				.order("created_at", { ascending: false });
+
+			// Only filter by is_published if we're not showing drafts
+			if (!showDraftVehicles) {
+				query = query.eq("is_published", true);
+			}
+
+			const { data, error } = await query;
 
 			if (error) throw error;
 			return data;

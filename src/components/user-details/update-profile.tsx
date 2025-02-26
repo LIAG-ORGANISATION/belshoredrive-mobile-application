@@ -13,7 +13,7 @@ import {
 } from "@/network/user-profile";
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import { Picker } from "@react-native-picker/picker";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Modal, Pressable, Text, View } from "react-native";
 import { ScrollView } from "react-native";
@@ -131,7 +131,7 @@ export const UpdateProfile = ({
 						control={control}
 						name="birth_year"
 						render={({ field: { onChange, onBlur, value } }) => (
-							<>
+							<Fragment>
 								<Pressable
 									className="w-full h-12 border border-white/20  bg-white/15 rounded-lg justify-center px-4"
 									onPress={() => setShowPicker(true)}
@@ -180,7 +180,7 @@ export const UpdateProfile = ({
 										</View>
 									</View>
 								</Modal>
-							</>
+							</Fragment>
 						)}
 					/>
 				</View>

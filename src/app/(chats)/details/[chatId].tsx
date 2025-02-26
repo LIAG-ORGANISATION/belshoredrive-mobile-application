@@ -12,13 +12,13 @@ import {
 	View,
 } from "react-native";
 import "dayjs/locale/fr";
-import * as DocumentPicker from 'expo-document-picker';
-import * as FileSystem from 'expo-file-system';
-import * as ImagePicker from 'expo-image-picker';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import * as DocumentPicker from "expo-document-picker";
+import * as FileSystem from "expo-file-system";
+import * as ImagePicker from "expo-image-picker";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import ImageView from "react-native-image-viewing";
-import Pdf from 'react-native-pdf';
+import Pdf from "react-native-pdf";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/text-input";
@@ -38,6 +38,19 @@ import { useQueryClient } from "@tanstack/react-query";
 
 dayjs.locale("fr");
 
+interface Message {
+	id: string;
+	content: string;
+	sender_id: string;
+	created_at: string;
+	has_attachment: boolean;
+	attachment_url?: string;
+	attachment_type?: 'image' | 'pdf';
+	sender: {
+		profile_picture_url: string;
+	};
+}
+
 export default function ChatView() {
 	const navigation = useNavigation();
 	const queryClient = useQueryClient();
@@ -47,10 +60,10 @@ export default function ChatView() {
 	const [isPdfViewerVisible, setIsPdfViewerVisible] = useState(false);
 	const [selectedPdfUri, setSelectedPdfUri] = useState("");
 
-	const flashListRef = useRef<FlashList<any>>(null);
+	const flashListRef = useRef<FlashList<Message>>(null);
 
 	const { chatId } = useLocalSearchParams();
-	const { data: messages } = useFetchMessages(chatId as string);
+	const { data: messages } = useFetchMessages(chatId as string) as { data: Message[] | undefined };
 	const { data: profile } = useFetchUserProfile();
 	const { mutate: sendMessage } = useSendMessage();
 	const { mutate: markConversationAsRead } = useMarkConversationAsRead();
@@ -244,13 +257,13 @@ export default function ChatView() {
 			>
 				<SafeAreaView className="flex-1 bg-black pt-10">
 					<View className="flex-row justify-between items-center p-4">
-						<TouchableOpacity 
+						<TouchableOpacity
 							onPress={() => setIsPdfViewerVisible(false)}
 							className="p-2"
 						>
 							<Ionicons name="close" size={24} color="white" />
 						</TouchableOpacity>
-						<TouchableOpacity 
+						<TouchableOpacity
 							onPress={() => Linking.openURL(selectedPdfUri)}
 							className="p-2"
 						>
@@ -260,7 +273,7 @@ export default function ChatView() {
 
 					<Pdf
 						source={{ uri: selectedPdfUri }}
-						style={{ flex: 1, backgroundColor: 'black' }}
+						style={{ flex: 1, backgroundColor: "black" }}
 						onLoadComplete={(numberOfPages, filePath) => {
 							console.log(`Number of pages: ${numberOfPages}`);
 						}}
@@ -305,35 +318,46 @@ export default function ChatView() {
 								}`}
 							>
 								<Text className="text-white">{item.content}</Text>
-								{item.has_attachment && item.attachment_url && (
-									item.attachment_type === "image" ? (
-										<TouchableOpacity 
+								{item.has_attachment &&
+									item.attachment_url &&
+									(item.attachment_type === "image" ? (
+										<TouchableOpacity
 											onPress={() => {
-												setSelectedImageUri(formatPicturesUri("conversations", item.attachment_url));
+												setSelectedImageUri(
+													formatPicturesUri(
+														"conversations",
+														item.attachment_url || "",
+													),
+												);
 												setIsImageViewerVisible(true);
 											}}
 										>
 											<Image
 												source={{
-													uri: formatPicturesUri("conversations", item.attachment_url),
+													uri: formatPicturesUri(
+														"conversations",
+														item.attachment_url || "",
+													),
 												}}
 												className="w-48 h-48 rounded-md"
 												resizeMode="cover"
 											/>
 										</TouchableOpacity>
 									) : (
-										<TouchableOpacity 
+										<TouchableOpacity
 											className="bg-gray-600 p-2 rounded-md"
 											onPress={() => {
-												const pdfUri = formatPicturesUri("conversations", item.attachment_url);
+												const pdfUri = formatPicturesUri(
+													"conversations",
+													item.attachment_url || "",
+												);
 												setSelectedPdfUri(pdfUri);
 												setIsPdfViewerVisible(true);
 											}}
 										>
 											<Text className="text-white">📎 View PDF</Text>
 										</TouchableOpacity>
-									)
-								)}
+									))}
 								<Text
 									className={`text-xs ${
 										item.sender_id === profile?.user_id
@@ -378,4 +402,4 @@ export default function ChatView() {
 			</View>
 		</KeyboardAvoidingView>
 	);
-};
+}

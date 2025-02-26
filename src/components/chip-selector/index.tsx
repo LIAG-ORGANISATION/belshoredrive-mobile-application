@@ -19,7 +19,10 @@ type DefaultItemType = {
 	type?: string;
 };
 
-type ChipSelectorProps<T extends FieldValues, ItemType extends DefaultItemType> = {
+type ChipSelectorProps<
+	T extends FieldValues,
+	ItemType extends DefaultItemType,
+> = {
 	name: Path<T>;
 	control: Control<T>;
 	items: ItemType[];
@@ -27,7 +30,10 @@ type ChipSelectorProps<T extends FieldValues, ItemType extends DefaultItemType> 
 	selectingType?: "multiple" | "single";
 };
 
-export const ChipSelector = <T extends FieldValues, ItemType extends DefaultItemType>({
+export const ChipSelector = <
+	T extends FieldValues,
+	ItemType extends DefaultItemType,
+>({
 	name,
 	control,
 	items,
@@ -41,17 +47,19 @@ export const ChipSelector = <T extends FieldValues, ItemType extends DefaultItem
 
 	const [types, setTypes] = useState<string[]>([]);
 	const [selectedType, setSelectedType] = useState("all");
-	const [itemsByType, setItemsByType] = useState<Record<string, ItemType[]>>({});
+	const [itemsByType, setItemsByType] = useState<Record<string, ItemType[]>>(
+		{},
+	);
 	const [searchQuery, setSearchQuery] = useState("");
 
 	const toggleItem = (itemId: string) => {
 		const currentSelection = field.value || ([] as string[]);
 		const newSelection =
-				selectingType === "multiple"
-					? currentSelection.includes(itemId)
-						? currentSelection.filter((id: string) => id !== itemId)
-						: [...currentSelection, itemId]
-					: itemId;
+			selectingType === "multiple"
+				? currentSelection.includes(itemId)
+					? currentSelection.filter((id: string) => id !== itemId)
+					: [...currentSelection, itemId]
+				: itemId;
 
 		field.onChange(newSelection);
 	};
@@ -63,29 +71,32 @@ export const ChipSelector = <T extends FieldValues, ItemType extends DefaultItem
 	const filterItems = (itemsToFilter: ItemType[]) => {
 		if (!itemsToFilter) return [];
 
-		return itemsToFilter.filter((item) =>
-			item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			(item.department_number?.toLowerCase() || "").includes(searchQuery.toLowerCase())
+		return itemsToFilter.filter(
+			(item) =>
+				item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+				(item.department_number?.toLowerCase() || "").includes(
+					searchQuery.toLowerCase(),
+				),
 		);
 	};
 
 	// Get the correct items based on selected type and apply search filter
 	const filteredData = filterItems(
-		selectedType === "all" ? items : itemsByType[selectedType] || []
+		selectedType === "all" ? items : itemsByType[selectedType] || [],
 	);
 
 	const renderItem = ({ item }: { item: ItemType }) => (
-			<View className="mb-2 mx-1">
-				<Chip
-					label={
-						item.department_number
-							? `${item.department_number} - ${item.name || "Unnamed department"}`
-							: item.name
-					}
-					isSelected={(field.value || ([] as string[])).includes(item.id)}
-					onPress={() => toggleItem(item.id)}
-				/>
-			</View>
+		<View className="mb-2 mx-1">
+			<Chip
+				label={
+					item.department_number
+						? `${item.department_number} - ${item.name || "Unnamed department"}`
+						: item.name
+				}
+				isSelected={(field.value || ([] as string[])).includes(item.id)}
+				onPress={() => toggleItem(item.id)}
+			/>
+		</View>
 	);
 
 	useEffect(() => {
@@ -104,7 +115,7 @@ export const ChipSelector = <T extends FieldValues, ItemType extends DefaultItem
 		setTypes([
 			"all",
 			...Object.keys(typeMap).map(
-				(type) => type.charAt(0).toUpperCase() + type.slice(1)
+				(type) => type.charAt(0).toUpperCase() + type.slice(1),
 			),
 		]);
 	}, [items]);

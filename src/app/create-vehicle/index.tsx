@@ -10,13 +10,7 @@ import * as ImagePicker from "expo-image-picker";
 import type { ImagePickerAsset } from "expo-image-picker";
 import { Link, router } from "expo-router";
 import { useEffect, useState } from "react";
-import {
-	Dimensions,
-	Image,
-	Pressable,
-	Text,
-	View,
-} from "react-native";
+import { Dimensions, Image, Pressable, Text, View } from "react-native";
 import {
 	Gesture,
 	GestureDetector,
