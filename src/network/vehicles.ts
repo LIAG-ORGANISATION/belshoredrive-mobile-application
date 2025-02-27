@@ -529,3 +529,18 @@ export function useFetchTransmissionTypes(typeId: string) {
 		},
 	});
 }
+
+export function useFetchVehicleTypes(): UseQueryResult<
+	Tables<"vehicle_types">[]
+> {
+	return useQuery({
+		queryKey: QueryKeys.VEHICLE_TYPES,
+		queryFn: async () => {
+			const { data, error } = await supabase.from("vehicle_types").select("*");
+
+			if (error) throw error;
+
+			return data;
+		},
+	});
+}

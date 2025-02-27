@@ -26,6 +26,7 @@ export const QueryKeys = {
 	VEHICLE_TAGS: ["vehicleTags"] as const,
 	MOTORIZATION_TYPES: ["motorizationTypes"] as const,
 	TRANSMISSION_TYPES: ["transmissionTypes"] as const,
+	VEHICLE_TYPES: ["vehicleTypes"] as const,
 
 	// Chat
 	MESSAGES: (conversationId: string) => ["messages", conversationId] as const,

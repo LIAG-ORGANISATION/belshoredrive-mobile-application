@@ -20,6 +20,7 @@ import {
 	useUpdateUserProfile,
 } from "@/network/user-profile";
 
+import { useFetchVehicleTypes } from "@/network/vehicles";
 import { v4 as uuidv4 } from "uuid";
 
 export type UpdateBrandsProps = {
@@ -31,12 +32,14 @@ export const UpdateBrands = ({
 	title,
 	onSubmitCallback,
 }: UpdateBrandsProps) => {
+	const { data: vehicleTypes, isLoading: loadingVehicleTypes } = useFetchVehicleTypes();
+	const { data: profile, isLoading: loadingProfile } = useFetchUserProfile();
 	const {
 		data: brands = [],
 		isLoading: loadingBrands,
 		error: brandsError,
 	} = useFetchBrands();
-	const { data: profile, isLoading: loadingProfile } = useFetchUserProfile();
+
 	const { mutate: updateProfile } = useUpdateUserProfile();
 
 	const {
