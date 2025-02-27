@@ -84,17 +84,15 @@ export const PartsDetails = ({
 		<KeyboardAvoidingView
 			behavior={Platform.OS === "ios" ? "padding" : "height"}
 			className="flex-1 bg-black"
-			keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
+			keyboardVerticalOffset={Platform.OS === "ios" ? 120 : 20}
 		>
-			<View
-				className={
-					"w-full h-fit max-h-screen flex-1 items-start justify-between pb-safe-offset-4 bg-black"
-				}
+			<ScrollView
+				className="flex-1 w-full"
+				contentContainerStyle={{ paddingBottom: 100, gap: 16 }}
+				showsVerticalScrollIndicator={false}
+				keyboardShouldPersistTaps="handled"
 			>
-				<ScrollView
-					className="w-full flex-1 flex-col gap-4"
-					contentContainerStyle={{ gap: 16 }}
-				>
+				<View className="flex-1 px-4">
 					<View className="flex-col w-full gap-1 ">
 						<Text className="text-white text-base font-semibold">
 							Motorisation
@@ -213,25 +211,23 @@ export const PartsDetails = ({
 								/>
 							</View>
 						</View>
-					</View>
-				</ScrollView>
+						<View className="w-full flex-col gap-4 mt-4">
+							<Button
+								className="w-full"
+								variant="secondary"
+								label="Continuer"
+								onPress={handleSubmit(onSubmit)}
+							/>
 
-				<View className="w-full flex-col gap-4">
-					<View className="w-full">
-						<Button
-							className="w-full"
-							variant="secondary"
-							label="Continuer"
-							onPress={handleSubmit(onSubmit)}
-						/>
+							<Link href="/(tabs)" asChild>
+								<Text className="text-white text-sm text-center font-semibold">
+									Passer cette étape
+								</Text>
+							</Link>
+						</View>
 					</View>
-					<Link href="/(tabs)" asChild>
-						<Text className="text-white text-sm text-center font-semibold">
-							Passer cette étape
-						</Text>
-					</Link>
 				</View>
-			</View>
+			</ScrollView>
 		</KeyboardAvoidingView>
 	);
 };

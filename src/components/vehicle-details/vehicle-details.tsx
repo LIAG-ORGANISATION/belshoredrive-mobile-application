@@ -17,7 +17,6 @@ import { ScrollView } from "react-native";
 import { Button } from "@/components/ui/button";
 import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
-import { Link } from "expo-router";
 import { Input } from "../ui/text-input";
 
 export const VehicleDetails = ({
@@ -508,24 +507,14 @@ export const VehicleDetails = ({
 								/>
 							</View>
 						</View>
-					</View>
-				</ScrollView>
-
-				<View className="w-full flex-col gap-4">
-					<View className="w-full">
 						<Button
-							className="w-full"
+							className="w-full mt-4"
 							variant="secondary"
 							label="Continuer"
 							onPress={handleSubmit(onSubmit)}
 						/>
 					</View>
-					<Link href={`/(create-vehicle)/${vehicleId}/parts-details`} asChild>
-						<Text className="text-white text-sm text-center font-semibold">
-							Passer cette étape
-						</Text>
-					</Link>
-				</View>
+				</ScrollView>
 			</View>
 		</KeyboardAvoidingView>
 	);
