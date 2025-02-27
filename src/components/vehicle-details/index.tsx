@@ -7,16 +7,22 @@ import {
 	useFetchVehicleStatuses,
 	useUpdateVehicle,
 } from "@/network/vehicles";
-import { valibotResolver } from "@hookform/resolvers/valibot";
-import { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { Modal, Pressable, Text, View } from "react-native";
-import { ScrollView } from "react-native";
-
-import { Button } from "@/components/ui/button";
 import { Ionicons } from "@expo/vector-icons";
+import { valibotResolver } from "@hookform/resolvers/valibot";
 import { Picker } from "@react-native-picker/picker";
 import { router } from "expo-router";
+import { Fragment, useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import {
+	KeyboardAvoidingView,
+	Modal,
+	Platform,
+	Pressable,
+	Text,
+	View,
+} from "react-native";
+import { ScrollView } from "react-native";
+import { Button } from "../ui/button";
 import { Input } from "../ui/text-input";
 
 export const VehicleProfile = ({
@@ -43,9 +49,12 @@ export const VehicleProfile = ({
 			description: "",
 			status_id: "",
 		},
-		mode: "onBlur",
+		mode: "onChange",
 		criteriaMode: "all",
+		delayError: 500,
 	});
+
+	const [isFormValid, setIsFormValid] = useState(false);
 
 	useEffect(() => {
 		if (vehicle) {
@@ -59,6 +68,14 @@ export const VehicleProfile = ({
 			});
 		}
 	}, [vehicle]);
+
+	useEffect(() => {
+		const timeoutId = setTimeout(() => {
+			setIsFormValid(isValid);
+		}, 1000);
+
+		return () => clearTimeout(timeoutId);
+	}, [isValid]);
 
 	const [showPicker, setShowPicker] = useState(false);
 	const [showStatusPicker, setShowStatusPicker] = useState(false);
@@ -92,251 +109,262 @@ export const VehicleProfile = ({
 	};
 
 	return (
-		<View
-			className={
-				"w-full h-fit max-h-screen flex-1 items-start justify-between pb-safe-offset-4 px-safe-offset-6 bg-black"
-			}
+		<KeyboardAvoidingView
+			behavior={Platform.OS === "ios" ? "padding" : "height"}
+			className="flex-1 bg-black"
+			keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
 		>
-			<View className="w-full flex-col items-start justify-between gap-4">
-				{title && (
-					<Text className="text-white text-2xl font-bold">{title}</Text>
-				)}
-			</View>
-
-			<ScrollView
-				className="w-full flex-1 flex-col gap-4"
-				contentContainerStyle={{ gap: 16 }}
+			<View
+				className={
+					"w-full flex-1 items-start justify-between pb-safe-offset-4 px-safe-offset-2 bg-black"
+				}
 			>
-				<View className="flex-col w-full gap-1 ">
-					<Text className="text-white text-lg font-semibold my-4">
-						Décrivez le véhicule
-					</Text>
-					<Text className="text-white text-base font-semibold">Marque</Text>
+				<View className="w-full flex-col items-start justify-between gap-4">
+					{title && (
+						<Text className="text-white text-2xl font-bold">{title}</Text>
+					)}
+				</View>
 
-					<Pressable
-						className="w-full h-12 border flex flex-row border-white/20  bg-white/15 rounded-lg justify-between items-center px-4"
-						onPress={() =>
-							router.push({
-								pathname: "/create-vehicle/[vehicleId]/choose-brand",
-								params: { vehicleId: vehicleId as string },
-							})
-						}
-					>
-						<Text
-							className={`${
-								vehicle?.brands?.name ? "text-white" : "text-white/50"
-							} text-base font-semibold`}
-						>
-							{vehicle?.brands?.name || "Marque"}
+				<ScrollView
+					className="w-full flex-1 flex-col"
+					contentContainerStyle={{
+						gap: 16,
+						paddingBottom: 24,
+					}}
+				>
+					<View className="flex-col w-full gap-1">
+						<Text className="text-white text-lg font-semibold my-4">
+							Décrivez le véhicule
 						</Text>
-						<Ionicons
-							name="add-circle-outline"
-							size={24}
-							color="white"
+						<Text className="text-white text-base font-semibold">Marque</Text>
+
+						<Pressable
+							className="w-full h-12 border flex flex-row border-white/20  bg-white/15 rounded-lg justify-between items-center px-4"
 							onPress={() =>
 								router.push({
-									pathname: "/create-vehicle/[vehicleId]/choose-brand",
+									pathname: "/(create-vehicle)/[vehicleId]/choose-brand",
 									params: { vehicleId: vehicleId as string },
 								})
 							}
+						>
+							<Text
+								className={`${
+									vehicle?.brands?.name ? "text-white" : "text-white/50"
+								} text-base font-semibold`}
+							>
+								{vehicle?.brands?.name || "Marque"}
+							</Text>
+							<Ionicons
+								name="add-circle-outline"
+								size={24}
+								color="white"
+								onPress={() =>
+									router.push({
+										pathname: "/(create-vehicle)/[vehicleId]/choose-brand",
+										params: { vehicleId: vehicleId as string },
+									})
+								}
+							/>
+						</Pressable>
+					</View>
+
+					<View className="flex-col w-full gap-1">
+						<Text className="text-white text-base font-semibold">Modèle</Text>
+						<Controller<CreateVehicleType>
+							control={control}
+							name="model"
+							render={({ field: { onChange, onBlur, value } }) => (
+								<Input
+									placeholder="Modèle"
+									name="model"
+									value={value as string}
+									onChangeText={onChange}
+									onBlur={onBlur}
+									placeholderTextColor="white"
+									error={errors.model}
+								/>
+							)}
 						/>
-					</Pressable>
-				</View>
-				<View className="flex-col w-full gap-1 ">
-					<Text className="text-white text-base font-semibold">Modèle</Text>
-					<Controller<CreateVehicleType>
-						control={control}
-						name="model"
-						render={({ field: { onChange, onBlur, value } }) => (
-							<Input
-								placeholder="Modèle"
-								name="model"
-								value={value as string}
-								onChangeText={onChange}
-								onBlur={onBlur}
-								placeholderTextColor="white"
-								error={errors.model}
-							/>
-						)}
-					/>
-				</View>
-				<View className="flex-col w-full gap-1 ">
-					<Text className="text-white text-base font-semibold">Année</Text>
-					<Controller<CreateVehicleType>
-						control={control}
-						name="year"
-						render={({ field: { onChange, onBlur, value } }) => (
-							<>
-								<Pressable
-									className="w-full h-12 border border-white/20  bg-white/15 rounded-lg justify-center px-4"
-									onPress={() => setShowPicker(true)}
-								>
-									<Text
-										className={`text-sm ${
-											!value ? "text-white/50" : "text-white"
-										}`}
+					</View>
+
+					<View className="flex-col w-full gap-1">
+						<Text className="text-white text-base font-semibold">Année</Text>
+						<Controller<CreateVehicleType>
+							control={control}
+							name="year"
+							render={({ field: { onChange, onBlur, value } }) => (
+								<Fragment>
+									<Pressable
+										className="w-full h-12 border border-white/20  bg-white/15 rounded-lg justify-center px-4"
+										onPress={() => setShowPicker(true)}
 									>
-										{value ? String(value) : "Année"}
-									</Text>
-								</Pressable>
+										<Text
+											className={`text-sm ${
+												!value ? "text-white/50" : "text-white"
+											}`}
+										>
+											{value ? String(value) : "Année"}
+										</Text>
+									</Pressable>
 
-								<Modal
-									visible={showPicker}
-									transparent={true}
-									animationType="slide"
-								>
-									<View className="flex-1 justify-end bg-black/50">
-										<View className="bg-zinc-900 w-full">
-											<View className="flex-row justify-end p-4 border-b border-white/20">
-												<Pressable onPress={() => setShowPicker(false)}>
-													<Text className="text-white font-bold">Fermer</Text>
-												</Pressable>
-											</View>
-											<Picker
-												mode="dropdown"
-												itemStyle={{
-													color: "white",
-													fontSize: 16,
-													fontWeight: "bold",
-												}}
-												selectedValue={value}
-												onValueChange={(itemValue) => {
-													onChange(Number(itemValue));
-												}}
-											>
-												{Array.from({ length: 100 }, (_, i) => (
-													<Picker.Item
-														key={`${new Date().getFullYear() - i}`}
-														label={`${new Date().getFullYear() - i}`}
-														value={new Date().getFullYear() - i}
-													/>
-												))}
-											</Picker>
-										</View>
-									</View>
-								</Modal>
-							</>
-						)}
-					/>
-				</View>
-				<View className="flex-col w-full gap-1 ">
-					<Text className="text-white text-base font-semibold">
-						Surnom du véhicule
-					</Text>
-					<Controller<CreateVehicleType>
-						control={control}
-						name="nickname"
-						render={({ field: { onChange, onBlur, value } }) => (
-							<Input
-								placeholder="Nickname"
-								name="nickname"
-								value={value as string}
-								onChangeText={onChange}
-								onBlur={onBlur}
-								placeholderTextColor="white"
-								error={errors.nickname}
-							/>
-						)}
-					/>
-				</View>
-
-				<View className="flex-col w-full gap-1 ">
-					<Text className="text-white text-base font-semibold">
-						Description du véhicule
-					</Text>
-					<Controller<CreateVehicleType>
-						control={control}
-						name="description"
-						render={({ field: { onChange, onBlur, value } }) => (
-							<Input
-								placeholder="Description du véhicule"
-								classes="h-32"
-								name="description"
-								value={value as string}
-								onChangeText={onChange}
-								onBlur={onBlur}
-								multiline={true}
-								numberOfLines={6}
-								placeholderTextColor="white"
-								error={errors.description}
-							/>
-						)}
-					/>
-				</View>
-				<View className="flex-col w-full gap-1 ">
-					<Text className="text-white text-base font-semibold">
-						Statut du véhicule
-					</Text>
-					<Controller<CreateVehicleType>
-						control={control}
-						name="status_id"
-						render={({ field: { onChange, onBlur, value } }) => (
-							<>
-								<Pressable
-									className="w-full h-12 border border-white/20  bg-white/15 rounded-lg justify-center px-4"
-									onPress={() => setShowStatusPicker(true)}
-								>
-									<Text
-										className={`text-sm ${
-											!vehicle?.vehicle_statuses?.name
-												? "text-white/50"
-												: "text-white"
-										}`}
+									<Modal
+										visible={showPicker}
+										transparent={true}
+										animationType="slide"
 									>
-										{vehicleStatuses?.find(
-											(status) => status.status_id === value,
-										)?.name || "Statut"}
-									</Text>
-								</Pressable>
-
-								<Modal
-									visible={showStatusPicker}
-									transparent={true}
-									animationType="slide"
-								>
-									<View className="flex-1 justify-end bg-black/50">
-										<View className="bg-zinc-900 w-full">
-											<View className="flex-row justify-end p-4 border-b border-white/20">
-												<Pressable onPress={() => setShowStatusPicker(false)}>
-													<Text className="text-white font-bold">Fermer</Text>
-												</Pressable>
+										<View className="flex-1 justify-end bg-black/50">
+											<View className="bg-zinc-900 w-full">
+												<View className="flex-row justify-end p-4 border-b border-white/20">
+													<Pressable onPress={() => setShowPicker(false)}>
+														<Text className="text-white font-bold">Fermer</Text>
+													</Pressable>
+												</View>
+												<Picker
+													mode="dropdown"
+													itemStyle={{
+														color: "white",
+														fontSize: 16,
+														fontWeight: "bold",
+													}}
+													selectedValue={value}
+													onValueChange={(itemValue) => {
+														onChange(Number(itemValue));
+													}}
+												>
+													{Array.from({ length: 100 }, (_, i) => (
+														<Picker.Item
+															key={`${new Date().getFullYear() - i}`}
+															label={`${new Date().getFullYear() - i}`}
+															value={new Date().getFullYear() - i}
+														/>
+													))}
+												</Picker>
 											</View>
-											<Picker
-												mode="dropdown"
-												itemStyle={{
-													color: "white",
-													fontSize: 16,
-													fontWeight: "bold",
-												}}
-												selectedValue={value}
-												onValueChange={(itemValue) => {
-													onChange(itemValue);
-												}}
-											>
-												{vehicleStatuses?.map((status) => (
-													<Picker.Item
-														key={status.status_id}
-														label={status.name}
-														value={status.status_id}
-													/>
-												))}
-											</Picker>
 										</View>
-									</View>
-								</Modal>
-							</>
-						)}
+									</Modal>
+								</Fragment>
+							)}
+						/>
+					</View>
+
+					<View className="flex-col w-full gap-1">
+						<Text className="text-white text-base font-semibold">
+							Surnom du véhicule
+						</Text>
+						<Controller<CreateVehicleType>
+							control={control}
+							name="nickname"
+							render={({ field: { onChange, onBlur, value } }) => (
+								<Input
+									placeholder="Nickname"
+									name="nickname"
+									value={value as string}
+									onChangeText={onChange}
+									onBlur={onBlur}
+									placeholderTextColor="white"
+									error={errors.nickname}
+								/>
+							)}
+						/>
+					</View>
+
+					<View className="flex-col w-full gap-1">
+						<Text className="text-white text-base font-semibold">
+							Description du véhicule
+						</Text>
+						<Controller<CreateVehicleType>
+							control={control}
+							name="description"
+							render={({ field: { onChange, onBlur, value } }) => (
+								<Input
+									placeholder="Description du véhicule"
+									name="description"
+									value={value as string}
+									onChangeText={onChange}
+									onBlur={onBlur}
+									multiline={true}
+									textAlignVertical="top"
+									placeholderTextColor="white"
+									error={errors.description}
+								/>
+							)}
+						/>
+					</View>
+
+					<View className="flex-col w-full gap-1">
+						<Text className="text-white text-base font-semibold">
+							Statut du véhicule
+						</Text>
+						<Controller<CreateVehicleType>
+							control={control}
+							name="status_id"
+							render={({ field: { onChange, onBlur, value } }) => (
+								<Fragment>
+									<Pressable
+										className="w-full h-12 border border-white/20  bg-white/15 rounded-lg justify-center px-4"
+										onPress={() => setShowStatusPicker(true)}
+									>
+										<Text
+											className={`text-sm ${
+												!vehicle?.vehicle_statuses?.name
+													? "text-white/50"
+													: "text-white"
+											}`}
+										>
+											{vehicleStatuses?.find(
+												(status) => status.status_id === value,
+											)?.name || "Statut"}
+										</Text>
+									</Pressable>
+
+									<Modal
+										visible={showStatusPicker}
+										transparent={true}
+										animationType="slide"
+									>
+										<View className="flex-1 justify-end bg-black/50">
+											<View className="bg-zinc-900 w-full">
+												<View className="flex-row justify-end p-4 border-b border-white/20">
+													<Pressable onPress={() => setShowStatusPicker(false)}>
+														<Text className="text-white font-bold">Fermer</Text>
+													</Pressable>
+												</View>
+												<Picker
+													mode="dropdown"
+													itemStyle={{
+														color: "white",
+														fontSize: 16,
+														fontWeight: "bold",
+													}}
+													selectedValue={value}
+													onValueChange={(itemValue) => {
+														onChange(itemValue);
+													}}
+												>
+													{vehicleStatuses?.map((status) => (
+														<Picker.Item
+															key={status.status_id}
+															label={status.name}
+															value={status.status_id}
+														/>
+													))}
+												</Picker>
+											</View>
+										</View>
+									</Modal>
+								</Fragment>
+							)}
+						/>
+					</View>
+					<Button
+						disabled={!isFormValid}
+						onPress={handleSubmit(onSubmit)}
+						label="Continuer"
+						variant="secondary"
+						className="mt-4"
 					/>
-				</View>
-			</ScrollView>
-			<View className="bottom-0 w-full pt-4 bg-black z-10 inset-x-0">
-				<Button
-					variant="secondary"
-					label="Continuer"
-					disabled={!isValid || isSubmitting}
-					onPress={handleSubmit(onSubmit)}
-				/>
+				</ScrollView>
 			</View>
-		</View>
+		</KeyboardAvoidingView>
 	);
 };

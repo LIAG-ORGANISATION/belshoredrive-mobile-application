@@ -77,7 +77,7 @@ export default function TabOneScreen() {
 							className="rounded-2xl mb-4 relative h-[500px] w-[100%]"
 							onPress={() => {
 								router.replace({
-									pathname: "/create-vehicle/[vehicleId]",
+									pathname: "/(create-vehicle)/[vehicleId]",
 									params: { vehicleId: item.vehicle_id },
 								});
 							}}

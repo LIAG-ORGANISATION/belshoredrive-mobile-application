@@ -300,7 +300,7 @@ function RootLayoutNav() {
 							/>
 
 							<Stack.Screen
-								name="create-vehicle"
+								name="(create-vehicle)"
 								options={{
 									headerShown: false,
 								}}

@@ -14,7 +14,7 @@ export default function ChooseBrandScreen() {
 				vehicleId={vehicleId as string}
 				onSuccess={() => {
 					router.push({
-						pathname: "/create-vehicle/[vehicleId]/parts-details",
+						pathname: "/(create-vehicle)/[vehicleId]/parts-details",
 						params: { vehicleId: vehicleId as string },
 					});
 				}}

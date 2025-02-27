@@ -8,7 +8,7 @@ import * as ImageManipulator from "expo-image-manipulator";
 import { SaveFormat } from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
 import type { ImagePickerAsset } from "expo-image-picker";
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { Dimensions, Image, Pressable, Text, View } from "react-native";
 import {
@@ -358,7 +358,7 @@ export default function CreateVehicle() {
 						},
 						{
 							onSuccess: (vehicle) => {
-								router.push(`/create-vehicle/${vehicle.vehicle_id}`);
+								router.push(`/(create-vehicle)/${vehicle.vehicle_id}`);
 							},
 						},
 					);
@@ -482,11 +482,6 @@ export default function CreateVehicle() {
 							onPress={cropAndSaveImage}
 						/>
 					</View>
-					<Link href="/complete-profile" asChild>
-						<Text className="text-white text-sm text-center font-semibold">
-							Passer cette étape
-						</Text>
-					</Link>
 				</View>
 			</View>
 		</View>

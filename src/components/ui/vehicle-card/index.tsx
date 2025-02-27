@@ -14,7 +14,7 @@ export const VehicleCard = ({ item }: { item: VehicleWithComments }) => {
 					<Pressable
 						onPress={() => {
 							router.replace({
-								pathname: "/create-vehicle/[vehicleId]",
+								pathname: "/(create-vehicle)/[vehicleId]",
 								params: { vehicleId: item.vehicle_id },
 							});
 						}}

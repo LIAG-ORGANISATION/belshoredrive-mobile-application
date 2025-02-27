@@ -188,7 +188,7 @@ export default function TabLayout() {
 						tabBarShowLabel: false,
 						tabBarIcon: (props) => (
 							<Pressable
-								onPress={() => router.replace("/create-vehicle")}
+								onPress={() => router.replace("/(create-vehicle)")}
 								className="flex-1 items-center justify-center h-full relative"
 							>
 								<View className="absolute bottom-1 p-4 mx-auto bg-[#4AA8BA] rounded-full flex items-center justify-center">

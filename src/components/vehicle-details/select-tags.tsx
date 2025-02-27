@@ -1,7 +1,7 @@
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Text, View } from "react-native";
+import { KeyboardAvoidingView, Platform, Text, View } from "react-native";
 
 import { ChipSelector } from "@/components/chip-selector";
 import { Button } from "@/components/ui/button";
@@ -81,33 +81,38 @@ export const SelectTags = ({
 	if (tagsError) return <Text>Error: {tagsError.message}</Text>;
 
 	return (
-		<>
-			{title && (
-				<Text className="text-white text-2xl font-bold py-4">{title}</Text>
-			)}
-			{subtitle && (
-				<Text className="text-white/70 text-lg font-medium mb-2">
-					{subtitle}
-				</Text>
-			)}
+		<KeyboardAvoidingView
+			behavior={Platform.OS === "ios" ? "padding" : "height"}
+			className="flex-1 bg-black"
+		>
+			<View className="flex-1 px-2">
+				{title && (
+					<Text className="text-white text-2xl font-bold py-4">{title}</Text>
+				)}
+				{subtitle && (
+					<Text className="text-white/70 text-lg font-medium mb-2">
+						{subtitle}
+					</Text>
+				)}
 
-			<View className="flex-1">
-				<ChipSelector<ChooseTagsType, ExtractId<TagsType, "tag_id">>
-					name="tags"
-					control={control}
-					haveSearch={true}
-					items={mapToId(tags, "tag_id") as ExtractId<TagsType, "tag_id">[]}
-				/>
-			</View>
+				<View className="flex-1 pb-24">
+					<ChipSelector<ChooseTagsType, ExtractId<TagsType, "tag_id">>
+						name="tags"
+						control={control}
+						haveSearch={true}
+						items={mapToId(tags, "tag_id") as ExtractId<TagsType, "tag_id">[]}
+					/>
+				</View>
 
-			<View className="absolute bottom-0 w-full px-4 pb-10 pt-4 bg-black z-50 inset-x-0">
-				<Button
-					variant="secondary"
-					label="Continuer"
-					disabled={!isValid || isSubmitting}
-					onPress={handleSubmit(onSubmit)}
-				/>
+				<View className="absolute bottom-0 w-full px-4 pb-10 pt-4 bg-black z-50 inset-x-0">
+					<Button
+						variant="secondary"
+						label="Continuer"
+						disabled={!isValid || isSubmitting}
+						onPress={handleSubmit(onSubmit)}
+					/>
+				</View>
 			</View>
-		</>
+		</KeyboardAvoidingView>
 	);
 };

@@ -12,7 +12,7 @@ export default function CreateVehicleDetails() {
 				vehicleId={vehicleId as string}
 				onSubmitCallback={() => {
 					router.replace({
-						pathname: "/create-vehicle/[vehicleId]/vehicle-details",
+						pathname: "/(create-vehicle)/[vehicleId]/vehicle-details",
 						params: { vehicleId: vehicleId as string },
 					});
 				}}

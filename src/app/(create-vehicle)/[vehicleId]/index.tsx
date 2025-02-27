@@ -7,7 +7,7 @@ export default function CreateVehicleDetails() {
 		<VehicleProfile
 			onSuccess={() => {
 				router.push({
-					pathname: "/create-vehicle/[vehicleId]/tags",
+					pathname: "/(create-vehicle)/[vehicleId]/tags",
 					params: { vehicleId: vehicleId as string },
 				});
 			}}
