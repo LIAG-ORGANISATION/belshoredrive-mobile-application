@@ -79,7 +79,7 @@ export const UpdateInterests = ({
 				/>
 			</View>
 
-			<View className="absolute bottom-0 w-full px-4 pb-10 pt-4 bg-black z-50 inset-x-0">
+			<View className="bottom-0 w-full px-4 pb-10 pt-4 bg-black z-50">
 				<Button
 					variant="secondary"
 					label="Continuer"

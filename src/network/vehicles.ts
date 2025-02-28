@@ -530,15 +530,21 @@ export function useFetchTransmissionTypes(typeId: string) {
 	});
 }
 
-export function useFetchVehicleTypes(): UseQueryResult<
-	Tables<"vehicle_types">[]
-> {
+export function useFetchVehicleTypes(
+	setType?: React.Dispatch<React.SetStateAction<string | undefined>>,
+): UseQueryResult<Tables<"vehicle_types">[]> {
 	return useQuery({
 		queryKey: QueryKeys.VEHICLE_TYPES,
 		queryFn: async () => {
 			const { data, error } = await supabase.from("vehicle_types").select("*");
 
-			if (error) throw error;
+			if (error) {
+				console.error("error --------> ", error);
+				throw error;
+			}
+			if (setType) {
+				setType(data[0].id);
+			}
 
 			return data;
 		},

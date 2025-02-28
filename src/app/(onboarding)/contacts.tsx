@@ -82,7 +82,7 @@ export default function Contact() {
 				/>
 			</View>
 
-			<View className="w-full absolute bottom-0 left-0 right-0 px-4 pb-10 pt-4 bg-black z-50 gap-4">
+			<View className="bottom-0 w-full px-4 pb-10 pt-4 bg-black z-50 gap-4">
 				<Button
 					variant="secondary"
 					label="Continuer"

@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Text, View } from "react-native";
 
 import { valibotResolver } from "@hookform/resolvers/valibot";
@@ -32,13 +32,18 @@ export const UpdateBrands = ({
 	title,
 	onSubmitCallback,
 }: UpdateBrandsProps) => {
-	const { data: vehicleTypes, isLoading: loadingVehicleTypes } = useFetchVehicleTypes();
+	const [selectedVehicleType, setSelectedVehicleType] = useState<
+		string | undefined
+	>(undefined);
+
+	const { data: vehicleTypes } = useFetchVehicleTypes(setSelectedVehicleType);
+
 	const { data: profile, isLoading: loadingProfile } = useFetchUserProfile();
 	const {
 		data: brands = [],
 		isLoading: loadingBrands,
 		error: brandsError,
-	} = useFetchBrands();
+	} = useFetchBrands(selectedVehicleType);
 
 	const { mutate: updateProfile } = useUpdateUserProfile();
 
@@ -90,9 +95,15 @@ export const UpdateBrands = ({
 						control={control}
 						items={mapToId(brands, "brand_id")}
 						haveSearch={true}
+						selectedVehicleType={selectedVehicleType}
+						types={vehicleTypes?.map((type) => ({
+							label: type.label ?? "",
+							id: type.id,
+						}))}
+						toggleType={setSelectedVehicleType}
 					/>
 
-					<View className="absolute bottom-0 w-full px-4 pb-10 pt-4 bg-black z-50 inset-x-0">
+					<View className="bottom-0 w-full px-4 pb-10 pt-4 bg-black z-50">
 						<Button
 							variant="secondary"
 							label="Continuer"

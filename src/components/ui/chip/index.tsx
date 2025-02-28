@@ -13,12 +13,7 @@ interface ChipProps {
 	isFilter?: boolean;
 }
 
-export function Chip({
-	label,
-	isSelected,
-	onPress,
-	isFilter = false,
-}: ChipProps) {
+export function Chip({ label, isSelected, onPress }: ChipProps) {
 	const scale = useSharedValue(1);
 	const colorProgress = useSharedValue(isSelected ? 1 : 0);
 
@@ -39,7 +34,7 @@ export function Chip({
 	return (
 		<Pressable onPress={triggerHeartbeat}>
 			<Text
-				className={`w-fit border leading-5 border-[#545454] px-3 py-1 rounded-md ${
+				className={`w-fit border border-[#545454] px-3 py-1 rounded-lg text-sm ${
 					isSelected ? "bg-white text-black" : "text-white bg-[#141414]"
 				}`}
 			>
