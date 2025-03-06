@@ -49,7 +49,10 @@ export function useVehicleComments(vehicleId: string, page = 0) {
 				.select("*", { count: "exact", head: true })
 				.eq("vehicle_id", vehicleId);
 
-			if (countError) throw countError;
+			if (countError) {
+				console.error("error --------> ", countError);
+				throw countError;
+			}
 
 			// Then get paginated comments
 			const { data, error } = await supabase
@@ -65,13 +68,17 @@ export function useVehicleComments(vehicleId: string, page = 0) {
 				.order("created_at", { ascending: false })
 				.range(page * COMMENTS_PER_PAGE, (page + 1) * COMMENTS_PER_PAGE - 1);
 
-			if (error) throw error;
+			if (error) {
+				console.error("error --------> ", error);
+				throw error;
+			}
 
 			return {
 				data: data,
 				count: count || 0,
 			};
 		},
+		enabled: !!vehicleId,
 	});
 }
 
@@ -204,21 +211,35 @@ export function useCreateVehicle() {
 }
 
 //fetch Vehicle by id
-export function useFetchVehicleById(vehicleId: string) {
+export function useFetchVehicleById(
+	vehicleId: string,
+	levelOfDetails: "full" | "minimal" = "minimal",
+) {
 	return useQuery({
 		queryKey: QueryKeys.VEHICLE(vehicleId),
 		queryFn: async () => {
+			const query =
+				levelOfDetails === "minimal"
+					? `
+						*,
+						brands (
+							*
+						),
+						vehicle_statuses (
+							*
+						)
+					`
+					: `
+						*,
+						brands (*),
+						vehicle_statuses (*),
+						user_profiles (*),
+						motorization_types (*),
+						transmission_types (*)
+					`;
 			const { data, error } = await supabase
 				.from("vehicles")
-				.select(`
-					*,
-					brands (
-						*
-					),
-					vehicle_statuses (
-						*
-					)
-				`)
+				.select(query)
 				.eq("vehicle_id", vehicleId)
 				.single();
 			if (error) {
@@ -227,6 +248,7 @@ export function useFetchVehicleById(vehicleId: string) {
 			}
 			return data;
 		},
+		enabled: !!vehicleId,
 	});
 }
 
@@ -548,5 +570,20 @@ export function useFetchVehicleTypes(
 
 			return data;
 		},
+	});
+}
+
+export function useFetchVehicleTagsDetails(tagsIds: string[]) {
+	return useQuery({
+		queryKey: QueryKeys.VEHICLE_TAGS_DETAILS,
+		queryFn: async () => {
+			const { data, error } = await supabase
+				.from("tags")
+				.select("*")
+				.in("tag_id", tagsIds);
+			if (error) throw error;
+			return data;
+		},
+		enabled: tagsIds.length > 0,
 	});
 }

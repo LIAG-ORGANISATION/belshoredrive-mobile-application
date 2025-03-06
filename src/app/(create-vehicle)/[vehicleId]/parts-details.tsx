@@ -13,7 +13,7 @@ export default function ChooseBrandScreen() {
 			<PartsDetails
 				vehicleId={vehicleId as string}
 				onSuccess={() => {
-					router.replace("/(tabs)");
+					router.replace("/(create-vehicle)/[vehicleId]/view");
 				}}
 			/>
 		</View>

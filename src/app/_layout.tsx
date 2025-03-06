@@ -193,6 +193,13 @@ function RootLayoutNav() {
 							/>
 
 							<Stack.Screen
+								name="(vehicle)"
+								options={{
+									headerShown: false,
+								}}
+							/>
+
+							<Stack.Screen
 								name="complete-profile/index"
 								options={{
 									headerShown: true,
