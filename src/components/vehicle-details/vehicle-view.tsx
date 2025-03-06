@@ -1,7 +1,6 @@
 import { useFetchVehicleById, useVehicleComments } from "@/network/vehicles";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
-import { useEffect } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { Drawer } from "../ui/drawer";
 import { DrawerSkeleton } from "../ui/drawer/skeleton";
@@ -25,9 +24,6 @@ export const VehicleView = ({
 	const { data: comments } = useVehicleComments(vehicleId);
 	const { initialTab } = useLocalSearchParams();
 
-	useEffect(() => {
-		console.log(comments);
-	}, [comments]);
 	if (!vehicle) return null;
 	return (
 		<View className="flex-1 flex flex-col bg-black">
