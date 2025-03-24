@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from "react";
+import { Fragment, useLayoutEffect } from "react";
 import { Text, View } from "react-native";
 
 import { valibotResolver } from "@hookform/resolvers/valibot";
@@ -73,7 +73,7 @@ export const ChooseBrand = ({
 		}
 	};
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		reset({
 			brand_id: vehicle?.brand_id ?? "",
 		});

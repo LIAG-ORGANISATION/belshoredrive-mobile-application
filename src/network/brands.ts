@@ -6,7 +6,6 @@ export const useFetchBrands = (type_id?: string) => {
 	return useQuery({
 		queryKey: [QueryKeys.BRANDS, type_id],
 		queryFn: () => fetchBrands(type_id),
-		enabled: !!type_id,
 	});
 };
 
