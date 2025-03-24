@@ -278,11 +278,13 @@ export const VehicleProfile = ({
 							render={({ field: { onChange, onBlur, value } }) => (
 								<Input
 									placeholder="Description du véhicule"
+									classes="h-24"
 									name="description"
 									value={value as string}
 									onChangeText={onChange}
 									onBlur={onBlur}
 									multiline={true}
+									numberOfLines={4}
 									textAlignVertical="top"
 									placeholderTextColor="white"
 									error={errors.description}
@@ -356,14 +358,16 @@ export const VehicleProfile = ({
 							)}
 						/>
 					</View>
+				</ScrollView>
+				<View className="w-full">
 					<Button
 						disabled={!isFormValid}
 						onPress={handleSubmit(onSubmit)}
 						label="Continuer"
 						variant="secondary"
-						className="mt-4"
+						className="w-full"
 					/>
-				</ScrollView>
+				</View>
 			</View>
 		</KeyboardAvoidingView>
 	);
