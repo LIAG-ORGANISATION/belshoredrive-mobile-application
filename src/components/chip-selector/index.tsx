@@ -64,6 +64,18 @@ export const ChipSelector = <
 		field.onChange(newSelection);
 	};
 
+	const filteredItems = items.filter((item) => {
+		const searchTerm = searchQuery.toLowerCase().trim();
+		if (!searchTerm) return true;
+
+		const nameMatch = item.name.toLowerCase().includes(searchTerm);
+		const departmentMatch = item.department_number
+			?.toLowerCase()
+			.includes(searchTerm);
+
+		return nameMatch || departmentMatch;
+	});
+
 	const renderItem = ({ item }: { item: ItemType }) => (
 		<View className="mb-2 mx-1">
 			<Chip
@@ -110,7 +122,7 @@ export const ChipSelector = <
 			)}
 
 			<MasonryFlashList
-				data={items}
+				data={filteredItems}
 				numColumns={3}
 				contentContainerClassName="flex flex-row flex-wrap gap-2 pb-4"
 				estimatedItemSize={40}
