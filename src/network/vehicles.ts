@@ -28,7 +28,7 @@ export type VehicleWithComments = Tables<"vehicles"> & {
 const COMMENTS_PER_PAGE = 10;
 
 // Type for paginated comments
-type PaginatedComments = {
+export type PaginatedComments = {
 	data: (Tables<"vehicle_comments"> & {
 		user_profiles: Pick<
 			Tables<"user_profiles">,

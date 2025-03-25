@@ -1,15 +1,25 @@
+import { useCreateComment } from "@/network/comments";
 import { useFetchVehicleById, useVehicleComments } from "@/network/vehicles";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
-import { ScrollView, Text, View } from "react-native";
+import { useState } from "react";
+import {
+	ScrollView,
+	Text,
+	TextInput,
+	TouchableOpacity,
+	View,
+} from "react-native";
 import { Drawer } from "../ui/drawer";
 import { DrawerSkeleton } from "../ui/drawer/skeleton";
 import { Tabs } from "../ui/tabs";
 import { VehicleCardFullInfos } from "../ui/vehicle-card/full-infos";
 import { BrakeIcon } from "../vectors/brake-icon";
 import { ChassisIcon } from "../vectors/chassis-icon";
+import { DirectMessageIcon } from "../vectors/direct-message-icon";
 import { EngineIcon } from "../vectors/engine-icon";
 import { WheelIcon } from "../vectors/wheel-icon";
+import { Comments } from "./comments";
 import { VehicleDescriptionBox } from "./description-box";
 
 export const VehicleView = ({
@@ -22,7 +32,24 @@ export const VehicleView = ({
 }) => {
 	const { data: vehicle, isLoading } = useFetchVehicleById(vehicleId, "full");
 	const { data: comments } = useVehicleComments(vehicleId);
+	const { mutate: createComment } = useCreateComment();
 	const { initialTab } = useLocalSearchParams();
+	const [activeTab, setActiveTab] = useState(Number(initialTab) || 0);
+	const [message, setMessage] = useState("");
+
+	const handleSend = () => {
+		createComment(
+			{
+				vehicleId: vehicleId,
+				content: message,
+			},
+			{
+				onSuccess: () => {
+					setMessage("");
+				},
+			},
+		);
+	};
 
 	if (!vehicle) return null;
 	return (
@@ -34,6 +61,7 @@ export const VehicleView = ({
 				<VehicleCardFullInfos item={vehicle} />
 				<Tabs
 					initialTab={Number(initialTab) || 0}
+					onChange={setActiveTab}
 					tabs={[
 						{
 							content: (
@@ -92,12 +120,15 @@ export const VehicleView = ({
 						{
 							content: (
 								<View className="flex-1 bg-black items-center justify-center">
-									<Text className="text-gray-400 text-2xl font-bold">
-										Commentaires
-									</Text>
-									<Text className="text-gray-400 text-lg text-center">
-										Les commentaires ne sont pas encore disponibles au moment.
-									</Text>
+									{comments && comments.data.length > 0 ? (
+										<View className="flex-1 bg-black items-center justify-center w-full pb-16">
+											<Comments comments={comments} />
+										</View>
+									) : (
+										<Text className="text-gray-400 text-lg text-center">
+											Les commentaires ne sont pas encore disponibles au moment.
+										</Text>
+									)}
 								</View>
 							),
 							icon: (
@@ -108,6 +139,25 @@ export const VehicleView = ({
 					]}
 				/>
 			</ScrollView>
+			{activeTab === 2 && (
+				<View className="absolute bottom-0 w-full bg-black">
+					<View className="p-2 flex flex-row items-center gap-2 border-b border-gray-800 mb-12">
+						<TextInput
+							className="rounded-full p-2 text-white flex-1"
+							value={message}
+							onChangeText={setMessage}
+							placeholder="Ecrire un commentaire ..."
+						/>
+
+						<TouchableOpacity
+							className="w-10 h-10 items-center justify-center"
+							onPress={handleSend}
+						>
+							<DirectMessageIcon width={20} height={20} fill="#fff" />
+						</TouchableOpacity>
+					</View>
+				</View>
+			)}
 		</View>
 	);
 };

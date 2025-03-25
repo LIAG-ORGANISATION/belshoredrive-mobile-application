@@ -8,11 +8,17 @@ export type TabsProps = {
 		id: string;
 	}[];
 	initialTab?: number;
+	onChange?: (index: number) => void;
 };
 
-export const Tabs = ({ tabs, initialTab = 0 }: TabsProps) => {
+export const Tabs = ({ tabs, initialTab = 0, onChange }: TabsProps) => {
 	const [activeTab, setActiveTab] = useState(initialTab);
 	const translateX = useRef(new Animated.Value(0)).current;
+
+	const setActiveTabHandler = (index: number) => {
+		setActiveTab(index);
+		onChange?.(index);
+	};
 
 	const animateBorder = (index: number) => {
 		Animated.spring(translateX, {
@@ -30,7 +36,7 @@ export const Tabs = ({ tabs, initialTab = 0 }: TabsProps) => {
 						className="flex-1 justify-center items-center px-8 py-4 h-fit border-b-2 border-gray-700"
 						onPress={() => {
 							animateBorder(index);
-							setActiveTab(index);
+							setActiveTabHandler(index);
 						}}
 					>
 						{React.cloneElement(tab.icon as React.ReactElement, {
