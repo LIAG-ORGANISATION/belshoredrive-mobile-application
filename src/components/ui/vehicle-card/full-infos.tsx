@@ -15,6 +15,7 @@ import {
 import { CarouselNavigator } from "../carousel/carousel-navigator";
 export const VehicleCardFullInfos = ({
 	item,
+	actionButton,
 }: {
 	item: Tables<"vehicles"> & {
 		brands: Pick<Tables<"brands">, "name">;
@@ -23,6 +24,7 @@ export const VehicleCardFullInfos = ({
 			"pseudo" | "profile_picture_url"
 		>;
 	};
+	actionButton?: React.ReactNode;
 }) => {
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const [screenWidth, setScreenWidth] = useState(0);
@@ -133,16 +135,18 @@ export const VehicleCardFullInfos = ({
 							{item.user_profiles?.pseudo || "Unknown User"}
 						</Text>
 					</View>
-					<Link href={`/(create-vehicle)/${item.vehicle_id}/gallery`}>
-						<View className="flex-row items-center pr-4 gap-0.5">
-							<Ionicons name="grid-outline" size={16} color="white" />
-							<Text className="text-white text-sm font-semibold">
-								{item.media?.length ?? 0} photo
-								{item.media?.length && item.media?.length > 1 ? "s" : ""}
-							</Text>
-							<Ionicons name="chevron-forward" size={16} color="white" />
-						</View>
-					</Link>
+					{actionButton || (
+						<Link href={`/(create-vehicle)/${item.vehicle_id}/gallery`}>
+							<View className="flex-row items-center pr-4 gap-0.5">
+								<Ionicons name="grid-outline" size={16} color="white" />
+								<Text className="text-white text-sm font-semibold">
+									{item.media?.length ?? 0} photo
+									{item.media?.length && item.media?.length > 1 ? "s" : ""}
+								</Text>
+								<Ionicons name="chevron-forward" size={16} color="white" />
+							</View>
+						</Link>
+					)}
 				</View>
 			</View>
 		</View>

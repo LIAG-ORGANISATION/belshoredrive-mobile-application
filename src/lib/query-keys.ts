@@ -20,6 +20,8 @@ export const QueryKeys = {
 	USER_VEHICLES: (userId: string) => ["userVehicles", userId] as const,
 	VEHICLE_SEARCH: (query: string) => ["vehicleSearch", query] as const,
 	VEHICLE_RATING: (vehicleId: string) => ["vehicleRating", vehicleId] as const,
+	VEHICLE_RATING_BY_USER: (vehicleId: string) =>
+		["vehicleRatingByUser", vehicleId] as const,
 	VEHICLE_COMMENTS: (vehicleId: string, page?: number) =>
 		["vehicleComments", vehicleId, page] as const,
 	VEHICLE_STATUSES: ["vehicleStatuses"] as const,

@@ -422,6 +422,29 @@ export function useRateVehicle() {
 	});
 }
 
+// Get vehicle rating by user
+export function useVehicleRatingByUser(vehicleId: string) {
+	return useQuery({
+		queryKey: QueryKeys.VEHICLE_RATING_BY_USER(vehicleId),
+		queryFn: async () => {
+			const {
+				data: { user },
+			} = await supabase.auth.getUser();
+			if (!user) throw new Error("User not authenticated");
+
+			const { data, error } = await supabase
+				.from("vehicle_ratings")
+				.select("rating")
+				.eq("vehicle_id", vehicleId)
+				.eq("user_id", user.id)
+				.single();
+
+			if (error) throw error;
+			return data;
+		},
+	});
+}
+
 export function useUploadVehicleMedia() {
 	const queryClient = useQueryClient();
 

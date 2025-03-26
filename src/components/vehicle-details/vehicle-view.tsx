@@ -1,8 +1,17 @@
 import { useCreateComment } from "@/network/comments";
-import { useFetchVehicleById, useVehicleComments } from "@/network/vehicles";
+import {
+	useFetchVehicleById,
+	useRateVehicle,
+	useVehicleComments,
+	useVehicleRating,
+	useVehicleRatingByUser,
+} from "@/network/vehicles";
 import { Ionicons } from "@expo/vector-icons";
+import BottomSheet from "@gorhom/bottom-sheet";
+import { BottomSheetView } from "@gorhom/bottom-sheet";
+import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { useLocalSearchParams } from "expo-router";
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
 	ScrollView,
 	Text,
@@ -12,12 +21,14 @@ import {
 } from "react-native";
 import { Drawer } from "../ui/drawer";
 import { DrawerSkeleton } from "../ui/drawer/skeleton";
+import { RateVehicle } from "../ui/rate-vehicle";
 import { Tabs } from "../ui/tabs";
 import { VehicleCardFullInfos } from "../ui/vehicle-card/full-infos";
 import { BrakeIcon } from "../vectors/brake-icon";
 import { ChassisIcon } from "../vectors/chassis-icon";
 import { DirectMessageIcon } from "../vectors/direct-message-icon";
 import { EngineIcon } from "../vectors/engine-icon";
+import { FireWheelIcon } from "../vectors/fire-wheel-icon";
 import { WheelIcon } from "../vectors/wheel-icon";
 import { Comments } from "./comments";
 import { VehicleDescriptionBox } from "./description-box";
@@ -31,6 +42,9 @@ export const VehicleView = ({
 	onSuccess?: () => void;
 }) => {
 	const { data: vehicle, isLoading } = useFetchVehicleById(vehicleId, "full");
+	const { data: rating } = useVehicleRating(vehicleId);
+	const { mutate: rateVehicle } = useRateVehicle();
+	const { data: ratingByUser } = useVehicleRatingByUser(vehicleId);
 	const { data: comments } = useVehicleComments(vehicleId);
 	const { mutate: createComment } = useCreateComment();
 	const { initialTab } = useLocalSearchParams();
@@ -50,6 +64,11 @@ export const VehicleView = ({
 			},
 		);
 	};
+	const bottomSheetRef = useRef<BottomSheet>(null);
+
+	const handleOpenBottomSheet = useCallback(() => {
+		bottomSheetRef.current?.expand();
+	}, []);
 
 	if (!vehicle) return null;
 	return (
@@ -58,7 +77,23 @@ export const VehicleView = ({
 				className={`flex-1 flex flex-col gap-4 bg-black mb-5  ${className}`}
 				showsVerticalScrollIndicator={false}
 			>
-				<VehicleCardFullInfos item={vehicle} />
+				<VehicleCardFullInfos
+					item={vehicle}
+					actionButton={
+						<TouchableOpacity
+							className="px-3 py-2 flex flex-row items-center justify-center gap-2 bg-black/30 rounded-lg"
+							onPress={handleOpenBottomSheet}
+						>
+							<FireWheelIcon />
+							{rating?.count !== 0 && (
+								<Text className="text-white text-lg">
+									<Text className="font-bold">{rating?.average}</Text>
+									&nbsp;sur 10
+								</Text>
+							)}
+						</TouchableOpacity>
+					}
+				/>
 				<Tabs
 					initialTab={Number(initialTab) || 0}
 					onChange={setActiveTab}
@@ -158,6 +193,37 @@ export const VehicleView = ({
 					</View>
 				</View>
 			)}
+			<BottomSheet
+				ref={bottomSheetRef}
+				snapPoints={["40%"]}
+				enablePanDownToClose
+				index={-1}
+				backgroundStyle={{
+					backgroundColor: "#1f1f1f",
+				}}
+				handleIndicatorStyle={{
+					backgroundColor: "#fff",
+				}}
+			>
+				<BottomSheetView className="flex-1">
+					<BottomSheetScrollView className="bg-[#1f1f1f] w-full">
+						<RateVehicle
+							initialRating={ratingByUser?.rating}
+							onRatingChange={(rating) => {
+								console.log(rating);
+								rateVehicle(
+									{ vehicleId, rating },
+									{
+										onSuccess: () => {
+											bottomSheetRef.current?.close();
+										},
+									},
+								);
+							}}
+						/>
+					</BottomSheetScrollView>
+				</BottomSheetView>
+			</BottomSheet>
 		</View>
 	);
 };
