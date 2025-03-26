@@ -610,3 +610,14 @@ export function useFetchVehicleTagsDetails(tagsIds: string[]) {
 		enabled: tagsIds.length > 0,
 	});
 }
+
+export function useFetchTypes() {
+	return useQuery({
+		queryKey: QueryKeys.TYPES,
+		queryFn: async () => {
+			const { data, error } = await supabase.from("vehicle_types").select("*");
+			if (error) throw error;
+			return data;
+		},
+	});
+}

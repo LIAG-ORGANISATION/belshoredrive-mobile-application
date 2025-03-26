@@ -36,6 +36,7 @@ export const QueryKeys = {
 	UNREAD_MESSAGES: ["unreadMessages"] as const,
 	UNREAD_MESSAGES_CONVERSATION: (conversationId: string) =>
 		["unreadMessages", conversationId] as const,
+	TYPES: ["types"] as const,
 
 	// Comments
 	COMMENT_VOTES: (commentId: string) => ["commentVotes", commentId] as const,
