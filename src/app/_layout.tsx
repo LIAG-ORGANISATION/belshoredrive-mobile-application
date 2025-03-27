@@ -7,6 +7,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
+import * as Notifications from 'expo-notifications';
 import { Stack, router } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
@@ -15,6 +16,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export { ErrorBoundary } from "expo-router";
 
+import { registerForPushNotificationsAsync } from "@/lib/notifications";
 import { LogBox } from "react-native";
 
 LogBox.ignoreLogs(["new NativeEventEmitter"]);
@@ -56,6 +58,23 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
+	useEffect(() => {
+    registerForPushNotificationsAsync();
+
+    const notificationListener = Notifications.addNotificationReceivedListener(notification => {
+      // Handle received notification
+    });
+
+    const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
+      // Handle notification response (when user taps notification)
+    });
+
+    return () => {
+      Notifications.removeNotificationSubscription(notificationListener);
+      Notifications.removeNotificationSubscription(responseListener);
+    };
+  }, []);
+
 	useEffect(() => {
 		const subscription = AppState.addEventListener("change", (state) => {
 			if (state === "active") {
