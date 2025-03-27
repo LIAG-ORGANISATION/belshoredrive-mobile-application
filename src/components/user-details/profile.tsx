@@ -1,4 +1,5 @@
 import { ExternalLink } from "@/components/ExternalLink";
+import { BottomSheetContent } from "@/components/ui/bottom-sheet";
 import { Button } from "@/components/ui/button";
 import { Tabs } from "@/components/ui/tabs";
 import { VehicleCard } from "@/components/ui/vehicle-card";
@@ -10,6 +11,7 @@ import { LinkIcon } from "@/components/vectors/link-icon";
 import { QrCodeIcon } from "@/components/vectors/qr-code-icon";
 import { ShareIcon } from "@/components/vectors/share-icon";
 import { WheelIcon } from "@/components/vectors/wheel-icon";
+import { useBottomSheet } from "@/context/BottomSheetContext";
 import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
 import { useCreateConversation } from "@/network/chat";
 import {
@@ -22,12 +24,9 @@ import { useFollowersCount } from "@/network/follows";
 import { useFetchUserProfileById } from "@/network/user-profile";
 import { useUserVehicles } from "@/network/vehicles";
 import { Ionicons } from "@expo/vector-icons";
-import BottomSheet, {
-	BottomSheetScrollView,
-	BottomSheetView,
-} from "@gorhom/bottom-sheet";
+import type BottomSheet from "@gorhom/bottom-sheet";
 import { router, useLocalSearchParams } from "expo-router";
-import { useCallback, useRef } from "react";
+import { useCallback, useLayoutEffect, useRef } from "react";
 import {
 	Dimensions,
 	Image,
@@ -62,9 +61,7 @@ export const ProfileComponent = ({
 
 	const { width } = Dimensions.get("window");
 
-	const handleSheetChanges = useCallback((index: number) => {
-		console.log("handleSheetChanges", index);
-	}, []);
+	const { registerSheet, showSheet } = useBottomSheet();
 
 	const handleCreate = () => {
 		createChat(
@@ -80,9 +77,69 @@ export const ProfileComponent = ({
 		);
 	};
 
+	// Register the bottom sheet on component mount
+	useLayoutEffect(() => {
+		if (profile?.pseudo) {
+			const qrCodeContent = (
+				<BottomSheetContent>
+					<View className="w-full flex-col gap-4 justify-center items-center py-8 px-4">
+						<View className="w-full items-center rounded-lg bg-[#0E57C1] py-8 px-4">
+							<QRCode
+								size={width * 0.8}
+								color={"white"}
+								value={`https://www.belshoredrive.com/${profile?.pseudo}`}
+								backgroundColor="#0E57C1"
+								logo={{
+									uri: qrCodeLogoBase64,
+								}}
+								logoSize={90}
+							/>
+						</View>
+						<CopyInput
+							value={`https://www.belshoredrive.com/${profile?.pseudo}`}
+						/>
+						<View className="w-full flex flex-col gap-2">
+							<Button
+								variant="primary"
+								label="Télécharger en PDF"
+								className=" !justify-start gap-4"
+								icon={
+									<Ionicons name="download-outline" size={24} color="white" />
+								}
+								onPress={() => {}}
+							/>
+							<Button
+								variant="primary"
+								label="Télécharger en image PNG"
+								className=" !justify-start gap-4"
+								icon={<Ionicons name="image-outline" size={24} color="white" />}
+								onPress={() => {}}
+							/>
+							<Button
+								variant="primary"
+								label="Imprimer"
+								className=" !justify-start gap-4"
+								icon={<Ionicons name="print-outline" size={24} color="white" />}
+								onPress={() => {}}
+							/>
+						</View>
+					</View>
+				</BottomSheetContent>
+			);
+
+			registerSheet("profileQRCode", {
+				id: "profileQRCode",
+				component: qrCodeContent,
+				snapPoints: ["70%"],
+				enablePanDownToClose: true,
+			});
+		}
+	}, [profile?.pseudo]);
+
+	// Replace handleOpenBottomSheet with this new function
 	const handleOpenBottomSheet = useCallback(() => {
-		bottomSheetRef.current?.expand();
-	}, []);
+		showSheet("profileQRCode");
+	}, [showSheet]);
 
 	return (
 		<ScrollView className="w-full flex-1 bg-black text-white pt-4">
@@ -279,70 +336,6 @@ export const ProfileComponent = ({
 					},
 				]}
 			/>
-			<BottomSheet
-				ref={bottomSheetRef}
-				onChange={handleSheetChanges}
-				snapPoints={["100%"]}
-				enablePanDownToClose
-				index={-1}
-				backgroundStyle={{
-					backgroundColor: "#1f1f1f",
-				}}
-				handleIndicatorStyle={{
-					backgroundColor: "#fff",
-				}}
-			>
-				<BottomSheetView className="flex-1">
-					<BottomSheetScrollView className="bg-[#1f1f1f] w-full">
-						<View className="w-full flex-col gap-4 justify-center items-center py-8 px-4">
-							<View className="w-full items-center rounded-lg bg-[#0E57C1] py-8 px-4">
-								<QRCode
-									size={width * 0.8}
-									color={"white"}
-									value={`https://www.belshoredrive.com/${profile?.pseudo}`}
-									backgroundColor="#0E57C1"
-									logo={{
-										uri: qrCodeLogoBase64,
-									}}
-									logoSize={90}
-								/>
-							</View>
-							<CopyInput
-								value={`https://www.belshoredrive.com/${profile?.pseudo}`}
-							/>
-							<View className="w-full flex flex-col gap-2">
-								<Button
-									variant="primary"
-									label="Télécharger en PDF"
-									className=" !justify-start gap-4"
-									icon={
-										<Ionicons name="download-outline" size={24} color="white" />
-									}
-									onPress={() => {}}
-								/>
-								<Button
-									variant="primary"
-									label="Télécharger en image PNG"
-									className=" !justify-start gap-4"
-									icon={
-										<Ionicons name="image-outline" size={24} color="white" />
-									}
-									onPress={() => {}}
-								/>
-								<Button
-									variant="primary"
-									label="Imprimer"
-									className=" !justify-start gap-4"
-									icon={
-										<Ionicons name="print-outline" size={24} color="white" />
-									}
-									onPress={() => {}}
-								/>
-							</View>
-						</View>
-					</BottomSheetScrollView>
-				</BottomSheetView>
-			</BottomSheet>
 		</ScrollView>
 	);
 };

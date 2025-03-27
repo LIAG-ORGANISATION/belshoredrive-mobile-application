@@ -14,16 +14,16 @@ import {
 	View,
 } from "react-native";
 import "dayjs/locale/fr";
-import BottomSheet, {
-	BottomSheetScrollView,
-	BottomSheetView,
-} from "@gorhom/bottom-sheet";
+import type BottomSheet from "@gorhom/bottom-sheet";
+import {} from "@gorhom/bottom-sheet";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import * as ImagePicker from "expo-image-picker";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { BottomSheetContent } from "@/components/ui/bottom-sheet";
 import { DirectMessageIcon } from "@/components/vectors/direct-message-icon";
+import { useBottomSheet } from "@/context/BottomSheetContext";
 import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
 import { supabase } from "@/lib/supabase";
 import {
@@ -117,6 +117,8 @@ export default function ChatView() {
 			};
 		},
 	});
+
+	const { registerSheet, showSheet, hideSheet } = useBottomSheet();
 
 	useLayoutEffect(() => {
 		if (conversation && profile) {
@@ -277,50 +279,48 @@ export default function ChatView() {
 		}
 	};
 
-	const handleOpenMediaPicker = () => {
-		bottomSheetRef.current?.expand();
+	const openMediaPicker = () => {
+		showSheet("mediaPickerSheet");
 	};
 
-	const MediaPickerBottomSheet = () => {
-		return (
-			<BottomSheet
-				ref={bottomSheetRef}
-				onChange={() => {}}
-				snapPoints={["10%"]}
-				enablePanDownToClose
-				index={-1}
-				backgroundStyle={{
-					backgroundColor: "#1f1f1f",
-				}}
-				handleIndicatorStyle={{
-					backgroundColor: "#fff",
-				}}
-			>
-				<BottomSheetView className="flex-1">
-					<BottomSheetScrollView className="bg-[#1f1f1f] w-full">
-						<View className="flex-1 p-4">
-							<View className="flex-row gap-4">
-								<Pressable
-									onPress={handleAttachImage}
-									className="flex-1 items-center py-4 bg-gray-800 rounded-lg"
-								>
-									<Ionicons name="image" size={24} color="white" />
-									<Text className="text-white mt-2">Gallery</Text>
-								</Pressable>
-								<Pressable
-									onPress={handleAttachFile}
-									className="flex-1 items-center py-4 bg-gray-800 rounded-lg"
-								>
-									<Ionicons name="document" size={24} color="white" />
-									<Text className="text-white mt-2">PDF File</Text>
-								</Pressable>
-							</View>
-						</View>
-					</BottomSheetScrollView>
-				</BottomSheetView>
-			</BottomSheet>
+	// Register the media picker bottom sheet
+	useLayoutEffect(() => {
+		const mediaPickerContent = (
+			<BottomSheetContent>
+				<View className="flex-1 p-4">
+					<View className="flex-row gap-4">
+						<Pressable
+							onPress={() => {
+								hideSheet("mediaPickerSheet");
+								handleAttachImage();
+							}}
+							className="flex-1 items-center py-4 bg-gray-800 rounded-lg"
+						>
+							<Ionicons name="image" size={24} color="white" />
+							<Text className="text-white mt-2">Gallery</Text>
+						</Pressable>
+						<Pressable
+							onPress={() => {
+								hideSheet("mediaPickerSheet");
+								handleAttachFile();
+							}}
+							className="flex-1 items-center py-4 bg-gray-800 rounded-lg"
+						>
+							<Ionicons name="document" size={24} color="white" />
+							<Text className="text-white mt-2">PDF File</Text>
+						</Pressable>
+					</View>
+				</View>
+			</BottomSheetContent>
 		);
-	};
+
+		registerSheet("mediaPickerSheet", {
+			id: "mediaPickerSheet",
+			component: mediaPickerContent,
+			snapPoints: ["10%"],
+			enablePanDownToClose: true,
+		});
+	}, []);
 
 	return (
 		<Fragment>
@@ -476,9 +476,9 @@ export default function ChatView() {
 
 						<TouchableOpacity
 							className="w-10 h-10 items-center justify-center"
-							onPress={handleOpenMediaPicker}
+							onPress={openMediaPicker}
 						>
-							<Ionicons name="image" size={20} color="white" />
+							<Ionicons name="attach" size={20} color="white" />
 						</TouchableOpacity>
 						<TouchableOpacity
 							className="w-10 h-10 items-center justify-center"
@@ -489,7 +489,6 @@ export default function ChatView() {
 					</View>
 				</View>
 			</KeyboardAvoidingView>
-			<MediaPickerBottomSheet />
 		</Fragment>
 	);
 }

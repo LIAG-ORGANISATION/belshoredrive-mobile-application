@@ -1,3 +1,5 @@
+import { BottomSheetContent } from "@/components/ui/bottom-sheet";
+import { useBottomSheet } from "@/context/BottomSheetContext";
 import { useCreateComment } from "@/network/comments";
 import {
 	useFetchVehicleById,
@@ -7,11 +9,8 @@ import {
 	useVehicleRatingByUser,
 } from "@/network/vehicles";
 import { Ionicons } from "@expo/vector-icons";
-import BottomSheet from "@gorhom/bottom-sheet";
-import { BottomSheetView } from "@gorhom/bottom-sheet";
-import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { useLocalSearchParams } from "expo-router";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import {
 	ScrollView,
 	Text,
@@ -50,6 +49,7 @@ export const VehicleView = ({
 	const { initialTab } = useLocalSearchParams();
 	const [activeTab, setActiveTab] = useState(Number(initialTab) || 0);
 	const [message, setMessage] = useState("");
+	const { registerSheet, showSheet, hideSheet } = useBottomSheet();
 
 	const handleSend = () => {
 		createComment(
@@ -67,8 +67,38 @@ export const VehicleView = ({
 	const bottomSheetRef = useRef<BottomSheet>(null);
 
 	const handleOpenBottomSheet = useCallback(() => {
-		bottomSheetRef.current?.expand();
-	}, []);
+		showSheet("vehicleRating");
+	}, [showSheet]);
+
+	useLayoutEffect(() => {
+		const ratingContent = (
+			<BottomSheetContent>
+				<RateVehicle
+					initialRating={ratingByUser?.rating}
+					onRatingChange={(rating) => {
+						rateVehicle(
+							{ vehicleId, rating },
+							{
+								onSuccess: () => {
+									// Use hideSheet instead of ref.current.close()
+									hideSheet("vehicleRating");
+								},
+							},
+						);
+					}}
+				/>
+			</BottomSheetContent>
+		);
+
+		registerSheet("vehicleRating", {
+			id: "vehicleRating",
+			component: ratingContent,
+			snapPoints: ["40%"],
+			enablePanDownToClose: true,
+			backgroundStyle: { backgroundColor: "#1f1f1f" },
+			handleIndicatorStyle: { backgroundColor: "#fff" },
+		});
+	}, [ratingByUser?.rating]);
 
 	if (!vehicle) return null;
 	return (
@@ -193,37 +223,6 @@ export const VehicleView = ({
 					</View>
 				</View>
 			)}
-			<BottomSheet
-				ref={bottomSheetRef}
-				snapPoints={["40%"]}
-				enablePanDownToClose
-				index={-1}
-				backgroundStyle={{
-					backgroundColor: "#1f1f1f",
-				}}
-				handleIndicatorStyle={{
-					backgroundColor: "#fff",
-				}}
-			>
-				<BottomSheetView className="flex-1">
-					<BottomSheetScrollView className="bg-[#1f1f1f] w-full">
-						<RateVehicle
-							initialRating={ratingByUser?.rating}
-							onRatingChange={(rating) => {
-								console.log(rating);
-								rateVehicle(
-									{ vehicleId, rating },
-									{
-										onSuccess: () => {
-											bottomSheetRef.current?.close();
-										},
-									},
-								);
-							}}
-						/>
-					</BottomSheetScrollView>
-				</BottomSheetView>
-			</BottomSheet>
 		</View>
 	);
 };
