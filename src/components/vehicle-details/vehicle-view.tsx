@@ -10,8 +10,10 @@ import {
 } from "@/network/vehicles";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
-import { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
+	KeyboardAvoidingView,
+	Platform,
 	ScrollView,
 	Text,
 	TextInput,
@@ -50,6 +52,7 @@ export const VehicleView = ({
 	const [activeTab, setActiveTab] = useState(Number(initialTab) || 0);
 	const [message, setMessage] = useState("");
 	const { registerSheet, showSheet, hideSheet } = useBottomSheet();
+	const scrollViewRef = useRef<ScrollView>(null);
 
 	const handleSend = () => {
 		createComment(
@@ -64,7 +67,6 @@ export const VehicleView = ({
 			},
 		);
 	};
-	const bottomSheetRef = useRef<BottomSheet>(null);
 
 	const handleOpenBottomSheet = useCallback(() => {
 		showSheet("vehicleRating");
@@ -100,12 +102,34 @@ export const VehicleView = ({
 		});
 	}, [ratingByUser?.rating]);
 
+	const scrollToBottom = () => {
+		scrollViewRef.current?.scrollToEnd({ animated: true });
+	};
+
+	useEffect(() => {
+		if (activeTab === 2) {
+			scrollToBottom();
+		}
+	}, [comments?.data.length, activeTab]);
+
 	if (!vehicle) return null;
 	return (
-		<View className="flex-1 flex flex-col bg-black">
+		<KeyboardAvoidingView
+			behavior={Platform.OS === "ios" ? "padding" : "height"}
+			keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
+			className="relative flex-1 flex flex-col bg-black"
+		>
 			<ScrollView
-				className={`flex-1 flex flex-col gap-4 bg-black mb-5  ${className}`}
+				ref={scrollViewRef}
+				className={`flex-1 flex flex-col gap-4 bg-black ${className}`}
 				showsVerticalScrollIndicator={false}
+				keyboardShouldPersistTaps="handled"
+				contentContainerStyle={{ paddingBottom: activeTab === 2 ? 80 : 20 }}
+				onContentSizeChange={() => {
+					if (activeTab === 2) {
+						scrollToBottom();
+					}
+				}}
 			>
 				<VehicleCardFullInfos
 					item={vehicle}
@@ -205,15 +229,16 @@ export const VehicleView = ({
 				/>
 			</ScrollView>
 			{activeTab === 2 && (
-				<View className="absolute bottom-0 w-full bg-black">
-					<View className="p-2 flex flex-row items-center gap-2 border-b border-gray-800 mb-12">
+				<View className="w-full bg-black border-t border-gray-800">
+					<View className="px-4 pt-2 pb-10 flex flex-row items-center gap-2">
 						<TextInput
-							className="rounded-full p-2 text-white flex-1"
+							className="p-2 text-white flex-1"
 							value={message}
 							onChangeText={setMessage}
 							placeholder="Ecrire un commentaire ..."
+							placeholderTextColor="#666"
+							onFocus={scrollToBottom}
 						/>
-
 						<TouchableOpacity
 							className="w-10 h-10 items-center justify-center"
 							onPress={handleSend}
@@ -223,6 +248,6 @@ export const VehicleView = ({
 					</View>
 				</View>
 			)}
-		</View>
+		</KeyboardAvoidingView>
 	);
 };

@@ -48,6 +48,7 @@ export function useCreateComment() {
 				data: { user },
 			} = await supabase.auth.getUser();
 			if (!user) throw new Error("User not authenticated");
+			console.log("user", user.id);
 
 			const { data, error } = await supabase
 				.from("vehicle_comments")
@@ -59,10 +60,14 @@ export function useCreateComment() {
 				.select()
 				.single();
 
-			if (error) throw error;
+			if (error) {
+				console.log("error", JSON.stringify(error, null, 2));
+				throw error;
+			}
 			return data;
 		},
 		onSuccess: (_, variables) => {
+			console.log("onSuccess", variables);
 			queryClient.invalidateQueries({
 				queryKey: ["vehicleComments", variables.vehicleId],
 			});
