@@ -78,9 +78,14 @@ export default function SearchScreen() {
 	const renderVehicle = ({ item }: { item: Tables<"vehicles"> }) => (
 		<TouchableOpacity
 			className="w-full aspect-square p-0.5"
-			onPress={() => {
-				// Navigate to vehicle detail
-			}}
+			onPress={() =>
+				router.replace({
+					pathname: "/(vehicle)/[vehicleId]",
+					params: {
+						vehicleId: item.vehicle_id,
+					},
+				})
+			}
 		>
 			<View className="w-full h-full overflow-hidden bg-gray-800">
 				{item.media?.[0] ? (

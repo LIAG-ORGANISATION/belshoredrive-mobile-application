@@ -277,6 +277,7 @@ export default function TabLayout() {
 				<Tabs.Screen
 					name="user"
 					options={{
+						tabBarShowLabel: false,
 						href: null,
 						title: "Utilisateur",
 						headerShown: true,
