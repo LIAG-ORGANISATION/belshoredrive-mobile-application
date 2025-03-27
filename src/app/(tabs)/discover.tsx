@@ -1,5 +1,7 @@
+import { BottomSheetContent } from "@/components/ui/bottom-sheet";
 import { SkeletonGrid } from "@/components/ui/skeleton-grid";
 import { Input } from "@/components/ui/text-input";
+import { useBottomSheet } from "@/context/BottomSheetContext";
 import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
 import { supabase } from "@/lib/supabase";
 import { useFetchBrands } from "@/network/brands";
@@ -7,12 +9,10 @@ import { useFetchDepartments } from "@/network/departments";
 import { useFetchTypes, useVehicles } from "@/network/vehicles";
 import type { Tables } from "@/types/supabase";
 import { Ionicons } from "@expo/vector-icons";
-import BottomSheet from "@gorhom/bottom-sheet";
-import { BottomSheetView } from "@gorhom/bottom-sheet";
 import { FlashList } from "@shopify/flash-list";
 import { useQuery } from "@tanstack/react-query";
 import { router } from "expo-router";
-import { useRef, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import {
 	Image,
 	Pressable,
@@ -42,6 +42,7 @@ export default function SearchScreen() {
 	const { data: types = [], isLoading: isLoadingTypes } = useFetchTypes();
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isSearchActive, setIsSearchActive] = useState(false);
+	const { registerSheet, showSheet, hideSheet } = useBottomSheet();
 
 	const { data: searchResults, isLoading: isLoadingSearchResults } = useQuery({
 		queryKey: ["userSearch", searchQuery],
@@ -75,6 +76,154 @@ export default function SearchScreen() {
 		return matchesBrand && matchesDepartment && matchesType;
 	});
 
+	useLayoutEffect(() => {
+		if (brands.length > 0) {
+			// Brand filter bottom sheet
+			const brandFilterContent = (
+				<BottomSheetContent>
+					<View className="flex-row justify-between items-center mb-4">
+						<Text className="text-white text-xl font-semibold">Marques</Text>
+						<TouchableOpacity onPress={() => clearFilter("brands")}>
+							<Text className="text-primary">Effacer</Text>
+						</TouchableOpacity>
+					</View>
+					<ScrollView className="flex-1 max-h-[500px]">
+						{brands.map((brand) => (
+							<Pressable
+								key={brand.brand_id}
+								className="flex-row items-center py-3"
+								onPress={() => toggleFilter("brands", brand.brand_id)}
+							>
+								<View
+									className={`w-6 h-6 border rounded mr-3 items-center justify-center ${filters.brands.includes(brand.brand_id) ? "border-primary bg-primary" : "border-gray-500"}`}
+								>
+									{filters.brands.includes(brand.brand_id) && (
+										<Ionicons name="checkmark" size={16} color="white" />
+									)}
+								</View>
+								<Text className="text-white">{brand.name}</Text>
+							</Pressable>
+						))}
+					</ScrollView>
+				</BottomSheetContent>
+			);
+
+			// Register all bottom sheets
+			registerSheet("brandFilterSheet", {
+				id: "brandFilterSheet",
+				component: brandFilterContent,
+				snapPoints: [200, "70%"],
+				enablePanDownToClose: true,
+				backgroundStyle: { backgroundColor: "#1c1c1e" },
+				handleIndicatorStyle: { backgroundColor: "#777" },
+			});
+		}
+	}, [brands, filters]);
+
+	useLayoutEffect(() => {
+		if (types.length > 0) {
+			const typeFilterContent = (
+				<BottomSheetContent>
+					<View className="flex-row justify-between items-center mb-4">
+						<Text className="text-white text-xl font-semibold">Types</Text>
+						<TouchableOpacity onPress={() => clearFilter("types")}>
+							<Text className="text-primary">Effacer</Text>
+						</TouchableOpacity>
+					</View>
+					<ScrollView className="flex-1 max-h-[500px]">
+						{types?.map((type) => (
+							<Pressable
+								key={type.id}
+								className="flex-row items-center py-3"
+								onPress={() => {
+									toggleFilter("types", type.id);
+									// Force re-registration of the sheet with updated UI
+									registerSheet("typeFilterSheet", {
+										id: "typeFilterSheet",
+										component: typeFilterContent,
+										snapPoints: [200, "70%"],
+										enablePanDownToClose: true,
+										backgroundStyle: { backgroundColor: "#1c1c1e" },
+										handleIndicatorStyle: { backgroundColor: "#777" },
+									});
+								}}
+							>
+								<View
+									className={`w-6 h-6 border rounded mr-3 items-center justify-center ${
+										filters.types.includes(type.id)
+											? "border-primary bg-primary"
+											: "border-gray-500"
+									}`}
+								>
+									{filters.types.includes(type.id) && (
+										<Ionicons name="checkmark" size={16} color="white" />
+									)}
+								</View>
+								<Text className="text-white">{type.label}</Text>
+							</Pressable>
+						))}
+					</ScrollView>
+				</BottomSheetContent>
+			);
+
+			registerSheet("typeFilterSheet", {
+				id: "typeFilterSheet",
+				component: typeFilterContent,
+				snapPoints: [200, "70%"],
+				enablePanDownToClose: true,
+				backgroundStyle: { backgroundColor: "#1c1c1e" },
+				handleIndicatorStyle: { backgroundColor: "#777" },
+			});
+		}
+	}, [types, filters]);
+
+	useLayoutEffect(() => {
+		if (departments.length > 0) {
+			// Department filter bottom sheet
+			const departmentFilterContent = (
+				<BottomSheetContent>
+					<View className="flex-row justify-between items-center mb-4">
+						<Text className="text-white text-xl font-semibold">
+							Départements
+						</Text>
+						<TouchableOpacity onPress={() => clearFilter("departments")}>
+							<Text className="text-primary">Effacer</Text>
+						</TouchableOpacity>
+					</View>
+					<ScrollView className="flex-1 max-h-[500px]">
+						{departments.map((department) => (
+							<Pressable
+								key={department.department_id}
+								className="flex-row items-center py-3 "
+								onPress={() =>
+									toggleFilter("departments", department.department_id)
+								}
+							>
+								<View
+									className={`w-6 h-6 border rounded mr-3 items-center justify-center ${filters.departments.includes(department.department_id) ? "border-primary bg-primary" : "border-gray-500"}`}
+								>
+									{filters.departments.includes(department.department_id) && (
+										<Ionicons name="checkmark" size={16} color="white" />
+									)}
+								</View>
+								<Text className="text-white">{department.name}</Text>
+							</Pressable>
+						))}
+					</ScrollView>
+				</BottomSheetContent>
+			);
+
+			registerSheet("departmentFilterSheet", {
+				id: "departmentFilterSheet",
+				component: departmentFilterContent,
+				snapPoints: [200, "70%"],
+				enablePanDownToClose: true,
+				backgroundStyle: { backgroundColor: "#1c1c1e" },
+				handleIndicatorStyle: { backgroundColor: "#777" },
+			});
+		}
+	}, [departments, filters]);
+
 	const renderVehicle = ({ item }: { item: Tables<"vehicles"> }) => (
 		<TouchableOpacity
 			className="w-full aspect-square p-0.5"
@@ -105,22 +254,27 @@ export default function SearchScreen() {
 		</TouchableOpacity>
 	);
 
-	const brandFilterSheetRef = useRef<BottomSheet>(null);
-	const departmentFilterSheetRef = useRef<BottomSheet>(null);
-	const typeFilterSheetRef = useRef<BottomSheet>(null);
-
-	const openBottomSheet = (sheetRef: React.RefObject<BottomSheet>) => {
-		for (const ref of [
-			brandFilterSheetRef,
-			departmentFilterSheetRef,
-			typeFilterSheetRef,
+	// Function to open a specific bottom sheet and close others
+	const openBottomSheet = (sheetId: string) => {
+		// Hide all other sheets first
+		for (const id of [
+			"brandFilterSheet",
+			"departmentFilterSheet",
+			"typeFilterSheet",
 		]) {
-			if (ref !== sheetRef && ref.current) {
-				ref.current.close();
+			if (id !== sheetId) {
+				hideSheet(id);
 			}
 		}
-
-		sheetRef.current?.expand();
+		// Show the requested sheet
+		// ["brandFilterSheet", "departmentFilterSheet", "typeFilterSheet"].forEach(
+		// 	(id) => {
+		// 		if (id !== sheetId) {
+		// 			hideSheet(id);
+		// 		}
+		// 	},
+		// );
+		showSheet(sheetId);
 	};
 
 	const toggleFilter = (type: keyof Filters, id: string) => {
@@ -167,7 +321,7 @@ export default function SearchScreen() {
 					className={
 						"w-fit h-10 border flex flex-row gap-1 items-center justify-between border-white/20  bg-white/15 rounded-lg px-4 mr-2"
 					}
-					onPress={() => openBottomSheet(brandFilterSheetRef)}
+					onPress={() => openBottomSheet("brandFilterSheet")}
 				>
 					<Text className="text-white">
 						{filters.brands.length
@@ -181,7 +335,7 @@ export default function SearchScreen() {
 					className={
 						"w-fit h-10 border flex flex-row gap-1 items-center justify-between border-white/20  bg-white/15 rounded-lg px-4 mr-2"
 					}
-					onPress={() => openBottomSheet(departmentFilterSheetRef)}
+					onPress={() => openBottomSheet("departmentFilterSheet")}
 				>
 					<Text className="text-white">
 						{filters.departments.length
@@ -195,7 +349,7 @@ export default function SearchScreen() {
 					className={
 						"w-fit h-10 border flex flex-row gap-1 items-center justify-between border-white/20  bg-white/15 rounded-lg px-4 mr-2"
 					}
-					onPress={() => openBottomSheet(typeFilterSheetRef)}
+					onPress={() => openBottomSheet("typeFilterSheet")}
 				>
 					<Text className="text-white">
 						{filters.types.length ? `Types (${filters.types.length})` : "Types"}
@@ -278,120 +432,7 @@ export default function SearchScreen() {
 					contentContainerStyle={{ paddingBottom: 20 }}
 				/>
 			)}
-			<BottomSheet
-				ref={brandFilterSheetRef}
-				snapPoints={[200, "70%"]}
-				enablePanDownToClose
-				index={-1}
-				backgroundStyle={{ backgroundColor: "#1c1c1e" }}
-				handleIndicatorStyle={{ backgroundColor: "#777" }}
-			>
-				<BottomSheetView className="flex-1 p-4">
-					<View className="flex-row justify-between items-center mb-4">
-						<Text className="text-white text-xl font-semibold">Marques</Text>
-						<TouchableOpacity onPress={() => clearFilter("brands")}>
-							<Text className="text-primary">Effacer</Text>
-						</TouchableOpacity>
-					</View>
-					<ScrollView className="flex-1">
-						{brands.map((brand) => (
-							<Pressable
-								key={brand.brand_id}
-								className="flex-row items-center py-3"
-								onPress={() => toggleFilter("brands", brand.brand_id)}
-							>
-								<View
-									className={`w-6 h-6 border rounded mr-3 items-center justify-center ${filters.brands.includes(brand.brand_id) ? "border-primary bg-primary" : "border-gray-500"}`}
-								>
-									{filters.brands.includes(brand.brand_id) && (
-										<Ionicons name="checkmark" size={16} color="white" />
-									)}
-								</View>
-								<Text className="text-white">{brand.name}</Text>
-							</Pressable>
-						))}
-					</ScrollView>
-				</BottomSheetView>
-			</BottomSheet>
-
-			<BottomSheet
-				ref={departmentFilterSheetRef}
-				snapPoints={[200, "70%"]}
-				enablePanDownToClose
-				index={-1}
-				backgroundStyle={{ backgroundColor: "#1c1c1e" }}
-				handleIndicatorStyle={{ backgroundColor: "#777" }}
-			>
-				<BottomSheetView className="flex-1 p-4">
-					<View className="flex-row justify-between items-center mb-4">
-						<Text className="text-white text-xl font-semibold">
-							Départements
-						</Text>
-						<TouchableOpacity onPress={() => clearFilter("departments")}>
-							<Text className="text-primary">Effacer</Text>
-						</TouchableOpacity>
-					</View>
-					<ScrollView className="flex-1">
-						{departments.map((department) => (
-							<Pressable
-								key={department.department_id}
-								className="flex-row items-center py-3 "
-								onPress={() =>
-									toggleFilter("departments", department.department_id)
-								}
-							>
-								<View
-									className={`w-6 h-6 border rounded mr-3 items-center justify-center ${filters.departments.includes(department.department_id) ? "border-primary bg-primary" : "border-gray-500"}`}
-								>
-									{filters.departments.includes(department.department_id) && (
-										<Ionicons name="checkmark" size={16} color="white" />
-									)}
-								</View>
-								<Text className="text-white">{department.name}</Text>
-							</Pressable>
-						))}
-					</ScrollView>
-				</BottomSheetView>
-			</BottomSheet>
-
-			<BottomSheet
-				ref={typeFilterSheetRef}
-				snapPoints={[200, "70%"]}
-				enablePanDownToClose
-				index={-1}
-				backgroundStyle={{ backgroundColor: "#1c1c1e" }}
-				handleIndicatorStyle={{ backgroundColor: "#777" }}
-				style={{
-					width: "100%",
-				}}
-			>
-				<BottomSheetView className="flex-1 p-4">
-					<View className="flex-row justify-between items-center mb-4">
-						<Text className="text-white text-xl font-semibold">Types</Text>
-						<TouchableOpacity onPress={() => clearFilter("types")}>
-							<Text className="text-primary">Effacer</Text>
-						</TouchableOpacity>
-					</View>
-					<ScrollView className="flex-1">
-						{types?.map((type) => (
-							<Pressable
-								key={type.id}
-								className="flex-row items-center py-3"
-								onPress={() => toggleFilter("types", type.id)}
-							>
-								<View
-									className={`w-6 h-6 border rounded mr-3 items-center justify-center ${filters.types.includes(type.id) ? "border-primary bg-primary" : "border-gray-500"}`}
-								>
-									{filters.types.includes(type.id) && (
-										<Ionicons name="checkmark" size={16} color="white" />
-									)}
-								</View>
-								<Text className="text-white">{type.label}</Text>
-							</Pressable>
-						))}
-					</ScrollView>
-				</BottomSheetView>
-			</BottomSheet>
+			{/* BottomSheets are now rendered by the BottomSheetProvider */}
 		</View>
 	);
 }
