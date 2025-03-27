@@ -17,7 +17,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export { ErrorBoundary } from "expo-router";
 
-import { registerForPushNotificationsAsync } from "@/lib/notifications";
+import { handleNotificationReceived, handleNotificationResponse, registerForPushNotificationsAsync } from "@/lib/notifications";
 import { supabase } from "@/lib/supabase";
 import { LogBox } from "react-native";
 
@@ -31,6 +31,15 @@ const queryClient = new QueryClient();
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+
+// Configure how notifications should be handled when app is in foreground
+Notifications.setNotificationHandler({
+	handleNotification: async () => ({
+		shouldShowAlert: true,
+		shouldPlaySound: true,
+		shouldSetBadge: true,
+	}),
+});
 
 export default function RootLayout({
 	children,
@@ -63,16 +72,19 @@ export default function RootLayout({
 
 function RootLayoutNav() {
 	useEffect(() => {
+		// Register for push notifications
 		registerForPushNotificationsAsync();
-	
-		const notificationListener = Notifications.addNotificationReceivedListener(notification => {
-			// Handle received notification
-		});
-	
-		const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
-			// Handle notification response (when user taps notification)
-		});
-	
+
+		// Handle notification when app is in foreground
+		const notificationListener = Notifications.addNotificationReceivedListener(
+			handleNotificationReceived
+		);
+
+		// Handle notification when user taps on it
+		const responseListener = Notifications.addNotificationResponseReceivedListener(
+			handleNotificationResponse
+		);
+
 		return () => {
 			Notifications.removeNotificationSubscription(notificationListener);
 			Notifications.removeNotificationSubscription(responseListener);

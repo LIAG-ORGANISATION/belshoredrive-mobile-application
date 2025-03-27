@@ -89,6 +89,11 @@
 				"projectId": "3b24992d-22a3-4074-bb4d-2e3c65d6edb0"
 			}
 		},
-		"owner": "belshoredrive"
+		"owner": "belshoredrive",
+		"notification": {
+			"icon": "./assets/images/icon.png",
+			"color": "#ffffff",
+			"iosDisplayInForeground": true
+		}
 	}
 }

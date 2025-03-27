@@ -14,30 +14,39 @@ Notifications.setNotificationHandler({
 
 // Register for push notifications
 export async function registerForPushNotificationsAsync() {
-	let token;
+	let token: string | undefined;
 
-	if (Device.isDevice) {
-		const { status: existingStatus } =
-			await Notifications.getPermissionsAsync();
-		let finalStatus = existingStatus;
+	if (!Device.isDevice) {
+		// alert("Must use physical device for Push Notifications");
+		// return;
+	}
 
-		if (existingStatus !== "granted") {
-			const { status } = await Notifications.requestPermissionsAsync();
-			finalStatus = status;
-		}
+	// Check if we already have permission
+	const { status: existingStatus } = await Notifications.getPermissionsAsync();
 
-		if (finalStatus !== "granted") {
-			alert("Failed to get push token for push notification!");
-			return;
-		}
+	let finalStatus = existingStatus;
 
+	// If we don't have permission, ask for it
+	if (existingStatus !== "granted") {
+		const { status } = await Notifications.requestPermissionsAsync();
+		finalStatus = status;
+	}
+
+	// If we still don't have permission, return
+	if (finalStatus !== "granted") {
+		// alert("Failed to get push token for push notification!");
+		return;
+	}
+
+	try {
+		// Get the token
 		token = (
 			await Notifications.getExpoPushTokenAsync({
-				projectId: process.env.EXPO_PUBLIC_PROJECT_ID, // Add this to your env variables
+				projectId: process.env.EXPO_PUBLIC_PROJECT_ID, // Make sure this is set in your env
 			})
 		).data;
 
-		// Store the token in Supabase user_profiles table
+		// Store the token in Supabase
 		const { error } = await supabase
 			.from("user_profiles")
 			.update({ expo_push_token: token })
@@ -46,16 +55,53 @@ export async function registerForPushNotificationsAsync() {
 		if (error) {
 			console.error("Error saving push token:", error);
 		}
-	}
 
-	if (Platform.OS === "android") {
-		Notifications.setNotificationChannelAsync("default", {
-			name: "default",
-			importance: Notifications.AndroidImportance.MAX,
-			vibrationPattern: [0, 250, 250, 250],
-			lightColor: "#FF231F7C",
-		});
-	}
+		// Android-specific notification channel
+		if (Platform.OS === "android") {
+			await Notifications.setNotificationChannelAsync("default", {
+				name: "default",
+				importance: Notifications.AndroidImportance.MAX,
+				vibrationPattern: [0, 250, 250, 250],
+				lightColor: "#FF231F7C",
+			});
+		}
 
-	return token;
+		return token;
+	} catch (error) {
+		console.error("Error getting push token:", error);
+	}
+}
+
+// Handle notification opened app from background state
+export function handleNotificationResponse(
+	response: Notifications.NotificationResponse,
+) {
+	const data = response.notification.request.content.data;
+
+	// Handle different notification types
+	switch (data.type) {
+		case "new_comment":
+			// Navigate to vehicle details
+			break;
+		case "new_follower":
+			// Navigate to profile
+			break;
+		case "new_message":
+			// Navigate to chat
+			break;
+		case "new_vehicle":
+			// Navigate to vehicle details
+			break;
+		case "new_rating":
+			// Navigate to vehicle details
+			break;
+	}
+}
+
+// Handle notification received while app is in foreground
+export function handleNotificationReceived(
+	notification: Notifications.Notification,
+) {
+	const data = notification.request.content.data;
+	console.log("Notification received in foreground:", data);
 }
