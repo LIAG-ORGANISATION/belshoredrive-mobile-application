@@ -12,12 +12,13 @@ import { Stack, router } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import type React from "react";
-import { View } from "react-native";
+import { AppState, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export { ErrorBoundary } from "expo-router";
 
 import { registerForPushNotificationsAsync } from "@/lib/notifications";
+import { supabase } from "@/lib/supabase";
 import { LogBox } from "react-native";
 
 LogBox.ignoreLogs(["new NativeEventEmitter"]);
@@ -62,21 +63,21 @@ export default function RootLayout({
 
 function RootLayoutNav() {
 	useEffect(() => {
-    registerForPushNotificationsAsync();
-
-    const notificationListener = Notifications.addNotificationReceivedListener(notification => {
-      // Handle received notification
-    });
-
-    const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
-      // Handle notification response (when user taps notification)
-    });
-
-    return () => {
-      Notifications.removeNotificationSubscription(notificationListener);
-      Notifications.removeNotificationSubscription(responseListener);
-    };
-  }, []);
+		registerForPushNotificationsAsync();
+	
+		const notificationListener = Notifications.addNotificationReceivedListener(notification => {
+			// Handle received notification
+		});
+	
+		const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
+			// Handle notification response (when user taps notification)
+		});
+	
+		return () => {
+			Notifications.removeNotificationSubscription(notificationListener);
+			Notifications.removeNotificationSubscription(responseListener);
+		};
+	}, []);
 
 	useEffect(() => {
 		const subscription = AppState.addEventListener("change", (state) => {
