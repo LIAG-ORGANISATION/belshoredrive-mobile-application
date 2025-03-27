@@ -11,7 +11,14 @@ import {
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import { Fragment, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { KeyboardAvoidingView, Modal, Platform, Pressable, Text, View } from "react-native";
+import {
+	KeyboardAvoidingView,
+	Modal,
+	Platform,
+	Pressable,
+	Text,
+	View,
+} from "react-native";
 import { ScrollView } from "react-native";
 
 import { Button } from "@/components/ui/button";
@@ -108,7 +115,7 @@ export const VehicleDetails = ({
 	}
 
 	return (
-		<KeyboardAvoidingView 
+		<KeyboardAvoidingView
 			behavior={Platform.OS === "ios" ? "padding" : "height"}
 			className="flex-1"
 		>
@@ -150,7 +157,9 @@ export const VehicleDetails = ({
 						</View>
 					</View>
 					<View className="flex-col w-full gap-1 ">
-						<Text className="text-white text-base font-semibold">Puissance</Text>
+						<Text className="text-white text-base font-semibold">
+							Puissance
+						</Text>
 						<View className="w-full h-fit flex flex-row justify-between items-center gap-2">
 							<View className="flex-1">
 								<Controller<VehicleDetailsType>
@@ -274,7 +283,8 @@ export const VehicleDetails = ({
 											}`}
 										>
 											{motorizationTypes?.find(
-												(motorization) => motorization.motorization_id === value,
+												(motorization) =>
+													motorization.motorization_id === value,
 											)?.name || "Motorisation"}
 										</Text>
 										<Ionicons name="chevron-down" size={24} color="white" />
@@ -470,7 +480,9 @@ export const VehicleDetails = ({
 																onPress={() => {
 																	setShowPurchaseDatePicker(false);
 																	if (value === "" || value === null) {
-																		onChange(`${new Date().getFullYear()}-01-01`);
+																		onChange(
+																			`${new Date().getFullYear()}-01-01`,
+																		);
 																	}
 																}}
 															>
