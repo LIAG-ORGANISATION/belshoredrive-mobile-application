@@ -100,25 +100,24 @@ export const ChipSelector = <
 
 	return (
 		<View className="flex-1 w-full">
-			{haveSearch && (
-				<View className="mb-4">
-					<Input
-						name="search"
-						classes="!h-12"
-						placeholder="Search..."
-						value={searchQuery}
-						onChangeText={setSearchQuery}
-						icon={<SearchIcon />}
-					/>
-				</View>
-			)}
-
 			{types && types.length > 1 && toggleType && (
 				<TypesSelector
 					types={types}
 					selectedType={selectedVehicleType ?? ""}
 					toggleTypes={toggleType}
 				/>
+			)}
+			{haveSearch && (
+				<View className="mb-4">
+					<Input
+						name="search"
+						classes="!h-12"
+						placeholder="Rechercher une marque..."
+						value={searchQuery}
+						onChangeText={setSearchQuery}
+						icon={<SearchIcon />}
+					/>
+				</View>
 			)}
 
 			<MasonryFlashList
