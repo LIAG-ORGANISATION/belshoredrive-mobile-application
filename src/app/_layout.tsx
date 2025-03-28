@@ -7,19 +7,16 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
-import * as Notifications from 'expo-notifications';
 import { Stack, router } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import type React from "react";
-import { AppState, View } from "react-native";
+import { AppState, LogBox, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export { ErrorBoundary } from "expo-router";
 
-import { handleNotificationReceived, handleNotificationResponse, registerForPushNotificationsAsync } from "@/lib/notifications";
 import { supabase } from "@/lib/supabase";
-import { LogBox } from "react-native";
 
 LogBox.ignoreLogs(["new NativeEventEmitter"]);
 
@@ -31,15 +28,6 @@ const queryClient = new QueryClient();
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
-
-// Configure how notifications should be handled when app is in foreground
-Notifications.setNotificationHandler({
-	handleNotification: async () => ({
-		shouldShowAlert: true,
-		shouldPlaySound: true,
-		shouldSetBadge: true,
-	}),
-});
 
 export default function RootLayout({
 	children,
@@ -71,26 +59,6 @@ export default function RootLayout({
 }
 
 function RootLayoutNav() {
-	useEffect(() => {
-		// Register for push notifications
-		registerForPushNotificationsAsync();
-
-		// Handle notification when app is in foreground
-		const notificationListener = Notifications.addNotificationReceivedListener(
-			handleNotificationReceived
-		);
-
-		// Handle notification when user taps on it
-		const responseListener = Notifications.addNotificationResponseReceivedListener(
-			handleNotificationResponse
-		);
-
-		return () => {
-			Notifications.removeNotificationSubscription(notificationListener);
-			Notifications.removeNotificationSubscription(responseListener);
-		};
-	}, []);
-
 	useEffect(() => {
 		const subscription = AppState.addEventListener("change", (state) => {
 			if (state === "active") {

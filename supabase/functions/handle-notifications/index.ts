@@ -111,6 +111,7 @@ Deno.serve(async (req) => {
 			});
 
 			const result = await response.json();
+			console.log("Expo push notification response:", result);
 
 			if (!response.ok) {
 				console.error("Expo push notification failed:", result);

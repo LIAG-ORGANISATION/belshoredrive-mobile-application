@@ -7,12 +7,16 @@ import { OptionsIcon } from "@/components/vectors/options-icon";
 import { SearchIcon } from "@/components/vectors/search";
 import { checkIfProfileComplete } from "@/lib/helpers/check-if-profile-complete";
 import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
+import { handleNotificationReceived, handleNotificationResponse, registerForPushNotificationsAsync } from "@/lib/notifications";
 import { supabase } from "@/lib/supabase";
 import { useHasUnreadMessages } from "@/network/chat";
+import { useGetSession } from "@/network/session";
 import { useFetchUserProfile } from "@/network/user-profile";
 import { Ionicons } from "@expo/vector-icons";
+import * as Notifications from "expo-notifications";
 import { Link, Tabs, router } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
 import {
 	Animated,
 	Dimensions,
@@ -27,6 +31,32 @@ export default function TabLayout() {
 	const { data: hasUnreadMessages } = useHasUnreadMessages();
 	const { data: profile, isLoading: loadingProfile } = useFetchUserProfile();
 	const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+	const { data: session } = useGetSession();
+
+	useEffect(() => {
+		// Register for push notifications
+		if (session?.user) {
+			registerForPushNotificationsAsync();
+		}
+
+		// Handle notification when app is in foreground
+		const notificationListener = Notifications.addNotificationReceivedListener(
+			handleNotificationReceived
+		);
+
+		// Handle notification when user taps on it
+		const responseListener = Notifications.addNotificationResponseReceivedListener(
+			handleNotificationResponse
+		);
+
+		return () => {
+			Notifications.removeNotificationSubscription(notificationListener);
+			Notifications.removeNotificationSubscription(responseListener);
+		};
+	}, [session?.user]);
+	
+	
 	const slideAnim = useState(
 		new Animated.Value(Dimensions.get("window").width),
 	)[0];
