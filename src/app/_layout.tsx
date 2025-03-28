@@ -192,6 +192,24 @@ function RootLayoutNav() {
 									}}
 								/>
 								<Stack.Screen
+									name="auth/phone-verification"
+									options={{
+										headerShown: true,
+										headerStyle: { backgroundColor: "#000" },
+										headerTitle: () => (
+											<ProgressBar currentStep={2} totalSteps={4} />
+										),
+										headerLeft: () => (
+											<Ionicons
+												name="chevron-back"
+												size={24}
+												color="white"
+												onPress={() => router.back()}
+											/>
+										),
+									}}
+								/>
+								<Stack.Screen
 									name="auth/email"
 									options={{
 										headerShown: true,
