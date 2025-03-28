@@ -1,4 +1,3 @@
-import { Fragment, useLayoutEffect } from "react";
 import { Text, View } from "react-native";
 
 import { valibotResolver } from "@hookform/resolvers/valibot";
@@ -17,6 +16,7 @@ import {
 import { type BrandsType, useFetchBrands } from "@/network/brands";
 import { useFetchVehicleById, useUpdateVehicle } from "@/network/vehicles";
 
+import { useLayoutEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 export type ChooseBrandProps = {
@@ -82,7 +82,7 @@ export const ChooseBrand = ({
 	if (brandsError) return <Text>Error: {brandsError.message}</Text>;
 
 	return (
-		<Fragment>
+		<View className="flex-1">
 			<Text className="text-white text-2xl font-bold py-4">{title}</Text>
 			{subtitle && (
 				<Text className="text-white/70 text-lg font-medium mb-2">
@@ -97,8 +97,8 @@ export const ChooseBrand = ({
 					))}
 				</View>
 			) : (
-				<Fragment>
-					<View className="flex-1">
+				<View className="flex-1">
+					<View className="min-h-[500px]">
 						<ChipSelector<ChooseBrandType, ExtractId<BrandsType, "brand_id">>
 							name="brand_id"
 							control={control}
@@ -107,17 +107,16 @@ export const ChooseBrand = ({
 							selectingType="single"
 						/>
 					</View>
-
-					<View className="absolute bottom-0 w-full px-4 pb-10 pt-4 bg-black z-50 inset-x-0">
+					<View className="flex-1">
 						<Button
 							variant="secondary"
 							label="Continuer"
 							disabled={!isValid || isSubmitting}
 							onPress={handleSubmit(onSubmit)}
-						/>
-					</View>
-				</Fragment>
+							/>
+						</View>
+				</View>
 			)}
-		</Fragment>
+		</View>
 	);
 };
