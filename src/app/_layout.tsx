@@ -129,7 +129,14 @@ function RootLayoutNav() {
 				<QueryClientProvider client={queryClient}>
 					<ThemeProvider value={DefaultTheme}>
 						<View className="flex-1 bg-black font-sans">
-							<Stack>
+							<Stack
+								screenOptions={{
+									headerShown: false,
+									headerTintColor: "white",
+									headerStyle: { backgroundColor: "#000" },
+									gestureEnabled: false,
+								}}
+							>
 								<Stack.Screen
 									name="index"
 									options={{ headerShown: false, headerTitle: "" }}

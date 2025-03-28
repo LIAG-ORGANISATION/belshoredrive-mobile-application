@@ -87,6 +87,7 @@ export default function TabLayout() {
 						padding: 0,
 						margin: 0,
 					},
+					gestureEnabled: false,
 				}}
 			>
 				<Tabs.Screen
