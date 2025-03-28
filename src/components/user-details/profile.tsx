@@ -238,7 +238,7 @@ export const ProfileComponent = ({
 							onPress={() => {
 								if (isCurrentUser) {
 									router.replace({
-										pathname: "/(tabs)/update-avatar",
+										pathname: "/(profile)/update-avatar",
 										params: { userId },
 									});
 								}
@@ -306,7 +306,7 @@ export const ProfileComponent = ({
 								label="Modifier"
 								onPress={() => {
 									router.replace({
-										pathname: "/(tabs)/update-pseudo",
+										pathname: "/(profile)/update-pseudo",
 										params: { userId },
 									});
 								}}
@@ -360,7 +360,7 @@ export const ProfileComponent = ({
 							<Pressable
 								onPress={() => {
 									router.replace({
-										pathname: "/(tabs)/following",
+										pathname: "/(profile)/following",
 										params: {
 											userId,
 											previousScreen: isCurrentUser ? "profile" : "user",
@@ -377,7 +377,7 @@ export const ProfileComponent = ({
 							<Pressable
 								onPress={() => {
 									router.replace({
-										pathname: "/(tabs)/followers",
+										pathname: "/(profile)/followers",
 										params: {
 											userId,
 											previousScreen: isCurrentUser ? "profile" : "user",

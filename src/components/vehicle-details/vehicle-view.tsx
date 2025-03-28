@@ -113,6 +113,7 @@ export const VehicleView = ({
 	}, [comments?.data.length, activeTab]);
 
 	if (!vehicle) return null;
+
 	return (
 		<KeyboardAvoidingView
 			behavior={Platform.OS === "ios" ? "padding" : "height"}

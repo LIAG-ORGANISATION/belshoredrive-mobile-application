@@ -20,7 +20,7 @@ export default function UserScreen() {
 					return (
 						<Pressable
 							onPress={() =>
-								router.replace({
+								router.push({
 									pathname: previousScreen as RelativePathString,
 									params: { userId },
 								})

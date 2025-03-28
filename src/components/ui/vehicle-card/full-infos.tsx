@@ -1,9 +1,10 @@
 import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
+import { useGetSession } from "@/network/session";
 import type { Tables } from "@/types/supabase";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { Link, router } from "expo-router";
-import { useState } from "react";
+import { Link, router, usePathname } from "expo-router";
+import { Fragment, useState } from "react";
 import {
 	FlatList,
 	Image,
@@ -13,6 +14,7 @@ import {
 	type ViewToken,
 } from "react-native";
 import { CarouselNavigator } from "../carousel/carousel-navigator";
+
 export const VehicleCardFullInfos = ({
 	item,
 	actionButton,
@@ -26,8 +28,10 @@ export const VehicleCardFullInfos = ({
 	};
 	actionButton?: React.ReactNode;
 }) => {
+	const { data: session } = useGetSession();
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const [screenWidth, setScreenWidth] = useState(0);
+	const pathname = usePathname();
 
 	const changeIndex = (
 		value: ViewToken<{
@@ -57,7 +61,7 @@ export const VehicleCardFullInfos = ({
 				</View>
 			)}
 			{item.media && item.media.length > 0 && (
-				<>
+				<Fragment>
 					<LinearGradient
 						colors={["rgba(0,0,0,0.8)", "transparent"]}
 						className="absolute top-0 left-0 right-0 h-32 w-full z-10 rounded-b-2xl"
@@ -109,7 +113,7 @@ export const VehicleCardFullInfos = ({
 						colors={["transparent", "rgba(0,0,0,0.8)"]}
 						className="absolute bottom-0 left-0 right-0 h-32 rounded-b-2xl"
 					/>
-				</>
+				</Fragment>
 			)}
 			<View className="absolute bottom-4  right-4 w-full">
 				{item.nickname && (
@@ -119,7 +123,18 @@ export const VehicleCardFullInfos = ({
 					{item.year} {item.brands?.name} {item.model}
 				</Text>
 				<View className="flex-row items-center justify-between w-full mt-4">
-					<View className="flex-row items-center pl-8">
+					<Pressable
+						onPress={() => {
+							const isCurrentUser = item.user_id === session?.user.id;
+							if (!isCurrentUser) {
+								router.push({
+									pathname: "/(tabs)/user",
+									params: { userId: item.user_id, previousScreen: pathname },
+								});
+							}
+						}}
+						className="flex-row items-center pl-8"
+					>
 						{item.user_profiles?.profile_picture_url && (
 							<Image
 								source={{
@@ -134,7 +149,7 @@ export const VehicleCardFullInfos = ({
 						<Text className="text-white text-sm font-semibold">
 							{item.user_profiles?.pseudo || "Unknown User"}
 						</Text>
-					</View>
+					</Pressable>
 					{actionButton || (
 						<Link href={`/(create-vehicle)/${item.vehicle_id}/gallery`}>
 							<View className="flex-row items-center pr-4 gap-0.5">
