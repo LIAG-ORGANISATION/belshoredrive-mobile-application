@@ -11,7 +11,7 @@ import type { Tables } from "@/types/supabase";
 import { Ionicons } from "@expo/vector-icons";
 import { FlashList } from "@shopify/flash-list";
 import { useQuery } from "@tanstack/react-query";
-import { router } from "expo-router";
+import { router, usePathname } from "expo-router";
 import { useLayoutEffect, useState } from "react";
 import {
 	Image,
@@ -29,6 +29,7 @@ type Filters = {
 };
 
 export default function SearchScreen() {
+	const previousScreen = usePathname();
 	const [filters, setFilters] = useState<Filters>({
 		brands: [],
 		departments: [],
@@ -228,10 +229,12 @@ export default function SearchScreen() {
 		<TouchableOpacity
 			className="w-full aspect-square p-0.5"
 			onPress={() =>
-				router.replace({
+				router.push({
 					pathname: "/(vehicle)/[vehicleId]",
 					params: {
 						vehicleId: item.vehicle_id,
+						userId: item.user_id,
+						previousScreen,
 					},
 				})
 			}
@@ -385,7 +388,7 @@ export default function SearchScreen() {
 										pathname: "/(tabs)/user",
 										params: {
 											userId: item.user_id,
-											previousScreen: "/(tabs)/discover",
+											previousScreen,
 										},
 									});
 								}}

@@ -78,7 +78,7 @@ export default function TabOneScreen() {
 							onPress={() => {
 								router.replace({
 									pathname: "/(vehicle)/[vehicleId]",
-									params: { vehicleId: item.vehicle_id },
+									params: { vehicleId: item.vehicle_id, previousScreen: "/(tabs)" },
 								});
 							}}
 						>
