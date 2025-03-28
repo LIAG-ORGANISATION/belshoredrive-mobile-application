@@ -318,7 +318,7 @@ export default function SearchScreen() {
 			<ScrollView
 				horizontal
 				showsHorizontalScrollIndicator={false}
-				className="py-3 px-2 max-h-14"
+				className="py-3 max-h-14"
 			>
 				<TouchableOpacity
 					className={
