@@ -1,9 +1,7 @@
-import { ExternalLink } from "@/components/ExternalLink";
-import { BottomSheetContent } from "@/components/ui/bottom-sheet";
 import { Button } from "@/components/ui/button";
 import { Tabs } from "@/components/ui/tabs";
 import { VehicleCard } from "@/components/ui/vehicle-card";
-import { UserDetails } from "@/components/user-details";
+import { type ChipItem, type ChipProps, UserDetails } from "@/components/user-details";
 import { Socials } from "@/components/user-details/socials";
 import { EditIcon } from "@/components/vectors/edit-icon";
 import { IdentificationIcon } from "@/components/vectors/identification-icon";
@@ -21,10 +19,10 @@ import {
 	useUnfollowUser,
 } from "@/network/follows";
 import { useFollowersCount } from "@/network/follows";
+import { useFetchUserInterests } from "@/network/interests";
 import { useFetchUserProfileById } from "@/network/user-profile";
 import { useUserVehicles } from "@/network/vehicles";
 import { Ionicons } from "@expo/vector-icons";
-import type BottomSheet from "@gorhom/bottom-sheet";
 import * as FileSystem from 'expo-file-system';
 import { router, useLocalSearchParams } from "expo-router";
 import * as Sharing from 'expo-sharing';
@@ -39,6 +37,10 @@ import {
 	View,
 } from "react-native";
 import QRCode from "react-native-qrcode-svg";
+import { v4 as uuidv4 } from "uuid";
+import { BottomSheetContent } from "../ui/bottom-sheet";
+import { Chip } from "../ui/chip";
+import { SkeletonChip } from "../ui/skeleton-chip";
 import { SkeletonText } from "../ui/skeleton-text";
 
 export const ProfileComponent = ({
@@ -46,8 +48,6 @@ export const ProfileComponent = ({
 	isCurrentUser,
 	showDraftVehicles,
 }: { userId: string; isCurrentUser: boolean; showDraftVehicles: boolean }) => {
-	const bottomSheetRef = useRef<BottomSheet>(null);
-
 	const { initialTab } = useLocalSearchParams();
 
 	const { data: profile, isLoading: isProfileLoading } =
@@ -56,6 +56,12 @@ export const ProfileComponent = ({
 	const { data: followersCount } = useFollowersCount(userId);
 	const { data: followingCount } = useFollowingCount(userId);
 	const { data: isFollowing } = useIsFollowing(userId);
+	const { data: interests, isLoading: isLoadingInterests } =
+		useFetchUserInterests({
+			ids: profile?.interests ?? [],
+			limit: 5,
+			enabled: !!profile?.interests,
+		});
 	const { mutate: createChat } = useCreateConversation();
 
 	const { mutate: followUser } = useFollowUser();
@@ -193,6 +199,35 @@ export const ProfileComponent = ({
 		showSheet("profileQRCode");
 	}, [showSheet]);
 
+	const renderChip = ({ item, onPress = () => {} }: ChipProps) => (
+		<Chip
+			key={uuidv4()}
+			label={item.name}
+			isSelected={false}
+			onPress={onPress}
+		/>
+	);
+
+	const renderSkeletonChips = ({ count }: { count: number }) => (
+		<View className="flex-row flex-wrap gap-2 mt-4">
+			{Array(count)
+				.fill(null)
+				.map((_, index) => (
+					<SkeletonChip key={uuidv4()} />
+				))}
+		</View>
+	);
+
+	const renderChips = (
+		items: ChipItem[],
+		keyExtractor: (item: ChipItem) => string,
+		onAddPress: () => void,
+	) => (
+		<View className="flex-row flex-wrap gap-2">
+			{items?.map((item) => renderChip({ item }))}
+		</View>
+	);
+
 	return (
 		<ScrollView className="w-full flex-1 bg-black text-white pt-4">
 			{/* profile details */}
@@ -250,21 +285,18 @@ export const ProfileComponent = ({
 						profile?.biography
 					)}
 				</Text>
-				{profile?.website && (
-					<View className="flex flex-row gap-2">
-						<ExternalLink
-							href={`https://${profile?.website}`}
-							className="text-sm text-gray-400"
-						>
-							<View className="flex flex-row gap-2 items-center">
-								<LinkIcon />
-								<Text className="text-sm font-semibold text-[#A1BDCA]">
-									Visitez mon site web
-								</Text>
-							</View>
-						</ExternalLink>
-					</View>
-				)}
+
+				{isLoadingInterests
+					? renderSkeletonChips({ count: 3 })
+					: renderChips(
+							interests || [],
+							(item) => item.interest_id ?? "",
+							() =>
+								router.replace({
+									pathname: "/update-interests",
+									params: { userId },
+								}),
+						)}
 
 				<View className="w-full flex flex-row gap-2 my-2">
 					<View className="flex-1 ">

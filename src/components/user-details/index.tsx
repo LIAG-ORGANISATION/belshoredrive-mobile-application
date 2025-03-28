@@ -1,5 +1,4 @@
 import { useFetchUserDepartments } from "@/network/departments";
-import { useFetchUserInterests } from "@/network/interests";
 import { useFetchUserServices } from "@/network/services";
 import { useGetSession } from "@/network/session";
 import { useFetchUserProfileById } from "@/network/user-profile";
@@ -12,7 +11,7 @@ import { Chip } from "../ui/chip";
 import { SkeletonChip } from "../ui/skeleton-chip";
 import { SkeletonText } from "../ui/skeleton-text";
 
-interface ChipItem {
+export interface ChipItem {
 	name: string;
 	service_id?: string;
 	interest_id?: string;
@@ -20,7 +19,7 @@ interface ChipItem {
 	department_number?: string;
 }
 
-interface ChipProps {
+export interface ChipProps {
 	item: ChipItem;
 	onPress?: () => void;
 }
@@ -30,11 +29,6 @@ export const UserDetails = ({ userId }: { userId: string }) => {
 	const { data: session } = useGetSession();
 	const { data: user, isLoading: isLoadingUser } =
 		useFetchUserProfileById(userId);
-	const { data: interests, isLoading: isLoadingInterests } =
-		useFetchUserInterests({
-			ids: user?.interests ?? [],
-			enabled: !!user?.interests,
-		});
 
 	const { data: departments, isLoading: isLoadingDepartments } =
 		useFetchUserDepartments({
@@ -135,23 +129,6 @@ export const UserDetails = ({ userId }: { userId: string }) => {
 							() =>
 								router.replace({
 									pathname: "/update-services",
-									params: { userId },
-								}),
-						)}
-			</View>
-
-			<View className="flex-col w-full gap-1">
-				<Text className="text-white/70 text-lg font-semibold my-4">
-					CENTRES D'INTÉRÊTS
-				</Text>
-				{isLoadingInterests
-					? renderSkeletonChips({ count: 3 })
-					: renderChips(
-							interests || [],
-							(item) => item.interest_id ?? "",
-							() =>
-								router.replace({
-									pathname: "/update-interests",
 									params: { userId },
 								}),
 						)}

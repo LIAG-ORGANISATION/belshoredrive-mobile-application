@@ -12,10 +12,11 @@ export const useFetchInterests = () => {
 export const useFetchUserInterests = ({
 	ids,
 	enabled,
-}: { ids: string[] | undefined; enabled: boolean }) => {
+	limit,
+}: { ids: string[] | undefined; enabled: boolean; limit: number }) => {
 	return useQuery({
 		queryKey: QueryKeys.USER_INTERESTS,
-		queryFn: () => fetchUserInterests(ids ?? []),
+		queryFn: () => fetchUserInterests(ids ?? [], limit),
 		enabled,
 	});
 };
@@ -33,11 +34,15 @@ const fetchInterests = async (): Promise<InterestsType[]> => {
 	return data;
 };
 
-const fetchUserInterests = async (ids: string[]): Promise<InterestsType[]> => {
+const fetchUserInterests = async (
+	ids: string[],
+	limit: number,
+): Promise<InterestsType[]> => {
 	const { data, error } = await supabase
 		.from("interests")
 		.select("*")
-		.in("interest_id", ids);
+		.in("interest_id", ids)
+		.limit(limit);
 
 	if (error) throw error;
 
