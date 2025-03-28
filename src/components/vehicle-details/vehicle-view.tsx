@@ -160,7 +160,17 @@ export const VehicleView = ({
 									) : (
 										<View className="flex flex-col gap-4 h-fit ">
 											<VehicleDescriptionBox item={vehicle} />
-											<Drawer
+										</View>
+									)}
+								</View>
+							),
+							icon: <WheelIcon />,
+							id: "vehicles",
+						},
+						{
+							content: (
+								<View className="flex-1 bg-black items-center justify-center">
+									<Drawer
 												items={[
 													{
 														icon: <EngineIcon />,
@@ -185,22 +195,6 @@ export const VehicleView = ({
 												]}
 												className="rounded-lg border-2 border-white/20"
 											/>
-										</View>
-									)}
-								</View>
-							),
-							icon: <WheelIcon />,
-							id: "vehicles",
-						},
-						{
-							content: (
-								<View className="flex-1 bg-black items-center justify-center">
-									<Text className="text-gray-400 text-2xl font-bold">
-										Commentaires
-									</Text>
-									<Text className="text-gray-400 text-lg text-center">
-										Les commentaires ne sont pas encore disponibles au moment.
-									</Text>
 								</View>
 							),
 							icon: <Ionicons name="menu" size={24} color="white" />,

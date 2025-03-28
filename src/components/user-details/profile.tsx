@@ -25,18 +25,20 @@ import { useFetchUserProfileById } from "@/network/user-profile";
 import { useUserVehicles } from "@/network/vehicles";
 import { Ionicons } from "@expo/vector-icons";
 import type BottomSheet from "@gorhom/bottom-sheet";
+import * as FileSystem from 'expo-file-system';
 import { router, useLocalSearchParams } from "expo-router";
+import * as Sharing from 'expo-sharing';
 import { useCallback, useLayoutEffect, useRef } from "react";
 import {
 	Dimensions,
 	Image,
 	Pressable,
 	ScrollView,
+	Share,
 	Text,
 	View,
 } from "react-native";
 import QRCode from "react-native-qrcode-svg";
-import { CopyInput } from "../ui/copy-input";
 import { SkeletonText } from "../ui/skeleton-text";
 
 export const ProfileComponent = ({
@@ -63,6 +65,8 @@ export const ProfileComponent = ({
 
 	const { registerSheet, showSheet } = useBottomSheet();
 
+	const qrCodeRef = useRef<QRCode>();
+
 	const handleCreate = () => {
 		createChat(
 			{
@@ -77,6 +81,22 @@ export const ProfileComponent = ({
 		);
 	};
 
+	const handleShare = async () => {
+		if (!profile?.user_id) return;
+
+		const shareUrl = `com.belshoredrive.app://${profile.user_id}`;
+
+		try {
+			await Share.share({
+				message: shareUrl,
+				url: shareUrl, // iOS only
+				title: `Check out ${profile.pseudo}'s profile on Belshore Drive`
+			});
+		} catch (error) {
+			console.error('Error sharing:', error);
+		}
+	};
+
 	// Register the bottom sheet on component mount
 	useLayoutEffect(() => {
 		if (profile?.pseudo) {
@@ -85,9 +105,12 @@ export const ProfileComponent = ({
 					<View className="w-full flex-col gap-4 justify-center items-center py-8 px-4">
 						<View className="w-full items-center rounded-lg bg-[#0E57C1] py-8 px-4">
 							<QRCode
+								getRef={(ref) => {
+									qrCodeRef.current = ref;
+								}}
 								size={width * 0.8}
 								color={"white"}
-								value={`https://www.belshoredrive.com/${profile?.pseudo}`}
+								value={`com.belshoredrive.app://${profile?.user_id}`}
 								backgroundColor="#0E57C1"
 								logo={{
 									uri: qrCodeLogoBase64,
@@ -95,32 +118,61 @@ export const ProfileComponent = ({
 								logoSize={90}
 							/>
 						</View>
-						<CopyInput
-							value={`https://www.belshoredrive.com/${profile?.pseudo}`}
-						/>
 						<View className="w-full flex flex-col gap-2">
 							<Button
 								variant="primary"
-								label="Télécharger en PDF"
+								label="Télécharger en PNG"
 								className=" !justify-start gap-4"
 								icon={
 									<Ionicons name="download-outline" size={24} color="white" />
 								}
-								onPress={() => {}}
-							/>
-							<Button
-								variant="primary"
-								label="Télécharger en image PNG"
-								className=" !justify-start gap-4"
-								icon={<Ionicons name="image-outline" size={24} color="white" />}
-								onPress={() => {}}
-							/>
-							<Button
-								variant="primary"
-								label="Imprimer"
-								className=" !justify-start gap-4"
-								icon={<Ionicons name="print-outline" size={24} color="white" />}
-								onPress={() => {}}
+								onPress={async () => {
+									console.log('Starting QR code save process...');
+									try {
+										if (!qrCodeRef.current) {
+											console.log('QR code ref is null');
+											return;
+										}
+
+										console.log('Getting QR code data URL...');
+										qrCodeRef.current.toDataURL(async (dataURL) => {
+											try {
+												// Create a temporary file
+												const tempFile = `${FileSystem.cacheDirectory}${profile?.pseudo || 'qrcode'}-${Date.now()}.png`;
+												console.log('Creating temporary file:', tempFile);
+
+												// Write to temp file
+												await FileSystem.writeAsStringAsync(tempFile, dataURL, {
+													encoding: FileSystem.EncodingType.Base64
+												});
+
+												// Check if sharing is available
+												const isAvailable = await Sharing.isAvailableAsync();
+												if (!isAvailable) {
+													console.log('Sharing is not available');
+													return;
+												}
+
+												// Open share dialog
+												await Sharing.shareAsync(tempFile, {
+													mimeType: 'image/png',
+													dialogTitle: 'Save QR Code',
+													UTI: 'public.png' // iOS only
+												});
+
+												// Clean up temp file
+												await FileSystem.deleteAsync(tempFile, { idempotent: true });
+											} catch (error) {
+												console.error('Error in file operations:', error);
+											}
+										});
+									} catch (error) {
+										console.error('Error getting QR code data:', error);
+										if (error instanceof Error) {
+											console.error('Error details:', error.message);
+										}
+									}
+								}}
 							/>
 						</View>
 					</View>
@@ -130,7 +182,7 @@ export const ProfileComponent = ({
 			registerSheet("profileQRCode", {
 				id: "profileQRCode",
 				component: qrCodeContent,
-				snapPoints: ["70%"],
+				snapPoints: ["50%"],
 				enablePanDownToClose: true,
 			});
 		}
@@ -250,7 +302,7 @@ export const ProfileComponent = ({
 							label={isCurrentUser ? "Partager" : "Message"}
 							onPress={() => {
 								if (isCurrentUser) {
-									// Open Share Modal from OS Generic
+									handleShare();
 								} else {
 									handleCreate();
 								}
