@@ -171,30 +171,30 @@ export const VehicleView = ({
 							content: (
 								<View className="flex-1 bg-black items-center justify-center">
 									<Drawer
-												items={[
-													{
-														icon: <EngineIcon />,
-														label: "Motorization",
-														value: vehicle.motorization ?? "",
-													},
-													{
-														icon: <ChassisIcon />,
-														label: "Chassis",
-														value: vehicle.chassis ?? "",
-													},
-													{
-														icon: <BrakeIcon />,
-														label: "Freinage",
-														value: vehicle.braking ?? "",
-													},
-													{
-														icon: <WheelIcon />,
-														label: "Extérieur",
-														value: vehicle.exterior ?? "",
-													},
-												]}
-												className="rounded-lg border-2 border-white/20"
-											/>
+										items={[
+											{
+												icon: <EngineIcon />,
+												label: "Motorization",
+												value: vehicle.motorization ?? "",
+											},
+											{
+												icon: <ChassisIcon />,
+												label: "Chassis",
+												value: vehicle.chassis ?? "",
+											},
+											{
+												icon: <BrakeIcon />,
+												label: "Freinage",
+												value: vehicle.braking ?? "",
+											},
+											{
+												icon: <WheelIcon />,
+												label: "Extérieur",
+												value: vehicle.exterior ?? "",
+											},
+										]}
+										className="rounded-lg border-2 border-white/20"
+									/>
 								</View>
 							),
 							icon: <Ionicons name="menu" size={24} color="white" />,
@@ -232,6 +232,8 @@ export const VehicleView = ({
 							placeholder="Ecrire un commentaire ..."
 							placeholderTextColor="#666"
 							onFocus={scrollToBottom}
+							onSubmitEditing={handleSend}
+							returnKeyType="send"
 						/>
 						<TouchableOpacity
 							className="w-10 h-10 items-center justify-center"

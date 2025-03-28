@@ -472,6 +472,8 @@ export default function ChatView() {
 							value={message}
 							onChangeText={setMessage}
 							placeholder="Type a message"
+							onSubmitEditing={handleSend}
+							returnKeyType="send"
 						/>
 
 						<TouchableOpacity
