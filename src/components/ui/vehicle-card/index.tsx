@@ -1,8 +1,7 @@
 import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
 import type { VehicleWithComments } from "@/network/vehicles";
 import { LinearGradient } from "expo-linear-gradient";
-import { router } from "expo-router";
-import { Fragment } from "react";
+import { Link, router } from "expo-router";
 import { Image, Pressable, Text, View } from "react-native";
 
 export const VehicleCard = ({ item }: { item: VehicleWithComments }) => {
@@ -24,7 +23,7 @@ export const VehicleCard = ({ item }: { item: VehicleWithComments }) => {
 				</View>
 			)}
 			{item.media && item.media.length > 0 && (
-				<Fragment>
+				<Link href={item.is_published ? `/(vehicle)/${item.vehicle_id}` : `/(create-vehicle)/${item.vehicle_id}`}>
 					<Image
 						source={{
 							uri: formatPicturesUri("vehicles", item.media[0]),
@@ -36,7 +35,7 @@ export const VehicleCard = ({ item }: { item: VehicleWithComments }) => {
 						colors={["transparent", "rgba(0,0,0,0.8)"]}
 						className="absolute bottom-0 w-full h-1/3 rounded-b-lg"
 					/>
-				</Fragment>
+				</Link>
 			)}
 			<View className="absolute bottom-4 left-4 right-4">
 				{item.nickname && (

@@ -214,7 +214,7 @@ export function useCreateVehicle() {
 export function useFetchVehicleById(
 	vehicleId: string,
 	levelOfDetails: "full" | "minimal" = "minimal",
-) {
+): UseQueryResult<Tables<"vehicles">> {
 	return useQuery({
 		queryKey: QueryKeys.VEHICLE(vehicleId),
 		queryFn: async () => {

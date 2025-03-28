@@ -1,8 +1,17 @@
 import { ProgressBar } from "@/components/ui/progress-bar";
+import { useDeleteVehicle } from "@/network/vehicles";
 import { Ionicons } from "@expo/vector-icons";
-import { Stack, router } from "expo-router";
+import { Stack, router, useLocalSearchParams } from "expo-router";
 
 export default function CreateVehicleLayout() {
+	const { mutate: deleteVehicle } = useDeleteVehicle();
+	const { vehicleId } = useLocalSearchParams();
+
+	const handleDeleteVehicle = async () => {
+		await deleteVehicle(vehicleId as string);
+		router.push("/(tabs)");
+	};
+
 	return (
 		<Stack>
 			<Stack.Screen
@@ -35,6 +44,14 @@ export default function CreateVehicleLayout() {
 							onPress={() => router.push("/(tabs)")}
 						/>
 					),
+					headerRight: () => (
+						<Ionicons
+							name="trash-outline"
+							size={24}
+							color="white"
+							onPress={handleDeleteVehicle}
+						/>
+					),
 				}}
 			/>
 			<Stack.Screen
@@ -49,6 +66,14 @@ export default function CreateVehicleLayout() {
 							size={24}
 							color="white"
 							onPress={() => router.back()}
+						/>
+					),
+					headerRight: () => (
+						<Ionicons
+							name="trash-outline"
+							size={24}
+							color="white"
+							onPress={handleDeleteVehicle}
 						/>
 					),
 				}}
@@ -83,6 +108,14 @@ export default function CreateVehicleLayout() {
 							onPress={() => router.back()}
 						/>
 					),
+					headerRight: () => (
+						<Ionicons
+							name="trash-outline"
+							size={24}
+							color="white"
+							onPress={handleDeleteVehicle}
+						/>
+					),
 				}}
 			/>
 			<Stack.Screen
@@ -99,6 +132,14 @@ export default function CreateVehicleLayout() {
 							onPress={() => router.back()}
 						/>
 					),
+					headerRight: () => (
+						<Ionicons
+							name="trash-outline"
+							size={24}
+							color="white"
+							onPress={handleDeleteVehicle}
+						/>
+					),
 				}}
 			/>
 			<Stack.Screen
@@ -113,6 +154,14 @@ export default function CreateVehicleLayout() {
 							size={24}
 							color="white"
 							onPress={() => router.back()}
+						/>
+					),
+					headerRight: () => (
+						<Ionicons
+							name="trash-outline"
+							size={24}
+							color="white"
+							onPress={handleDeleteVehicle}
 						/>
 					),
 				}}

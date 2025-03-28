@@ -1,17 +1,26 @@
-import { useFetchVehicleById } from "@/network/vehicles";
+import { useDeleteVehicle, useFetchVehicleById } from "@/network/vehicles";
 import Ionicons from "@expo/vector-icons/build/Ionicons";
 import { Stack, router, useLocalSearchParams } from "expo-router";
 import { useLayoutEffect, useState } from "react";
 import { Text, View } from "react-native";
 
 export default function VehicleProfileLayout() {
+	const [title, setTitle] = useState("");
 	const { vehicleId } = useLocalSearchParams();
 	const { data: vehicle } = useFetchVehicleById(vehicleId as string);
-	const [title, setTitle] = useState("");
+	const { mutate: deleteVehicle } = useDeleteVehicle();
+
+	const handleDeleteVehicle = () => {
+		deleteVehicle(vehicleId as string);
+		router.push("/(tabs)");
+	};
+
 	useLayoutEffect(() => {
 		if (!vehicle) return;
 		setTitle(`${vehicle.year} ${vehicle.brands?.name} ${vehicle.model}`);
 	}, [vehicle]);
+
+
 	return (
 		<View className="flex-1 bg-black">
 			<Stack
@@ -30,10 +39,20 @@ export default function VehicleProfileLayout() {
 						),
 						headerLeft: () => (
 							<Ionicons
-								name="close"
+								name="arrow-back"
 								size={24}
 								style={{ color: "white", paddingRight: 10 }}
-								onPress={() => router.replace("/(tabs)")}
+								onPress={() => {
+									router.canGoBack() ? router.back() : router.replace("/(tabs)");
+								}}
+							/>
+						),
+						headerRight: () => (
+							<Ionicons
+								name="trash-outline"
+								size={24}
+								color="white"
+								onPress={handleDeleteVehicle}
 							/>
 						),
 					}}
