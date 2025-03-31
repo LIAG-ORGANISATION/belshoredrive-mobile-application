@@ -10,10 +10,23 @@ import {
 // Fetch comments for a specific vehicle
 export function useVehicleComments(
 	vehicleId: string,
-): UseQueryResult<Tables<"vehicle_comments">[]> {
+	page = 0,
+): UseQueryResult<{
+	data: Tables<"vehicle_comments">[];
+	count: number;
+}> {
 	return useQuery({
-		queryKey: ["vehicleComments", vehicleId],
+		queryKey: ["vehicleComments", vehicleId, page],
 		queryFn: async () => {
+			// Get total count first
+			const { count, error: countError } = await supabase
+				.from("vehicle_comments")
+				.select("*", { count: "exact", head: true })
+				.eq("vehicle_id", vehicleId);
+
+			if (countError) throw countError;
+
+			// Fetch paginated comments
 			const { data, error } = await supabase
 				.from("vehicle_comments")
 				.select(`
@@ -24,10 +37,11 @@ export function useVehicleComments(
           )
         `)
 				.eq("vehicle_id", vehicleId)
-				.order("created_at", { ascending: false });
+				.order("created_at", { ascending: false })
+				.range(page * 10, page * 10 + 9);
 
 			if (error) throw error;
-			return data;
+			return { data: data || [], count: count || 0 };
 		},
 	});
 }

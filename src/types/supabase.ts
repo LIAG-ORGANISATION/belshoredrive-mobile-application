@@ -230,6 +230,39 @@ export type Database = {
 					},
 				];
 			};
+			notifications: {
+				Row: {
+					body: string;
+					created_at: string | null;
+					data: Json | null;
+					id: string;
+					read: boolean | null;
+					title: string;
+					type: string;
+					user_id: string;
+				};
+				Insert: {
+					body: string;
+					created_at?: string | null;
+					data?: Json | null;
+					id?: string;
+					read?: boolean | null;
+					title: string;
+					type: string;
+					user_id: string;
+				};
+				Update: {
+					body?: string;
+					created_at?: string | null;
+					data?: Json | null;
+					id?: string;
+					read?: boolean | null;
+					title?: string;
+					type?: string;
+					user_id?: string;
+				};
+				Relationships: [];
+			};
 			services: {
 				Row: {
 					name: string | null;
@@ -338,6 +371,7 @@ export type Database = {
 					biography: string | null;
 					birth_year: number | null;
 					created_at: string;
+					expo_push_token: string | null;
 					facebook: string | null;
 					favorite_vehicle_brands: string[] | null;
 					instagram: string | null;
@@ -356,6 +390,7 @@ export type Database = {
 					biography?: string | null;
 					birth_year?: number | null;
 					created_at?: string;
+					expo_push_token?: string | null;
 					facebook?: string | null;
 					favorite_vehicle_brands?: string[] | null;
 					instagram?: string | null;
@@ -374,6 +409,7 @@ export type Database = {
 					biography?: string | null;
 					birth_year?: number | null;
 					created_at?: string;
+					expo_push_token?: string | null;
 					facebook?: string | null;
 					favorite_vehicle_brands?: string[] | null;
 					instagram?: string | null;
@@ -445,6 +481,13 @@ export type Database = {
 					vehicle_id?: string;
 				};
 				Relationships: [
+					{
+						foreignKeyName: "vehicle_comments_user_id_fkey1";
+						columns: ["user_id"];
+						isOneToOne: false;
+						referencedRelation: "user_profiles";
+						referencedColumns: ["user_id"];
+					},
 					{
 						foreignKeyName: "vehicle_comments_vehicle_id_fkey";
 						columns: ["vehicle_id"];
@@ -663,7 +706,10 @@ export type Database = {
 			[_ in never]: never;
 		};
 		CompositeTypes: {
-			[_ in never]: never;
+			http_header: {
+				field: unknown | null;
+				value: string | null;
+			};
 		};
 	};
 };
