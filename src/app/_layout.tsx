@@ -7,18 +7,43 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
+import * as Notifications from "expo-notifications";
 import { Stack, router } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import type React from "react";
 import { AppState, LogBox, View } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-
 export { ErrorBoundary } from "expo-router";
 
 import { supabase } from "@/lib/supabase";
-
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 LogBox.ignoreLogs(["new NativeEventEmitter"]);
+
+// Configure notification behavior
+Notifications.setNotificationHandler({
+	handleNotification: async (notification) => {
+		console.log("🎯 Handling notification:", {
+			date: new Date().toISOString(),
+			notification: JSON.stringify(notification, null, 2)
+		});
+
+		return {
+			shouldShowAlert: true,
+			shouldPlaySound: true,
+			shouldSetBadge: true,
+			priority: Notifications.AndroidNotificationPriority.MAX,
+			ios: {
+				sound: true,
+				priority: 1,
+				foregroundPresentationOptions: {
+					alert: true,
+					badge: true,
+					sound: true,
+				},
+			},
+		};
+	},
+});
 
 export const unstable_settings = {
 	initialRouteName: "/index",
@@ -89,6 +114,49 @@ function RootLayoutNav() {
 		};
 
 		checkSession();
+	}, []);
+
+	useEffect(() => {
+		// Set up notification handlers
+		const setupNotifications = async () => {
+			// Request permissions
+			const { status: existingStatus } = await Notifications.getPermissionsAsync();
+			console.log("Current permission status:", existingStatus);
+
+			let finalStatus = existingStatus;
+			if (existingStatus !== 'granted') {
+				const { status } = await Notifications.requestPermissionsAsync({
+					ios: {
+						allowAlert: true,
+						allowBadge: true,
+						allowSound: true,
+					},
+				});
+				finalStatus = status;
+			}
+			console.log("Final permission status:", finalStatus);
+
+			// Set up foreground handler
+			const foregroundSubscription = Notifications.addNotificationReceivedListener(
+				notification => {
+					console.log("🔔 Foreground notification received:", notification);
+				}
+			);
+
+			// Set up background handler
+			const backgroundSubscription = Notifications.addNotificationResponseReceivedListener(
+				response => {
+					console.log("📱 Background notification response:", response);
+				}
+			);
+
+			return () => {
+				foregroundSubscription.remove();
+				backgroundSubscription.remove();
+			};
+		};
+
+		setupNotifications();
 	}, []);
 
 	return (

@@ -172,10 +172,16 @@ export default function ChatView() {
 	}, [messages]);
 
 	useEffect(() => {
-		if (messages && messages.length > 0) {
-			requestAnimationFrame(() => {
-				flashListRef.current?.scrollToEnd({ animated: false });
-			});
+		// Only attempt to scroll when messages are updated and exist
+		if (messages?.length) {
+			// Add a small delay to ensure the FlashList has updated
+			const timer = setTimeout(() => {
+				if (flashListRef.current) {
+					flashListRef.current.scrollToEnd({ animated: true });
+				}
+			}, 100);
+
+			return () => clearTimeout(timer);
 		}
 	}, [messages]);
 
@@ -188,9 +194,6 @@ export default function ChatView() {
 		});
 
 		setMessage("");
-		requestAnimationFrame(() => {
-			flashListRef.current?.scrollToEnd({ animated: true });
-		});
 	};
 
 	const handleAttachFile = async () => {

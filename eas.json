@@ -13,6 +13,13 @@
 			"ios": {
 				"buildConfiguration": "Debug"
 			}
+		},
+		"production": {
+			"ios": {
+				"buildConfiguration": "Release",
+				"simulator": false,
+				"node": "18.18.0"
+			}
 		}
 	}
 }

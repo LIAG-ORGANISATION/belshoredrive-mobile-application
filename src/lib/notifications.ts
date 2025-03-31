@@ -3,60 +3,61 @@ import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 import { supabase } from "./supabase";
 
-// Configure how notifications should be handled when app is in foreground
-Notifications.setNotificationHandler({
-	handleNotification: async () => ({
-		shouldShowAlert: true,
-		shouldPlaySound: true,
-		shouldSetBadge: true,
-	}),
-});
+const debugLog = (message: string, data?: any) => {
+	const log = data ? `${message}: ${JSON.stringify(data, null, 2)}` : message;
+	console.log(log);
+	if (__DEV__) {
+		console.warn(log);
+	}
+};
 
 // Register for push notifications
 export async function registerForPushNotificationsAsync() {
-	let token: string | undefined;
-
-	if (!Device.isDevice) {
-		// alert("Must use physical device for Push Notifications");
-		// return;
-	}
-
-	// Check if we already have permission
-	const { status: existingStatus } = await Notifications.getPermissionsAsync();
-
-	let finalStatus = existingStatus;
-
-	// If we don't have permission, ask for it
-	if (existingStatus !== "granted") {
-		const { status } = await Notifications.requestPermissionsAsync();
-		finalStatus = status;
-	}
-
-	// If we still don't have permission, return
-	if (finalStatus !== "granted") {
-		// alert("Failed to get push token for push notification!");
-		return;
-	}
-
 	try {
-		// Get the token
-		token = (
-			await Notifications.getExpoPushTokenAsync({
-				projectId: process.env.EXPO_PUBLIC_PROJECT_ID, // Make sure this is set in your env
-			})
-		).data;
+		debugLog("Starting push notification registration");
 
-		// Store the token in Supabase
-		const { error } = await supabase
-			.from("user_profiles")
-			.update({ expo_push_token: token })
-			.eq("user_id", (await supabase.auth.getUser()).data.user?.id);
-
-		if (error) {
-			console.error("Error saving push token:", error);
+		if (!Device.isDevice) {
+			debugLog("Not a physical device, skipping push registration");
+			return;
 		}
 
-		// Android-specific notification channel
+		const { status: existingStatus } =
+			await Notifications.getPermissionsAsync();
+		debugLog("Current permission status:", existingStatus);
+
+		let finalStatus = existingStatus;
+		if (existingStatus !== "granted") {
+			debugLog("Requesting push notification permissions");
+			const { status } = await Notifications.requestPermissionsAsync();
+			finalStatus = status;
+			debugLog("New permission status:", status);
+		}
+
+		if (finalStatus !== "granted") {
+			debugLog("Push notification permission denied");
+			return;
+		}
+
+		debugLog("Getting push token");
+		const token = await Notifications.getExpoPushTokenAsync({
+			projectId: process.env.EXPO_PUBLIC_PROJECT_ID,
+		});
+		debugLog("Push token received:", token);
+
+		// Store token in Supabase
+		const { data, error } = await supabase
+			.from("user_profiles")
+			.update({ expo_push_token: token.data })
+			.eq("user_id", (await supabase.auth.getUser()).data.user?.id)
+			.select();
+
+		if (error) {
+			debugLog("Error saving push token:", error);
+		} else {
+			debugLog("Push token saved successfully:", data);
+		}
+
+		// Set up Android channel
 		if (Platform.OS === "android") {
 			await Notifications.setNotificationChannelAsync("default", {
 				name: "default",
@@ -66,9 +67,10 @@ export async function registerForPushNotificationsAsync() {
 			});
 		}
 
-		return token;
+		return token.data;
 	} catch (error) {
-		console.error("Error getting push token:", error);
+		debugLog("Error in registerForPushNotificationsAsync:", error);
+		return undefined;
 	}
 }
 
@@ -76,32 +78,29 @@ export async function registerForPushNotificationsAsync() {
 export function handleNotificationResponse(
 	response: Notifications.NotificationResponse,
 ) {
+	debugLog("🔔 NOTIFICATION RESPONSE", {
+		actionIdentifier: response.actionIdentifier,
+		notification: {
+			title: response.notification.request.content.title,
+			body: response.notification.request.content.body,
+			data: response.notification.request.content.data,
+		},
+	});
+
+	// Handle the notification based on type
 	const data = response.notification.request.content.data;
 
-	// Handle different notification types
-	switch (data.type) {
-		case "new_comment":
-			// Navigate to vehicle details
-			break;
-		case "new_follower":
-			// Navigate to profile
-			break;
-		case "new_message":
-			// Navigate to chat
-			break;
-		case "new_vehicle":
-			// Navigate to vehicle details
-			break;
-		case "new_rating":
-			// Navigate to vehicle details
-			break;
-	}
+	console.log("NOTIFICATION RESPONSE DATA", data);
 }
 
 // Handle notification received while app is in foreground
 export function handleNotificationReceived(
 	notification: Notifications.Notification,
 ) {
-	const data = notification.request.content.data;
-	console.log("Notification received in foreground:", data);
+	debugLog("🔔 NOTIFICATION RECEIVED", {
+		title: notification.request.content.title,
+		body: notification.request.content.body,
+		data: notification.request.content.data,
+		date: notification.date,
+	});
 }

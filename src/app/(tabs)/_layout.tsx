@@ -7,11 +7,8 @@ import { OptionsIcon } from "@/components/vectors/options-icon";
 import { SearchIcon } from "@/components/vectors/search";
 import { checkIfProfileComplete } from "@/lib/helpers/check-if-profile-complete";
 import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
-import {
-	handleNotificationReceived,
-	handleNotificationResponse,
-	registerForPushNotificationsAsync,
-} from "@/lib/notifications";
+import { handleNotificationReceived, handleNotificationResponse, registerForPushNotificationsAsync } from "@/lib/notifications";
+import { supabase } from "@/lib/supabase";
 import { useHasUnreadMessages } from "@/network/chat";
 import { useGetSession } from "@/network/session";
 import { useFetchUserProfile } from "@/network/user-profile";
@@ -22,6 +19,16 @@ import { useEffect } from "react";
 
 import { Image, Pressable, Text, View } from "react-native";
 
+// At the top of your file, add this debug function
+const debugLog = (message: string, data?: any) => {
+	const log = data ? `${message}: ${JSON.stringify(data, null, 2)}` : message;
+	console.log(log);
+	// Force log to show even in production
+	if (__DEV__) {
+		console.warn(log);
+	}
+};
+
 export default function TabLayout() {
 	const { data: hasUnreadMessages } = useHasUnreadMessages();
 	const { data: profile, isLoading: loadingProfile } = useFetchUserProfile();
@@ -29,27 +36,77 @@ export default function TabLayout() {
 	const { data: session } = useGetSession();
 
 	useEffect(() => {
-		// Register for push notifications
+		debugLog("=== NOTIFICATION SETUP START ===");
+		debugLog("Session state:", { hasUser: !!session?.user });
+
 		if (session?.user) {
-			registerForPushNotificationsAsync();
-		}
+			const setupNotifications = async () => {
+				try {
+					debugLog("Checking notification permissions");
+					const { status: existingStatus } = await Notifications.getPermissionsAsync();
+					debugLog("Current permission status:", existingStatus);
 
 		// Handle notification when app is in foreground
 		const notificationListener = Notifications.addNotificationReceivedListener(
-			handleNotificationReceived,
+			handleNotificationReceived
 		);
 
 		// Handle notification when user taps on it
-		const responseListener =
-			Notifications.addNotificationResponseReceivedListener(
-				handleNotificationResponse,
-			);
+		const responseListener = Notifications.addNotificationResponseReceivedListener(
+			handleNotificationResponse
+		);
 
-		return () => {
-			Notifications.removeNotificationSubscription(notificationListener);
-			Notifications.removeNotificationSubscription(responseListener);
-		};
+					if (finalStatus !== 'granted') {
+						debugLog("Permission denied");
+						return;
+					}
+
+					// Test if we can get the token
+					try {
+						debugLog("Getting Expo push token");
+						const tokenData = await Notifications.getExpoPushTokenAsync({
+							projectId: process.env.EXPO_PUBLIC_PROJECT_ID,
+						});
+						debugLog("Successfully got push token:", tokenData);
+					} catch (tokenError) {
+						debugLog("Error getting push token:", tokenError);
+					}
+
+					// Set up listeners
+					debugLog("Setting up notification listeners");
+					const notificationListener = Notifications.addNotificationReceivedListener(
+						(notification) => {
+							debugLog("🔔 Notification received in foreground:", notification);
+							handleNotificationReceived(notification);
+						}
+					);
+
+					const responseListener = Notifications.addNotificationResponseReceivedListener(
+						(response) => {
+							debugLog("🔔 Notification response received:", response);
+							handleNotificationResponse(response);
+						}
+					);
+
+					return () => {
+						debugLog("Cleaning up notification listeners");
+						Notifications.removeNotificationSubscription(notificationListener);
+						Notifications.removeNotificationSubscription(responseListener);
+					};
+				} catch (error) {
+					debugLog("Error in notification setup:", error);
+				}
+			};
+
+			setupNotifications();
+		}
+
+		debugLog("=== NOTIFICATION SETUP END ===");
 	}, [session?.user]);
+
+	const slideAnim = useState(
+		new Animated.Value(Dimensions.get("window").width),
+	)[0];
 
 	if (loadingProfile) {
 		return <Text>Loading...</Text>;

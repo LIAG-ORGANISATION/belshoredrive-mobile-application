@@ -15,10 +15,14 @@
 		},
 		"ios": {
 			"supportsTablet": true,
+			"buildNumber": "1.0.0",
 			"bundleIdentifier": "com.belshoredrive.app",
 			"infoPlist": {
+				"UIBackgroundModes": ["remote-notification"],
 				"ITSAppUsesNonExemptEncryption": false,
-				"NSLocalNotificationUsageDescription": "This app needs access to send notifications to you."
+				"NSLocalNotificationUsageDescription": "This app needs access to send notifications to you.",
+				"aps-environment": "development",
+				"UIRequireFullScreen": true
 			}
 		},
 		"android": {
@@ -30,9 +34,11 @@
 				"android.permission.READ_CONTACTS",
 				"android.permission.WRITE_CONTACTS",
 				"android.permission.RECORD_AUDIO",
-				"android.permission.CAMERA"
+				"android.permission.CAMERA",
+				"NOTIFICATIONS"
 			],
-			"package": "com.belshoredrive.app"
+			"package": "com.belshoredrive.app",
+			"useNextNotificationsApi": true
 		},
 		"web": {
 			"bundler": "metro",
@@ -74,7 +80,11 @@
 				"expo-notifications",
 				{
 					"icon": "./assets/images/icon.png",
-					"color": "#ffffff"
+					"color": "#ffffff",
+					"mode": "production",
+					"androidMode": "default",
+					"androidCollapsedTitle": "#{unread_notifications} new notifications",
+					"iosDisplayInForeground": true
 				}
 			]
 		],
@@ -93,7 +103,9 @@
 		"notification": {
 			"icon": "./assets/images/icon.png",
 			"color": "#ffffff",
-			"iosDisplayInForeground": true
+			"iosDisplayInForeground": true,
+			"androidMode": "default",
+			"androidCollapsedTitle": "#{unread_notifications} new notifications"
 		}
 	}
 }
