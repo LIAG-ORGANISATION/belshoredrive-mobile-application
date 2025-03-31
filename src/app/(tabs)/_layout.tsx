@@ -7,30 +7,24 @@ import { OptionsIcon } from "@/components/vectors/options-icon";
 import { SearchIcon } from "@/components/vectors/search";
 import { checkIfProfileComplete } from "@/lib/helpers/check-if-profile-complete";
 import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
-import { handleNotificationReceived, handleNotificationResponse, registerForPushNotificationsAsync } from "@/lib/notifications";
-import { supabase } from "@/lib/supabase";
+import {
+	handleNotificationReceived,
+	handleNotificationResponse,
+	registerForPushNotificationsAsync,
+} from "@/lib/notifications";
 import { useHasUnreadMessages } from "@/network/chat";
 import { useGetSession } from "@/network/session";
 import { useFetchUserProfile } from "@/network/user-profile";
 import { Ionicons } from "@expo/vector-icons";
 import * as Notifications from "expo-notifications";
 import { Link, Tabs, router } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
-import {
-	Animated,
-	Dimensions,
-	Image,
-	Pressable,
-	Text,
-	TouchableOpacity,
-	View,
-} from "react-native";
+import { Image, Pressable, Text, View } from "react-native";
 
 export default function TabLayout() {
 	const { data: hasUnreadMessages } = useHasUnreadMessages();
 	const { data: profile, isLoading: loadingProfile } = useFetchUserProfile();
-	const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
 	const { data: session } = useGetSession();
 
@@ -42,46 +36,20 @@ export default function TabLayout() {
 
 		// Handle notification when app is in foreground
 		const notificationListener = Notifications.addNotificationReceivedListener(
-			handleNotificationReceived
+			handleNotificationReceived,
 		);
 
 		// Handle notification when user taps on it
-		const responseListener = Notifications.addNotificationResponseReceivedListener(
-			handleNotificationResponse
-		);
+		const responseListener =
+			Notifications.addNotificationResponseReceivedListener(
+				handleNotificationResponse,
+			);
 
 		return () => {
 			Notifications.removeNotificationSubscription(notificationListener);
 			Notifications.removeNotificationSubscription(responseListener);
 		};
 	}, [session?.user]);
-	
-	
-	const slideAnim = useState(
-		new Animated.Value(Dimensions.get("window").width),
-	)[0];
-
-	const toggleDrawer = () => {
-		const toValue = isDrawerOpen ? Dimensions.get("window").width : 0;
-		Animated.timing(slideAnim, {
-			toValue,
-			duration: 300,
-			useNativeDriver: true,
-		}).start();
-		setIsDrawerOpen(!isDrawerOpen);
-	};
-
-	const handleLogout = async () => {
-		try {
-			const { error } = await supabase.auth.signOut();
-			if (error) throw error;
-
-			// After successful logout, redirect to auth screen
-			router.replace("/auth");
-		} catch (error) {
-			console.error("Error logging out:", error);
-		}
-	};
 
 	if (loadingProfile) {
 		return <Text>Loading...</Text>;
@@ -262,7 +230,17 @@ export default function TabLayout() {
 						tabBarShowLabel: false,
 						headerRight: () => (
 							<View className="flex-row items-center gap-2 rotate-90">
-								<Pressable onPress={toggleDrawer}>
+								<Pressable
+									onPress={() => {
+										router.replace({
+											pathname: "/(tabs)/settings",
+											params: {
+												userId: profile?.user_id,
+												previousScreen: "/(tabs)/profile",
+											},
+										});
+									}}
+								>
 									<Ionicons name="settings-outline" size={24} color="#fff" />
 								</Pressable>
 							</View>
@@ -316,40 +294,29 @@ export default function TabLayout() {
 						headerStyle: { backgroundColor: "#000" },
 					}}
 				/>
-
-			</Tabs>
-
-			{/* Drawer Menu */}
-			<Animated.View
-				className="absolute top-0 right-0 h-full bg-[#1F1F1F] w-72 z-50"
-				style={{
-					transform: [{ translateX: slideAnim }],
-					borderLeftWidth: 1,
-					borderLeftColor: "#2F2F2F",
-				}}
-			>
-				<View className="p-6">
-					<Text className="text-white text-xl font-bold mb-6">Menu</Text>
-					<Pressable
-						className="py-3"
-						onPress={() => {
-							toggleDrawer();
-						}}
-					>
-						<TouchableOpacity onPress={handleLogout}>
-							<Text className="text-white text-lg">Déconnexion</Text>
-						</TouchableOpacity>
-					</Pressable>
-				</View>
-			</Animated.View>
-
-			{/* Backdrop */}
-			{isDrawerOpen && (
-				<Pressable
-					className="absolute top-0 left-0 right-0 bottom-0 bg-black/50"
-					onPress={toggleDrawer}
+				<Tabs.Screen
+					name="settings"
+					options={{
+						tabBarShowLabel: false,
+						href: null,
+						title: "Paramètres",
+						headerShown: true,
+						headerTintColor: "white",
+						headerStyle: { backgroundColor: "#000" },
+					}}
 				/>
-			)}
+				<Tabs.Screen
+					name="notification-preferences"
+					options={{
+						tabBarShowLabel: false,
+						href: null,
+						title: "Notifications",
+						headerShown: true,
+						headerTintColor: "white",
+						headerStyle: { backgroundColor: "#000" },
+					}}
+				/>
+			</Tabs>
 		</View>
 	);
 }
