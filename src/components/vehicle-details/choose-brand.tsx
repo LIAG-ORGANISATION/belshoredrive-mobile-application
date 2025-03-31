@@ -14,9 +14,13 @@ import {
 	chooseBrandSchema,
 } from "@/lib/schemas/create-vehicle";
 import { type BrandsType, useFetchBrands } from "@/network/brands";
-import { useFetchVehicleById, useUpdateVehicle } from "@/network/vehicles";
+import {
+	useFetchVehicleById,
+	useFetchVehicleTypes,
+	useUpdateVehicle,
+} from "@/network/vehicles";
 
-import { useLayoutEffect } from "react";
+import { useLayoutEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 export type ChooseBrandProps = {
@@ -32,13 +36,18 @@ export const ChooseBrand = ({
 	vehicleId,
 	onSubmitCallback,
 }: ChooseBrandProps) => {
+	const [selectedVehicleType, setSelectedVehicleType] = useState<
+		string | undefined
+	>(undefined);
+
+	const { data: vehicleTypes } = useFetchVehicleTypes(setSelectedVehicleType);
+	const { data: vehicle, isLoading: loadingVehicle } =
+		useFetchVehicleById(vehicleId);
 	const {
 		data: brands = [],
 		isLoading: loadingBrands,
 		error: brandsError,
-	} = useFetchBrands();
-	const { data: vehicle, isLoading: loadingVehicle } =
-		useFetchVehicleById(vehicleId);
+	} = useFetchBrands(selectedVehicleType);
 	const { mutate: updateVehicle } = useUpdateVehicle();
 	const {
 		control,
@@ -103,7 +112,13 @@ export const ChooseBrand = ({
 							name="brand_id"
 							control={control}
 							items={mapToId(brands, "brand_id")}
+							selectedVehicleType={selectedVehicleType}
+							types={vehicleTypes?.map((type) => ({
+								label: type.label ?? "",
+								id: type.id,
+							}))}
 							haveSearch={true}
+							toggleType={setSelectedVehicleType}
 							selectingType="single"
 						/>
 					</View>
@@ -113,8 +128,8 @@ export const ChooseBrand = ({
 							label="Continuer"
 							disabled={!isValid || isSubmitting}
 							onPress={handleSubmit(onSubmit)}
-							/>
-						</View>
+						/>
+					</View>
 				</View>
 			)}
 		</View>
