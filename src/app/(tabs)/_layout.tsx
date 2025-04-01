@@ -7,7 +7,7 @@ import { OptionsIcon } from "@/components/vectors/options-icon";
 import { SearchIcon } from "@/components/vectors/search";
 import { checkIfProfileComplete } from "@/lib/helpers/check-if-profile-complete";
 import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
-import { handleNotificationReceived, handleNotificationResponse, registerForPushNotificationsAsync } from "@/lib/notifications";
+import { handleNotificationReceived, handleNotificationResponse } from "@/lib/notifications";
 import { supabase } from "@/lib/supabase";
 import { useHasUnreadMessages } from "@/network/chat";
 import { useGetSession } from "@/network/session";
@@ -46,15 +46,14 @@ export default function TabLayout() {
 					const { status: existingStatus } = await Notifications.getPermissionsAsync();
 					debugLog("Current permission status:", existingStatus);
 
-		// Handle notification when app is in foreground
-		const notificationListener = Notifications.addNotificationReceivedListener(
-			handleNotificationReceived
-		);
+					let finalStatus = existingStatus;
 
-		// Handle notification when user taps on it
-		const responseListener = Notifications.addNotificationResponseReceivedListener(
-			handleNotificationResponse
-		);
+					if (existingStatus !== 'granted') {
+						debugLog("Requesting permissions");
+						const { status } = await Notifications.requestPermissionsAsync();
+						finalStatus = status;
+						debugLog("New permission status:", status);
+					}
 
 					if (finalStatus !== 'granted') {
 						debugLog("Permission denied");
