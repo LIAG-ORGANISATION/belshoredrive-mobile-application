@@ -17,6 +17,7 @@ export { ErrorBoundary } from "expo-router";
 
 import { supabase } from "@/lib/supabase";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+
 LogBox.ignoreLogs(["new NativeEventEmitter"]);
 
 // Configure notification behavior

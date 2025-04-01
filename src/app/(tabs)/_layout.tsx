@@ -8,14 +8,13 @@ import { SearchIcon } from "@/components/vectors/search";
 import { checkIfProfileComplete } from "@/lib/helpers/check-if-profile-complete";
 import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
 import { handleNotificationReceived, handleNotificationResponse } from "@/lib/notifications";
-import { supabase } from "@/lib/supabase";
 import { useHasUnreadMessages } from "@/network/chat";
 import { useGetSession } from "@/network/session";
 import { useFetchUserProfile } from "@/network/user-profile";
 import { Ionicons } from "@expo/vector-icons";
 import * as Notifications from "expo-notifications";
 import { Link, Tabs, router } from "expo-router";
-import { useEffect } from "react";
+import { useEffect, } from "react";
 
 import { Image, Pressable, Text, View } from "react-native";
 
@@ -102,10 +101,6 @@ export default function TabLayout() {
 
 		debugLog("=== NOTIFICATION SETUP END ===");
 	}, [session?.user]);
-
-	const slideAnim = useState(
-		new Animated.Value(Dimensions.get("window").width),
-	)[0];
 
 	if (loadingProfile) {
 		return <Text>Loading...</Text>;
