@@ -25,8 +25,8 @@ export const ToggleOption = ({
 				<Text className="text-zinc-400 text-base">{description}</Text>
 			</View>
 			<Switch
-				trackColor={{ false: "#767577", true: "#81b0ff" }}
-				thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+				trackColor={{ false: "#767577", true: "#fff" }}
+				thumbColor={isEnabled ? "#4aa8ba" : "#f4f3f4"}
 				ios_backgroundColor="#3e3e3e"
 				onValueChange={toggleSwitch}
 				value={isEnabled}
