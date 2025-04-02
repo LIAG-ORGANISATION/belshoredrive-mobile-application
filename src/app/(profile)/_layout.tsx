@@ -40,7 +40,7 @@ export default function TabLayout() {
 								onPress={() =>
 									router.push({
 										pathname: "/(tabs)/profile",
-										params: { initialTab: 1, userId: profile.user_id },
+										params: { initialTab: 1 },
 									})
 								}
 							/>
@@ -62,7 +62,7 @@ export default function TabLayout() {
 								onPress={() =>
 									router.push({
 										pathname: "/(tabs)/profile",
-										params: { initialTab: 1, userId: profile?.user_id },
+										params: { initialTab: 1 },
 									})
 								}
 							/>
@@ -85,7 +85,7 @@ export default function TabLayout() {
 								onPress={() =>
 									router.push({
 										pathname: "/(tabs)/profile",
-										params: { initialTab: 1, userId: profile?.user_id },
+										params: { initialTab: 1 },
 									})
 								}
 							/>
@@ -131,7 +131,7 @@ export default function TabLayout() {
 								onPress={() =>
 									router.push({
 										pathname: "/(tabs)/profile",
-										params: { initialTab: 1, userId: profile?.user_id },
+										params: { initialTab: 1 },
 									})
 								}
 							/>
@@ -154,7 +154,7 @@ export default function TabLayout() {
 								onPress={() =>
 									router.push({
 										pathname: "/(tabs)/profile",
-										params: { initialTab: 1, userId: profile?.user_id },
+										params: { initialTab: 1 },
 									})
 								}
 							/>

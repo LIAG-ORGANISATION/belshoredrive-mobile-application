@@ -25,6 +25,11 @@ export type VehicleWithComments = Tables<"vehicles"> & {
 	brands: Pick<Tables<"brands">, "name"> | null;
 };
 
+export type UserVehicleWithComments = {
+	publishedVehicles: VehicleWithComments[];
+	draftsVehicle: VehicleWithComments[];
+};
+
 const COMMENTS_PER_PAGE = 10;
 
 // Type for paginated comments
@@ -144,14 +149,20 @@ export function useVehicles() {
 }
 
 // Fetch vehicles by user
-export function useUserVehicles(
+export function useUserVehicles<
+	T extends "VehicleWithComments" | "UserVehicleWithComments",
+>(
 	userId: string,
 	showDraftVehicles: boolean,
-): UseQueryResult<VehicleWithComments[]> {
+): UseQueryResult<
+	T extends "VehicleWithComments"
+		? VehicleWithComments[]
+		: UserVehicleWithComments
+> {
 	return useQuery({
 		queryKey: QueryKeys.USER_VEHICLES(userId),
 		queryFn: async () => {
-			let query = supabase
+			const query = supabase
 				.from("vehicles")
 				.select(`
           *,
@@ -163,17 +174,35 @@ export function useUserVehicles(
           )
         `)
 				.eq("user_id", userId)
-				.order("created_at", { ascending: false });
+				.order("created_at", { ascending: false })
+				.eq("is_published", true);
 
-			// Only filter by is_published if we're not showing drafts
-			if (!showDraftVehicles) {
-				query = query.eq("is_published", true);
+			const draftQuery = supabase
+				.from("vehicles")
+				.select(`
+          *,
+          brands (
+            name
+          )
+        `)
+				.eq("user_id", userId)
+				.order("created_at", { ascending: false })
+				.eq("is_published", false);
+
+			if (showDraftVehicles) {
+				const { data, error } = await query;
+				const { data: draftData, error: draftError } = await draftQuery;
+				if (error || draftError) throw error || draftError;
+				return {
+					publishedVehicles: data || [],
+					draftsVehicle: draftData || [],
+				} as UserVehicleWithComments;
 			}
 
 			const { data, error } = await query;
 
 			if (error) throw error;
-			return data;
+			return data as VehicleWithComments[];
 		},
 	});
 }

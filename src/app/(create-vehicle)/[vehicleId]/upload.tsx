@@ -1,16 +1,28 @@
 import { Button } from "@/components/ui/button";
 import { CameraIcon } from "@/components/vectors/camera-icon";
 import { GalleryIcon } from "@/components/vectors/gallery-icon";
-import { useCreateVehicle, useUploadVehicleMedia } from "@/network/vehicles";
+import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
+import {
+	useFetchVehicleById,
+	useUpdateVehicle,
+	useUploadVehicleMedia,
+} from "@/network/vehicles";
 import { Ionicons } from "@expo/vector-icons";
 import { FlashList } from "@shopify/flash-list";
 import * as ImageManipulator from "expo-image-manipulator";
 import { SaveFormat } from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
 import type { ImagePickerAsset } from "expo-image-picker";
-import { router } from "expo-router";
-import { useEffect, useState } from "react";
-import { Dimensions, Image, Pressable, Text, View } from "react-native";
+import { router, useLocalSearchParams } from "expo-router";
+import { useEffect, useLayoutEffect, useState } from "react";
+import {
+	ActivityIndicator,
+	Dimensions,
+	Image,
+	Pressable,
+	Text,
+	View,
+} from "react-native";
 import {
 	Gesture,
 	GestureDetector,
@@ -24,11 +36,17 @@ import Animated, {
 
 const MAX_IMAGES = 15;
 
-export default function CreateVehicle() {
+export default function UploadVehicleMedia() {
+	const { vehicleId } = useLocalSearchParams();
+	const { data: vehicle, isLoading: isVehicleLoading } = useFetchVehicleById(
+		vehicleId as string,
+	);
+	const [loadingImages, setLoadingImages] = useState<boolean>(true);
+
 	const [selectedIndex, setSelectedIndex] = useState<number>(0);
 	const [isLoading, setIsLoading] = useState(false);
 	const { mutate: uploadMedia, data: mediaData } = useUploadVehicleMedia();
-	const { mutate: createVehicle, data: vehicleData } = useCreateVehicle();
+	const { mutate: updateVehicle, data: vehicleData } = useUpdateVehicle();
 	const { width, height } = Dimensions.get("window");
 
 	const sharedValuePool = Array.from({ length: MAX_IMAGES }).map(() => ({
@@ -280,6 +298,8 @@ export default function CreateVehicle() {
 		let index = 0;
 		for (const image of images) {
 			if (!image.uri) continue;
+			if (!image.uri.includes("file://")) continue;
+
 			try {
 				const center = {
 					x: image.width / 2,
@@ -375,11 +395,12 @@ export default function CreateVehicle() {
 			})),
 			{
 				onSuccess: (media) => {
-					createVehicle(
+					updateVehicle(
 						{
-							// brand_id: "1",
-							// model: "Model 1",
-							media: media,
+							vehicleId: vehicleId as string,
+							updates: {
+								media: [...(vehicle?.media || []), ...media],
+							},
 						},
 						{
 							onSuccess: (vehicle) => {
@@ -392,6 +413,33 @@ export default function CreateVehicle() {
 		);
 	};
 
+	useLayoutEffect(() => {
+		if (vehicle?.media?.length && vehicle?.media?.length > 0) {
+			const loadedImages: (ImagePickerAsset & { add?: boolean })[] = images;
+			vehicle.media.map((media, index) => {
+				loadedImages[index] = {
+					uri: media,
+					width: 0,
+					height: 0,
+					base64: "",
+					add: false,
+				};
+			});
+			setImages(loadedImages);
+			setLoadingImages(false);
+		} else if (vehicle?.media?.length === 0 && !isVehicleLoading) {
+			setLoadingImages(false);
+		}
+	}, [vehicle]);
+
+	if (isVehicleLoading || loadingImages) {
+		return (
+			<View className="w-full h-full items-center justify-center bg-black">
+				<ActivityIndicator size="large" color="white" />
+			</View>
+		);
+	}
+
 	return (
 		<View className="w-full h-fit max-h-screen flex-1 items-start justify-between pb-safe-offset-4 px-safe-offset-4 bg-black">
 			<Text className="text-white text-2xl font-bold">
@@ -402,9 +450,16 @@ export default function CreateVehicle() {
 					<View className="w-full relative aspect-square rounded-lg overflow-hidden">
 						{images[selectedIndex] && (
 							<GestureDetector gesture={composed}>
-								<Animated.View className="w-full h-full">
+								<Animated.View className="w-full h-full bg-red-100">
 									<Animated.Image
-										source={{ uri: images[selectedIndex].uri }}
+										source={{
+											uri: !images[selectedIndex].uri.includes("file://")
+												? formatPicturesUri(
+														"vehicles",
+														images[selectedIndex].uri,
+													)
+												: images[selectedIndex].uri,
+										}}
 										className="w-full h-full"
 										style={[imageStyle]}
 										resizeMode="contain"
@@ -433,6 +488,7 @@ export default function CreateVehicle() {
 					renderItem={({ item, index }) => (
 						<Pressable
 							onPress={() => {
+								console.log(index);
 								if (index <= MAX_IMAGES) {
 									setSelectedIndex(index);
 								}
@@ -445,7 +501,11 @@ export default function CreateVehicle() {
 						>
 							{item.uri.length > 0 ? (
 								<Image
-									source={{ uri: item.uri }}
+									source={{
+										uri: item.uri.includes("file://")
+											? item.uri
+											: formatPicturesUri("vehicles", item.uri),
+									}}
 									className="w-full h-full"
 									resizeMode="cover"
 								/>

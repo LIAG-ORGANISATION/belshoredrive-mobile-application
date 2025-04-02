@@ -12,7 +12,6 @@ export default function UpdateProfileScreen() {
 					pathname: "/(tabs)/profile",
 					params: {
 						initialTab: 1,
-						userId: profile?.user_id,
 					},
 				})
 			}

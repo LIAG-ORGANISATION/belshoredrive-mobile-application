@@ -31,6 +31,26 @@ export default function CreateVehicleLayout() {
 				}}
 			/>
 			<Stack.Screen
+				name="[vehicleId]/upload"
+				options={{
+					headerShown: true,
+					headerStyle: { backgroundColor: "#000" },
+					headerTitle: () => <ProgressBar currentStep={0} totalSteps={5} />,
+					headerLeft: () => (
+						<Ionicons
+							name="close"
+							size={24}
+							color="white"
+							onPress={() =>
+								router.replace({
+									pathname: "/(tabs)/profile",
+								})
+							}
+						/>
+					),
+				}}
+			/>
+			<Stack.Screen
 				name="[vehicleId]/index"
 				options={{
 					headerShown: true,
