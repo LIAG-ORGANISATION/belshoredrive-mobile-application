@@ -98,7 +98,6 @@ export const ChooseBrand = ({
 					{subtitle}
 				</Text>
 			)}
-			{/* TODO: Make it as generic components for all screen that needs this */}
 			{loadingBrands || loadingVehicle ? (
 				<View className="flex flex-row flex-wrap gap-2 pb-4">
 					{[...Array(10)].map((_, index) => (
@@ -107,7 +106,7 @@ export const ChooseBrand = ({
 				</View>
 			) : (
 				<View className="flex-1">
-					<View className="min-h-[600px]">
+					<View className="flex-1">
 						<ChipSelector<ChooseBrandType, ExtractId<BrandsType, "brand_id">>
 							name="brand_id"
 							control={control}
@@ -122,14 +121,13 @@ export const ChooseBrand = ({
 							selectingType="single"
 						/>
 					</View>
-					<View className="flex-1">
-						<Button
-							variant="secondary"
-							label="Continuer"
-							disabled={!isValid || isSubmitting}
-							onPress={handleSubmit(onSubmit)}
-						/>
-					</View>
+					<Button
+						variant="secondary"
+						label="Continuer"
+						disabled={!isValid || isSubmitting}
+						onPress={handleSubmit(onSubmit)}
+						className="mx-2 mb-10"
+					/>
 				</View>
 			)}
 		</View>
