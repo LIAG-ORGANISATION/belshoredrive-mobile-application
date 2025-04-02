@@ -107,7 +107,7 @@ export const ChooseBrand = ({
 				</View>
 			) : (
 				<View className="flex-1">
-					<View className="min-h-[500px]">
+					<View className="min-h-[600px]">
 						<ChipSelector<ChooseBrandType, ExtractId<BrandsType, "brand_id">>
 							name="brand_id"
 							control={control}

@@ -1,7 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Tabs } from "@/components/ui/tabs";
 import { VehicleCard } from "@/components/ui/vehicle-card";
-import { type ChipItem, type ChipProps, UserDetails } from "@/components/user-details";
+import {
+	type ChipItem,
+	type ChipProps,
+	UserDetails,
+} from "@/components/user-details";
 import { Socials } from "@/components/user-details/socials";
 import { EditIcon } from "@/components/vectors/edit-icon";
 import { IdentificationIcon } from "@/components/vectors/identification-icon";
@@ -23,9 +27,10 @@ import { useFetchUserInterests } from "@/network/interests";
 import { useFetchUserProfileById } from "@/network/user-profile";
 import { useUserVehicles } from "@/network/vehicles";
 import { Ionicons } from "@expo/vector-icons";
-import * as FileSystem from 'expo-file-system';
+import { FlashList } from "@shopify/flash-list";
+import * as FileSystem from "expo-file-system";
 import { router, useLocalSearchParams } from "expo-router";
-import * as Sharing from 'expo-sharing';
+import * as Sharing from "expo-sharing";
 import { useCallback, useLayoutEffect, useRef } from "react";
 import {
 	Dimensions,
@@ -52,10 +57,14 @@ export const ProfileComponent = ({
 
 	const { data: profile, isLoading: isProfileLoading } =
 		useFetchUserProfileById(userId as string);
-	const { data: vehicles } = useUserVehicles(userId, showDraftVehicles);
-	const { data: followersCount } = useFollowersCount(userId);
-	const { data: followingCount } = useFollowingCount(userId);
-	const { data: isFollowing } = useIsFollowing(userId);
+	const { data: vehicles, isLoading: isLoadingVehicles } =
+		useUserVehicles<"UserVehicleWithComments">(userId, showDraftVehicles);
+	const { data: followersCount, isLoading: isLoadingFollowersCount } =
+		useFollowersCount(userId);
+	const { data: followingCount, isLoading: isLoadingFollowingCount } =
+		useFollowingCount(userId);
+	const { data: isFollowing, isLoading: isLoadingIsFollowing } =
+		useIsFollowing(userId);
 	const { data: interests, isLoading: isLoadingInterests } =
 		useFetchUserInterests({
 			ids: profile?.interests ?? [],
@@ -63,7 +72,6 @@ export const ProfileComponent = ({
 			enabled: !!profile?.interests,
 		});
 	const { mutate: createChat } = useCreateConversation();
-
 	const { mutate: followUser } = useFollowUser();
 	const { mutate: unfollowUser } = useUnfollowUser();
 
@@ -96,10 +104,10 @@ export const ProfileComponent = ({
 			await Share.share({
 				message: shareUrl,
 				url: shareUrl, // iOS only
-				title: `Check out ${profile.pseudo}'s profile on Belshore Drive`
+				title: `Check out ${profile.pseudo}'s profile on Belshore Drive`,
 			});
 		} catch (error) {
-			console.error('Error sharing:', error);
+			console.error("Error sharing:", error);
 		}
 	};
 
@@ -133,49 +141,51 @@ export const ProfileComponent = ({
 									<Ionicons name="download-outline" size={24} color="white" />
 								}
 								onPress={async () => {
-									console.log('Starting QR code save process...');
+									console.log("Starting QR code save process...");
 									try {
 										if (!qrCodeRef.current) {
-											console.log('QR code ref is null');
+											console.log("QR code ref is null");
 											return;
 										}
 
-										console.log('Getting QR code data URL...');
+										console.log("Getting QR code data URL...");
 										qrCodeRef.current.toDataURL(async (dataURL) => {
 											try {
 												// Create a temporary file
-												const tempFile = `${FileSystem.cacheDirectory}${profile?.pseudo || 'qrcode'}-${Date.now()}.png`;
-												console.log('Creating temporary file:', tempFile);
+												const tempFile = `${FileSystem.cacheDirectory}${profile?.pseudo || "qrcode"}-${Date.now()}.png`;
+												console.log("Creating temporary file:", tempFile);
 
 												// Write to temp file
 												await FileSystem.writeAsStringAsync(tempFile, dataURL, {
-													encoding: FileSystem.EncodingType.Base64
+													encoding: FileSystem.EncodingType.Base64,
 												});
 
 												// Check if sharing is available
 												const isAvailable = await Sharing.isAvailableAsync();
 												if (!isAvailable) {
-													console.log('Sharing is not available');
+													console.log("Sharing is not available");
 													return;
 												}
 
 												// Open share dialog
 												await Sharing.shareAsync(tempFile, {
-													mimeType: 'image/png',
-													dialogTitle: 'Save QR Code',
-													UTI: 'public.png' // iOS only
+													mimeType: "image/png",
+													dialogTitle: "Save QR Code",
+													UTI: "public.png", // iOS only
 												});
 
 												// Clean up temp file
-												await FileSystem.deleteAsync(tempFile, { idempotent: true });
+												await FileSystem.deleteAsync(tempFile, {
+													idempotent: true,
+												});
 											} catch (error) {
-												console.error('Error in file operations:', error);
+												console.error("Error in file operations:", error);
 											}
 										});
 									} catch (error) {
-										console.error('Error getting QR code data:', error);
+										console.error("Error getting QR code data:", error);
 										if (error instanceof Error) {
-											console.error('Error details:', error.message);
+											console.error("Error details:", error.message);
 										}
 									}
 								}}
@@ -218,15 +228,27 @@ export const ProfileComponent = ({
 		</View>
 	);
 
-	const renderChips = (
-		items: ChipItem[],
-		keyExtractor: (item: ChipItem) => string,
-		onAddPress: () => void,
-	) => (
+	const renderChips = (items: ChipItem[]) => (
 		<View className="flex-row flex-wrap gap-2">
 			{items?.map((item) => renderChip({ item }))}
 		</View>
 	);
+
+	if (
+		isProfileLoading ||
+		isLoadingInterests ||
+		isLoadingVehicles ||
+		isLoadingFollowersCount ||
+		isLoadingFollowingCount ||
+		isLoadingIsFollowing
+	) {
+		return <SkeletonText width="w-full" />;
+	}
+
+	console.log("vehicles", vehicles);
+	console.log("vehicles?.draftsVehicle", vehicles?.draftsVehicle);
+	console.log("vehicles?.publishedVehicles", vehicles?.publishedVehicles);
+	console.log("userId", userId);
 
 	return (
 		<ScrollView className="w-full flex-1 bg-black text-white pt-4">
@@ -397,10 +419,49 @@ export const ProfileComponent = ({
 					{
 						content: (
 							<View className="flex flex-col gap-4 h-full pb-10">
-								{vehicles?.length === 0 && (
+								{vehicles && vehicles?.draftsVehicle.length > 0 && (
+									<FlashList
+										data={vehicles?.draftsVehicle}
+										estimatedItemSize={208}
+										className="h-52 max-h-52"
+										horizontal={true}
+										renderItem={({ item, index }) => (
+											<View
+												className={`w-32 aspect-[10/16] mr-2 rounded-lg overflow-hidden relative`}
+											>
+												<Image
+													source={{
+														uri: formatPicturesUri(
+															"vehicles",
+															item.media?.[0] as string,
+														),
+													}}
+													className="w-full h-full"
+													resizeMode="cover"
+												/>
+												<Pressable
+													onPress={() =>
+														router.replace({
+															pathname: "/(create-vehicle)/[vehicleId]/upload",
+															params: {
+																vehicleId: item.vehicle_id,
+																previousScreen: "(tabs)/profile",
+															},
+														})
+													}
+													className="absolute w-full h-full bg-black/50 p-2 rounded-lg flex items-center justify-center z-50"
+												>
+													<Text className="text-white">Compléter</Text>
+												</Pressable>
+											</View>
+										)}
+									/>
+								)}
+
+								{vehicles?.publishedVehicles.length === 0 && (
 									<Text className="text-white">Aucun véhicule trouvé</Text>
 								)}
-								{vehicles?.map((item) => (
+								{vehicles?.publishedVehicles.map((item) => (
 									<VehicleCard key={item.vehicle_id} item={item} />
 								))}
 							</View>

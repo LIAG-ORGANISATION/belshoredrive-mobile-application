@@ -7,14 +7,17 @@ import { OptionsIcon } from "@/components/vectors/options-icon";
 import { SearchIcon } from "@/components/vectors/search";
 import { checkIfProfileComplete } from "@/lib/helpers/check-if-profile-complete";
 import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
-import { handleNotificationReceived, handleNotificationResponse } from "@/lib/notifications";
+import {
+	handleNotificationReceived,
+	handleNotificationResponse,
+} from "@/lib/notifications";
 import { useHasUnreadMessages } from "@/network/chat";
 import { useGetSession } from "@/network/session";
 import { useFetchUserProfile } from "@/network/user-profile";
 import { Ionicons } from "@expo/vector-icons";
 import * as Notifications from "expo-notifications";
 import { Link, Tabs, router } from "expo-router";
-import { useEffect, } from "react";
+import { useEffect } from "react";
 
 import { Image, Pressable, Text, View } from "react-native";
 
@@ -42,19 +45,20 @@ export default function TabLayout() {
 			const setupNotifications = async () => {
 				try {
 					debugLog("Checking notification permissions");
-					const { status: existingStatus } = await Notifications.getPermissionsAsync();
+					const { status: existingStatus } =
+						await Notifications.getPermissionsAsync();
 					debugLog("Current permission status:", existingStatus);
 
 					let finalStatus = existingStatus;
 
-					if (existingStatus !== 'granted') {
+					if (existingStatus !== "granted") {
 						debugLog("Requesting permissions");
 						const { status } = await Notifications.requestPermissionsAsync();
 						finalStatus = status;
 						debugLog("New permission status:", status);
 					}
 
-					if (finalStatus !== 'granted') {
+					if (finalStatus !== "granted") {
 						debugLog("Permission denied");
 						return;
 					}
@@ -72,19 +76,19 @@ export default function TabLayout() {
 
 					// Set up listeners
 					debugLog("Setting up notification listeners");
-					const notificationListener = Notifications.addNotificationReceivedListener(
-						(notification) => {
+					const notificationListener =
+						Notifications.addNotificationReceivedListener((notification) => {
 							debugLog("🔔 Notification received in foreground:", notification);
 							handleNotificationReceived(notification);
-						}
-					);
+						});
 
-					const responseListener = Notifications.addNotificationResponseReceivedListener(
-						(response) => {
-							debugLog("🔔 Notification response received:", response);
-							handleNotificationResponse(response);
-						}
-					);
+					const responseListener =
+						Notifications.addNotificationResponseReceivedListener(
+							(response) => {
+								debugLog("🔔 Notification response received:", response);
+								handleNotificationResponse(response);
+							},
+						);
 
 					return () => {
 						debugLog("Cleaning up notification listeners");
@@ -298,14 +302,12 @@ export default function TabLayout() {
 						),
 						href: {
 							pathname: "/(tabs)/profile",
-							params: { userId: profile?.user_id },
 						},
 						tabBarIcon: ({ color, focused }) => (
 							<Pressable
 								onPress={() =>
 									router.push({
 										pathname: "/(tabs)/profile",
-										params: { userId: profile?.user_id },
 									})
 								}
 								className="flex-1 items-center justify-center"
