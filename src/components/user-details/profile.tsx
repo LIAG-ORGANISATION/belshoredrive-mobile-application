@@ -72,7 +72,6 @@ export const ProfileComponent = ({
 			enabled: !!profile?.interests,
 		});
 	const { mutate: createChat } = useCreateConversation();
-
 	const { mutate: followUser } = useFollowUser();
 	const { mutate: unfollowUser } = useUnfollowUser();
 
@@ -246,6 +245,11 @@ export const ProfileComponent = ({
 		return <SkeletonText width="w-full" />;
 	}
 
+	console.log("vehicles", vehicles);
+	console.log("vehicles?.draftsVehicle", vehicles?.draftsVehicle);
+	console.log("vehicles?.publishedVehicles", vehicles?.publishedVehicles);
+	console.log("userId", userId);
+
 	return (
 		<ScrollView className="w-full flex-1 bg-black text-white pt-4">
 			{/* profile details */}
@@ -415,9 +419,7 @@ export const ProfileComponent = ({
 					{
 						content: (
 							<View className="flex flex-col gap-4 h-full pb-10">
-								{vehicles?.draftsVehicle.length === 0 ? (
-									<Text className="text-white">Aucun véhicule trouvé</Text>
-								) : (
+								{vehicles && vehicles?.draftsVehicle.length > 0 && (
 									<FlashList
 										data={vehicles?.draftsVehicle}
 										estimatedItemSize={208}

@@ -161,6 +161,7 @@ export function useUserVehicles<
 > {
 	return useQuery({
 		queryKey: QueryKeys.USER_VEHICLES(userId),
+		enabled: !!userId,
 		queryFn: async () => {
 			const query = supabase
 				.from("vehicles")
@@ -189,20 +190,25 @@ export function useUserVehicles<
 				.order("created_at", { ascending: false })
 				.eq("is_published", false);
 
+			const { data: publishedData, error: publishedError } = await query;
+
 			if (showDraftVehicles) {
-				const { data, error } = await query;
 				const { data: draftData, error: draftError } = await draftQuery;
-				if (error || draftError) throw error || draftError;
+
+				if (publishedError || draftError) throw publishedError || draftError;
+
 				return {
-					publishedVehicles: data || [],
+					publishedVehicles: publishedData || [],
 					draftsVehicle: draftData || [],
 				} as UserVehicleWithComments;
 			}
 
-			const { data, error } = await query;
+			if (publishedError) throw publishedError;
 
-			if (error) throw error;
-			return data as VehicleWithComments[];
+			return {
+				publishedVehicles: publishedData as VehicleWithComments[],
+				draftsVehicle: [],
+			} as UserVehicleWithComments;
 		},
 	});
 }
