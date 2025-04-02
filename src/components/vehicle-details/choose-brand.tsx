@@ -1,4 +1,3 @@
-import { Fragment, useEffect } from "react";
 import { Text, View } from "react-native";
 
 import { valibotResolver } from "@hookform/resolvers/valibot";
@@ -15,8 +14,13 @@ import {
 	chooseBrandSchema,
 } from "@/lib/schemas/create-vehicle";
 import { type BrandsType, useFetchBrands } from "@/network/brands";
-import { useFetchVehicleById, useUpdateVehicle } from "@/network/vehicles";
+import {
+	useFetchVehicleById,
+	useFetchVehicleTypes,
+	useUpdateVehicle,
+} from "@/network/vehicles";
 
+import { useLayoutEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 export type ChooseBrandProps = {
@@ -32,13 +36,18 @@ export const ChooseBrand = ({
 	vehicleId,
 	onSubmitCallback,
 }: ChooseBrandProps) => {
+	const [selectedVehicleType, setSelectedVehicleType] = useState<
+		string | undefined
+	>(undefined);
+
+	const { data: vehicleTypes } = useFetchVehicleTypes(setSelectedVehicleType);
+	const { data: vehicle, isLoading: loadingVehicle } =
+		useFetchVehicleById(vehicleId);
 	const {
 		data: brands = [],
 		isLoading: loadingBrands,
 		error: brandsError,
-	} = useFetchBrands();
-	const { data: vehicle, isLoading: loadingVehicle } =
-		useFetchVehicleById(vehicleId);
+	} = useFetchBrands(selectedVehicleType);
 	const { mutate: updateVehicle } = useUpdateVehicle();
 	const {
 		control,
@@ -73,7 +82,7 @@ export const ChooseBrand = ({
 		}
 	};
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		reset({
 			brand_id: vehicle?.brand_id ?? "",
 		});
@@ -82,7 +91,7 @@ export const ChooseBrand = ({
 	if (brandsError) return <Text>Error: {brandsError.message}</Text>;
 
 	return (
-		<Fragment>
+		<View className="flex-1">
 			<Text className="text-white text-2xl font-bold py-4">{title}</Text>
 			{subtitle && (
 				<Text className="text-white/70 text-lg font-medium mb-2">
@@ -97,18 +106,23 @@ export const ChooseBrand = ({
 					))}
 				</View>
 			) : (
-				<Fragment>
-					<View className="flex-1">
+				<View className="flex-1">
+					<View className="min-h-[600px]">
 						<ChipSelector<ChooseBrandType, ExtractId<BrandsType, "brand_id">>
 							name="brand_id"
 							control={control}
 							items={mapToId(brands, "brand_id")}
+							selectedVehicleType={selectedVehicleType}
+							types={vehicleTypes?.map((type) => ({
+								label: type.label ?? "",
+								id: type.id,
+							}))}
 							haveSearch={true}
+							toggleType={setSelectedVehicleType}
 							selectingType="single"
 						/>
 					</View>
-
-					<View className="absolute bottom-0 w-full px-4 pb-10 pt-4 bg-black z-50 inset-x-0">
+					<View className="flex-1">
 						<Button
 							variant="secondary"
 							label="Continuer"
@@ -116,8 +130,8 @@ export const ChooseBrand = ({
 							onPress={handleSubmit(onSubmit)}
 						/>
 					</View>
-				</Fragment>
+				</View>
 			)}
-		</Fragment>
+		</View>
 	);
 };

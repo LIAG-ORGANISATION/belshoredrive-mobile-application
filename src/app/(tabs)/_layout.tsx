@@ -7,51 +7,104 @@ import { OptionsIcon } from "@/components/vectors/options-icon";
 import { SearchIcon } from "@/components/vectors/search";
 import { checkIfProfileComplete } from "@/lib/helpers/check-if-profile-complete";
 import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
-import { supabase } from "@/lib/supabase";
+import {
+	handleNotificationReceived,
+	handleNotificationResponse,
+} from "@/lib/notifications";
 import { useHasUnreadMessages } from "@/network/chat";
+import { useGetSession } from "@/network/session";
 import { useFetchUserProfile } from "@/network/user-profile";
 import { Ionicons } from "@expo/vector-icons";
+import * as Notifications from "expo-notifications";
 import { Link, Tabs, router } from "expo-router";
-import { useState } from "react";
-import {
-	Animated,
-	Dimensions,
-	Image,
-	Pressable,
-	Text,
-	TouchableOpacity,
-	View,
-} from "react-native";
+import { useEffect } from "react";
+
+import { Image, Pressable, Text, View } from "react-native";
+
+// At the top of your file, add this debug function
+const debugLog = (message: string, data?: any) => {
+	const log = data ? `${message}: ${JSON.stringify(data, null, 2)}` : message;
+	console.log(log);
+	// Force log to show even in production
+	if (__DEV__) {
+		console.warn(log);
+	}
+};
 
 export default function TabLayout() {
 	const { data: hasUnreadMessages } = useHasUnreadMessages();
 	const { data: profile, isLoading: loadingProfile } = useFetchUserProfile();
-	const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-	const slideAnim = useState(
-		new Animated.Value(Dimensions.get("window").width),
-	)[0];
 
-	const toggleDrawer = () => {
-		const toValue = isDrawerOpen ? Dimensions.get("window").width : 0;
-		Animated.timing(slideAnim, {
-			toValue,
-			duration: 300,
-			useNativeDriver: true,
-		}).start();
-		setIsDrawerOpen(!isDrawerOpen);
-	};
+	const { data: session } = useGetSession();
 
-	const handleLogout = async () => {
-		try {
-			const { error } = await supabase.auth.signOut();
-			if (error) throw error;
+	useEffect(() => {
+		debugLog("=== NOTIFICATION SETUP START ===");
+		debugLog("Session state:", { hasUser: !!session?.user });
 
-			// After successful logout, redirect to auth screen
-			router.replace("/auth");
-		} catch (error) {
-			console.error("Error logging out:", error);
+		if (session?.user) {
+			const setupNotifications = async () => {
+				try {
+					debugLog("Checking notification permissions");
+					const { status: existingStatus } =
+						await Notifications.getPermissionsAsync();
+					debugLog("Current permission status:", existingStatus);
+
+					let finalStatus = existingStatus;
+
+					if (existingStatus !== "granted") {
+						debugLog("Requesting permissions");
+						const { status } = await Notifications.requestPermissionsAsync();
+						finalStatus = status;
+						debugLog("New permission status:", status);
+					}
+
+					if (finalStatus !== "granted") {
+						debugLog("Permission denied");
+						return;
+					}
+
+					// Test if we can get the token
+					try {
+						debugLog("Getting Expo push token");
+						const tokenData = await Notifications.getExpoPushTokenAsync({
+							projectId: process.env.EXPO_PUBLIC_PROJECT_ID,
+						});
+						debugLog("Successfully got push token:", tokenData);
+					} catch (tokenError) {
+						debugLog("Error getting push token:", tokenError);
+					}
+
+					// Set up listeners
+					debugLog("Setting up notification listeners");
+					const notificationListener =
+						Notifications.addNotificationReceivedListener((notification) => {
+							debugLog("🔔 Notification received in foreground:", notification);
+							handleNotificationReceived(notification);
+						});
+
+					const responseListener =
+						Notifications.addNotificationResponseReceivedListener(
+							(response) => {
+								debugLog("🔔 Notification response received:", response);
+								handleNotificationResponse(response);
+							},
+						);
+
+					return () => {
+						debugLog("Cleaning up notification listeners");
+						Notifications.removeNotificationSubscription(notificationListener);
+						Notifications.removeNotificationSubscription(responseListener);
+					};
+				} catch (error) {
+					debugLog("Error in notification setup:", error);
+				}
+			};
+
+			setupNotifications();
 		}
-	};
+
+		debugLog("=== NOTIFICATION SETUP END ===");
+	}, [session?.user]);
 
 	if (loadingProfile) {
 		return <Text>Loading...</Text>;
@@ -87,6 +140,7 @@ export default function TabLayout() {
 						padding: 0,
 						margin: 0,
 					},
+					gestureEnabled: false,
 				}}
 			>
 				<Tabs.Screen
@@ -165,6 +219,10 @@ export default function TabLayout() {
 						headerShown: false,
 						headerStyle: { backgroundColor: "#000" },
 						headerTitle: "",
+						sceneStyle: {
+							paddingHorizontal: 12,
+							backgroundColor: "#000",
+						},
 						tabBarIcon: ({ color }) => (
 							<View className="w-full">
 								<Pressable
@@ -184,7 +242,7 @@ export default function TabLayout() {
 						tabBarShowLabel: false,
 						tabBarIcon: (props) => (
 							<Pressable
-								onPress={() => router.replace("/create-vehicle")}
+								onPress={() => router.replace("/(create-vehicle)")}
 								className="flex-1 items-center justify-center h-full relative"
 							>
 								<View className="absolute bottom-1 p-4 mx-auto bg-[#4AA8BA] rounded-full flex items-center justify-center">
@@ -214,6 +272,7 @@ export default function TabLayout() {
 						headerShown: true,
 						title: "Mon profil",
 						sceneStyle: {
+							paddingHorizontal: 12,
 							backgroundColor: "#000",
 						},
 						headerTitleAlign: "center",
@@ -226,21 +285,29 @@ export default function TabLayout() {
 						tabBarShowLabel: false,
 						headerRight: () => (
 							<View className="flex-row items-center gap-2 rotate-90">
-								<Pressable onPress={toggleDrawer}>
+								<Pressable
+									onPress={() => {
+										router.replace({
+											pathname: "/(tabs)/settings",
+											params: {
+												userId: profile?.user_id,
+												previousScreen: "/(tabs)/profile",
+											},
+										});
+									}}
+								>
 									<Ionicons name="settings-outline" size={24} color="#fff" />
 								</Pressable>
 							</View>
 						),
 						href: {
 							pathname: "/(tabs)/profile",
-							params: { userId: profile?.user_id },
 						},
 						tabBarIcon: ({ color, focused }) => (
 							<Pressable
 								onPress={() =>
 									router.push({
 										pathname: "/(tabs)/profile",
-										params: { userId: profile?.user_id },
 									})
 								}
 								className="flex-1 items-center justify-center"
@@ -272,6 +339,7 @@ export default function TabLayout() {
 				<Tabs.Screen
 					name="user"
 					options={{
+						tabBarShowLabel: false,
 						href: null,
 						title: "Utilisateur",
 						headerShown: true,
@@ -279,203 +347,29 @@ export default function TabLayout() {
 						headerStyle: { backgroundColor: "#000" },
 					}}
 				/>
-
 				<Tabs.Screen
-					name="update-services"
+					name="settings"
 					options={{
+						tabBarShowLabel: false,
 						href: null,
+						title: "Paramètres",
 						headerShown: true,
 						headerTintColor: "white",
-						headerTitle: "Modifier mes services",
-						headerStyle: { backgroundColor: "#000" },
-						headerLeft: () => (
-							<Ionicons
-								name="chevron-back"
-								size={24}
-								color="white"
-								onPress={() =>
-									router.push({
-										pathname: "/(tabs)/profile",
-										params: { initialTab: 1 },
-									})
-								}
-							/>
-						),
-					}}
-				/>
-				<Tabs.Screen
-					name="update-interests"
-					options={{
-						href: null,
-						headerShown: true,
-						headerTintColor: "white",
-						headerTitle: "Modifier mes centres d'intérêts",
-						headerStyle: { backgroundColor: "#000" },
-						headerLeft: () => (
-							<Ionicons
-								name="chevron-back"
-								size={24}
-								color="white"
-								onPress={() =>
-									router.push({
-										pathname: "/(tabs)/profile",
-										params: { initialTab: 1 },
-									})
-								}
-							/>
-						),
-					}}
-				/>
-				<Tabs.Screen
-					name="update-departments"
-					options={{
-						href: null,
-						headerShown: true,
-						headerTintColor: "white",
-						headerTitle: "Modifier mes départements",
-						headerStyle: { backgroundColor: "#000" },
-						headerLeft: () => (
-							<Ionicons
-								name="chevron-back"
-								size={24}
-								color="white"
-								onPress={() =>
-									router.push({
-										pathname: "/(tabs)/profile",
-										params: { initialTab: 1 },
-									})
-								}
-							/>
-						),
-					}}
-				/>
-
-				<Tabs.Screen
-					name="update-profile"
-					options={{
-						href: null,
-						headerShown: true,
-						headerTintColor: "white",
-						headerTitle: "Modifier mes informations",
-						headerStyle: { backgroundColor: "#000" },
-						headerLeft: () => (
-							<Ionicons
-								name="chevron-back"
-								size={24}
-								color="white"
-								onPress={() =>
-									router.push({
-										pathname: "/(tabs)/update-pseudo",
-										params: { userId: profile?.user_id },
-									})
-								}
-							/>
-						),
-					}}
-				/>
-
-				<Tabs.Screen
-					name="update-pseudo"
-					options={{
-						href: null,
-						headerShown: true,
-						headerTintColor: "white",
-						headerTitle: "Modifier mon pseudo",
-						headerStyle: { backgroundColor: "#000" },
-						headerLeft: () => (
-							<Ionicons
-								name="chevron-back"
-								size={24}
-								color="white"
-								onPress={() =>
-									router.push({
-										pathname: "/(tabs)/profile",
-										params: { initialTab: 1, userId: profile?.user_id },
-									})
-								}
-							/>
-						),
-					}}
-				/>
-
-				<Tabs.Screen
-					name="update-avatar"
-					options={{
-						href: null,
-						headerShown: true,
-						headerTintColor: "white",
-						headerTitle: "Modifier mon avatar",
-						headerStyle: { backgroundColor: "#000" },
-						headerLeft: () => (
-							<Ionicons
-								name="chevron-back"
-								size={24}
-								color="white"
-								onPress={() =>
-									router.push({
-										pathname: "/(tabs)/profile",
-										params: { initialTab: 1, userId: profile?.user_id },
-									})
-								}
-							/>
-						),
-					}}
-				/>
-
-				<Tabs.Screen
-					name="followers"
-					options={{
-						href: null,
-						headerShown: true,
-						headerTintColor: "white",
-						headerTitle: "Suivi",
 						headerStyle: { backgroundColor: "#000" },
 					}}
 				/>
-
 				<Tabs.Screen
-					name="following"
+					name="notification-preferences"
 					options={{
+						tabBarShowLabel: false,
 						href: null,
+						title: "Notifications",
 						headerShown: true,
 						headerTintColor: "white",
-						headerTitle: "Suivi",
 						headerStyle: { backgroundColor: "#000" },
 					}}
 				/>
 			</Tabs>
-
-			{/* Drawer Menu */}
-			<Animated.View
-				className="absolute top-0 right-0 h-full bg-[#1F1F1F] w-72 z-50"
-				style={{
-					transform: [{ translateX: slideAnim }],
-					borderLeftWidth: 1,
-					borderLeftColor: "#2F2F2F",
-				}}
-			>
-				<View className="p-6">
-					<Text className="text-white text-xl font-bold mb-6">Menu</Text>
-					<Pressable
-						className="py-3"
-						onPress={() => {
-							toggleDrawer();
-						}}
-					>
-						<TouchableOpacity onPress={handleLogout}>
-							<Text className="text-white text-lg">Déconnexion</Text>
-						</TouchableOpacity>
-					</Pressable>
-				</View>
-			</Animated.View>
-
-			{/* Backdrop */}
-			{isDrawerOpen && (
-				<Pressable
-					className="absolute top-0 left-0 right-0 bottom-0 bg-black/50"
-					onPress={toggleDrawer}
-				/>
-			)}
 		</View>
 	);
 }

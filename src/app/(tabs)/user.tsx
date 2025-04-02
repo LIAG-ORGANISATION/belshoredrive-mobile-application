@@ -20,7 +20,7 @@ export default function UserScreen() {
 					return (
 						<Pressable
 							onPress={() =>
-								router.replace({
+								router.push({
 									pathname: previousScreen as RelativePathString,
 									params: { userId },
 								})
@@ -34,5 +34,11 @@ export default function UserScreen() {
 		}
 	}, [previousScreen]);
 
-	return <ProfileComponent userId={userId as string} isCurrentUser={false} />;
+	return (
+		<ProfileComponent
+			userId={userId as string}
+			isCurrentUser={false}
+			showDraftVehicles={false}
+		/>
+	);
 }

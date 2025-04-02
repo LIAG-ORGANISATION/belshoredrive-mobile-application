@@ -1,8 +1,11 @@
-import { ExternalLink } from "@/components/ExternalLink";
 import { Button } from "@/components/ui/button";
 import { Tabs } from "@/components/ui/tabs";
 import { VehicleCard } from "@/components/ui/vehicle-card";
-import { UserDetails } from "@/components/user-details";
+import {
+	type ChipItem,
+	type ChipProps,
+	UserDetails,
+} from "@/components/user-details";
 import { Socials } from "@/components/user-details/socials";
 import { EditIcon } from "@/components/vectors/edit-icon";
 import { IdentificationIcon } from "@/components/vectors/identification-icon";
@@ -10,6 +13,7 @@ import { LinkIcon } from "@/components/vectors/link-icon";
 import { QrCodeIcon } from "@/components/vectors/qr-code-icon";
 import { ShareIcon } from "@/components/vectors/share-icon";
 import { WheelIcon } from "@/components/vectors/wheel-icon";
+import { useBottomSheet } from "@/context/BottomSheetContext";
 import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
 import { useCreateConversation } from "@/network/chat";
 import {
@@ -19,51 +23,63 @@ import {
 	useUnfollowUser,
 } from "@/network/follows";
 import { useFollowersCount } from "@/network/follows";
+import { useFetchUserInterests } from "@/network/interests";
 import { useFetchUserProfileById } from "@/network/user-profile";
 import { useUserVehicles } from "@/network/vehicles";
 import { Ionicons } from "@expo/vector-icons";
-import BottomSheet, {
-	BottomSheetScrollView,
-	BottomSheetView,
-} from "@gorhom/bottom-sheet";
+import { FlashList } from "@shopify/flash-list";
+import * as FileSystem from "expo-file-system";
 import { router, useLocalSearchParams } from "expo-router";
-import { useCallback, useRef } from "react";
+import * as Sharing from "expo-sharing";
+import { useCallback, useLayoutEffect, useRef } from "react";
 import {
 	Dimensions,
 	Image,
 	Pressable,
 	ScrollView,
+	Share,
 	Text,
 	View,
 } from "react-native";
 import QRCode from "react-native-qrcode-svg";
-import { CopyInput } from "../ui/copy-input";
+import { v4 as uuidv4 } from "uuid";
+import { BottomSheetContent } from "../ui/bottom-sheet";
+import { Chip } from "../ui/chip";
+import { SkeletonChip } from "../ui/skeleton-chip";
 import { SkeletonText } from "../ui/skeleton-text";
 
 export const ProfileComponent = ({
 	userId,
 	isCurrentUser,
-}: { userId: string; isCurrentUser: boolean }) => {
-	const bottomSheetRef = useRef<BottomSheet>(null);
-
+	showDraftVehicles,
+}: { userId: string; isCurrentUser: boolean; showDraftVehicles: boolean }) => {
 	const { initialTab } = useLocalSearchParams();
 
 	const { data: profile, isLoading: isProfileLoading } =
 		useFetchUserProfileById(userId as string);
-	const { data: vehicles } = useUserVehicles(userId as string);
-	const { data: followersCount } = useFollowersCount(userId as string);
-	const { data: followingCount } = useFollowingCount(userId as string);
-	const { data: isFollowing } = useIsFollowing(userId as string);
+	const { data: vehicles, isLoading: isLoadingVehicles } =
+		useUserVehicles<"UserVehicleWithComments">(userId, showDraftVehicles);
+	const { data: followersCount, isLoading: isLoadingFollowersCount } =
+		useFollowersCount(userId);
+	const { data: followingCount, isLoading: isLoadingFollowingCount } =
+		useFollowingCount(userId);
+	const { data: isFollowing, isLoading: isLoadingIsFollowing } =
+		useIsFollowing(userId);
+	const { data: interests, isLoading: isLoadingInterests } =
+		useFetchUserInterests({
+			ids: profile?.interests ?? [],
+			limit: 5,
+			enabled: !!profile?.interests,
+		});
 	const { mutate: createChat } = useCreateConversation();
-
 	const { mutate: followUser } = useFollowUser();
 	const { mutate: unfollowUser } = useUnfollowUser();
 
 	const { width } = Dimensions.get("window");
 
-	const handleSheetChanges = useCallback((index: number) => {
-		console.log("handleSheetChanges", index);
-	}, []);
+	const { registerSheet, showSheet } = useBottomSheet();
+
+	const qrCodeRef = useRef<QRCode>();
 
 	const handleCreate = () => {
 		createChat(
@@ -79,13 +95,160 @@ export const ProfileComponent = ({
 		);
 	};
 
-	const handleOpenBottomSheet = useCallback(() => {
-		bottomSheetRef.current?.expand();
-	}, []);
+	const handleShare = async () => {
+		if (!profile?.user_id) return;
 
-	// const handleCloseBottomSheet = useCallback(() => {
-	// 	bottomSheetRef.current?.close();
-	// }, []);
+		const shareUrl = `com.belshoredrive.app://${profile.user_id}`;
+
+		try {
+			await Share.share({
+				message: shareUrl,
+				url: shareUrl, // iOS only
+				title: `Check out ${profile.pseudo}'s profile on Belshore Drive`,
+			});
+		} catch (error) {
+			console.error("Error sharing:", error);
+		}
+	};
+
+	// Register the bottom sheet on component mount
+	useLayoutEffect(() => {
+		if (profile?.pseudo) {
+			const qrCodeContent = (
+				<BottomSheetContent>
+					<View className="w-full flex-col gap-4 justify-center items-center py-8 px-4">
+						<View className="w-full items-center rounded-lg bg-[#0E57C1] py-8 px-4">
+							<QRCode
+								getRef={(ref) => {
+									qrCodeRef.current = ref;
+								}}
+								size={width * 0.8}
+								color={"white"}
+								value={`com.belshoredrive.app://${profile?.user_id}`}
+								backgroundColor="#0E57C1"
+								logo={{
+									uri: qrCodeLogoBase64,
+								}}
+								logoSize={90}
+							/>
+						</View>
+						<View className="w-full flex flex-col gap-2">
+							<Button
+								variant="primary"
+								label="Télécharger en PNG"
+								className=" !justify-start gap-4"
+								icon={
+									<Ionicons name="download-outline" size={24} color="white" />
+								}
+								onPress={async () => {
+									console.log("Starting QR code save process...");
+									try {
+										if (!qrCodeRef.current) {
+											console.log("QR code ref is null");
+											return;
+										}
+
+										console.log("Getting QR code data URL...");
+										qrCodeRef.current.toDataURL(async (dataURL) => {
+											try {
+												// Create a temporary file
+												const tempFile = `${FileSystem.cacheDirectory}${profile?.pseudo || "qrcode"}-${Date.now()}.png`;
+												console.log("Creating temporary file:", tempFile);
+
+												// Write to temp file
+												await FileSystem.writeAsStringAsync(tempFile, dataURL, {
+													encoding: FileSystem.EncodingType.Base64,
+												});
+
+												// Check if sharing is available
+												const isAvailable = await Sharing.isAvailableAsync();
+												if (!isAvailable) {
+													console.log("Sharing is not available");
+													return;
+												}
+
+												// Open share dialog
+												await Sharing.shareAsync(tempFile, {
+													mimeType: "image/png",
+													dialogTitle: "Save QR Code",
+													UTI: "public.png", // iOS only
+												});
+
+												// Clean up temp file
+												await FileSystem.deleteAsync(tempFile, {
+													idempotent: true,
+												});
+											} catch (error) {
+												console.error("Error in file operations:", error);
+											}
+										});
+									} catch (error) {
+										console.error("Error getting QR code data:", error);
+										if (error instanceof Error) {
+											console.error("Error details:", error.message);
+										}
+									}
+								}}
+							/>
+						</View>
+					</View>
+				</BottomSheetContent>
+			);
+
+			registerSheet("profileQRCode", {
+				id: "profileQRCode",
+				component: qrCodeContent,
+				snapPoints: ["50%"],
+				enablePanDownToClose: true,
+			});
+		}
+	}, [profile?.pseudo]);
+
+	// Replace handleOpenBottomSheet with this new function
+	const handleOpenBottomSheet = useCallback(() => {
+		showSheet("profileQRCode");
+	}, [showSheet]);
+
+	const renderChip = ({ item, onPress = () => {} }: ChipProps) => (
+		<Chip
+			key={uuidv4()}
+			label={item.name}
+			isSelected={false}
+			onPress={onPress}
+		/>
+	);
+
+	const renderSkeletonChips = ({ count }: { count: number }) => (
+		<View className="flex-row flex-wrap gap-2 mt-4">
+			{Array(count)
+				.fill(null)
+				.map((_, index) => (
+					<SkeletonChip key={uuidv4()} />
+				))}
+		</View>
+	);
+
+	const renderChips = (items: ChipItem[]) => (
+		<View className="flex-row flex-wrap gap-2">
+			{items?.map((item) => renderChip({ item }))}
+		</View>
+	);
+
+	if (
+		isProfileLoading ||
+		isLoadingInterests ||
+		isLoadingVehicles ||
+		isLoadingFollowersCount ||
+		isLoadingFollowingCount ||
+		isLoadingIsFollowing
+	) {
+		return <SkeletonText width="w-full" />;
+	}
+
+	console.log("vehicles", vehicles);
+	console.log("vehicles?.draftsVehicle", vehicles?.draftsVehicle);
+	console.log("vehicles?.publishedVehicles", vehicles?.publishedVehicles);
+	console.log("userId", userId);
 
 	return (
 		<ScrollView className="w-full flex-1 bg-black text-white pt-4">
@@ -97,7 +260,7 @@ export const ProfileComponent = ({
 							onPress={() => {
 								if (isCurrentUser) {
 									router.replace({
-										pathname: "/(tabs)/update-avatar",
+										pathname: "/(profile)/update-avatar",
 										params: { userId },
 									});
 								}
@@ -144,19 +307,18 @@ export const ProfileComponent = ({
 						profile?.biography
 					)}
 				</Text>
-				<View className="flex flex-row gap-2">
-					<ExternalLink
-						href={`https://${profile?.website}`}
-						className="text-sm text-gray-400"
-					>
-						<View className="flex flex-row gap-2 items-center">
-							<LinkIcon />
-							<Text className="text-sm font-semibold text-[#A1BDCA]">
-								{profile?.website}
-							</Text>
-						</View>
-					</ExternalLink>
-				</View>
+
+				{isLoadingInterests
+					? renderSkeletonChips({ count: 3 })
+					: renderChips(
+							interests || [],
+							(item) => item.interest_id ?? "",
+							() =>
+								router.replace({
+									pathname: "/update-interests",
+									params: { userId },
+								}),
+						)}
 
 				<View className="w-full flex flex-row gap-2 my-2">
 					<View className="flex-1 ">
@@ -166,7 +328,7 @@ export const ProfileComponent = ({
 								label="Modifier"
 								onPress={() => {
 									router.replace({
-										pathname: "/(tabs)/update-pseudo",
+										pathname: "/(profile)/update-pseudo",
 										params: { userId },
 									});
 								}}
@@ -194,7 +356,7 @@ export const ProfileComponent = ({
 							label={isCurrentUser ? "Partager" : "Message"}
 							onPress={() => {
 								if (isCurrentUser) {
-									// Open Share Modal from OS Generic
+									handleShare();
 								} else {
 									handleCreate();
 								}
@@ -220,7 +382,7 @@ export const ProfileComponent = ({
 							<Pressable
 								onPress={() => {
 									router.replace({
-										pathname: "/(tabs)/following",
+										pathname: "/(profile)/following",
 										params: {
 											userId,
 											previousScreen: isCurrentUser ? "profile" : "user",
@@ -237,7 +399,7 @@ export const ProfileComponent = ({
 							<Pressable
 								onPress={() => {
 									router.replace({
-										pathname: "/(tabs)/followers",
+										pathname: "/(profile)/followers",
 										params: {
 											userId,
 											previousScreen: isCurrentUser ? "profile" : "user",
@@ -257,94 +419,68 @@ export const ProfileComponent = ({
 					{
 						content: (
 							<View className="flex flex-col gap-4 h-full pb-10">
-								{vehicles?.length === 0 && (
+								{vehicles && vehicles?.draftsVehicle.length > 0 && (
+									<FlashList
+										data={vehicles?.draftsVehicle}
+										estimatedItemSize={208}
+										className="h-52 max-h-52"
+										horizontal={true}
+										renderItem={({ item, index }) => (
+											<View
+												className={`w-32 aspect-[10/16] mr-2 rounded-lg overflow-hidden relative`}
+											>
+												<Image
+													source={{
+														uri: formatPicturesUri(
+															"vehicles",
+															item.media?.[0] as string,
+														),
+													}}
+													className="w-full h-full"
+													resizeMode="cover"
+												/>
+												<Pressable
+													onPress={() =>
+														router.replace({
+															pathname: "/(create-vehicle)/[vehicleId]/upload",
+															params: {
+																vehicleId: item.vehicle_id,
+																previousScreen: "(tabs)/profile",
+															},
+														})
+													}
+													className="absolute w-full h-full bg-black/50 p-2 rounded-lg flex items-center justify-center z-50"
+												>
+													<Text className="text-white">Compléter</Text>
+												</Pressable>
+											</View>
+										)}
+									/>
+								)}
+
+								{vehicles?.publishedVehicles.length === 0 && (
 									<Text className="text-white">Aucun véhicule trouvé</Text>
 								)}
-								{vehicles?.map((item) => (
-									<VehicleCard
-										key={item.vehicle_id}
-										item={item}
-										user={profile}
-									/>
+								{vehicles?.publishedVehicles.map((item) => (
+									<VehicleCard key={item.vehicle_id} item={item} />
 								))}
 							</View>
 						),
 						icon: <WheelIcon />,
+						id: "vehicles",
 					},
 					{
-						content: <UserDetails userId={profile?.user_id as string} />,
+						content: <UserDetails userId={userId} />,
 						icon: <IdentificationIcon />,
+						id: "user-details",
 					},
 					{
-						content: <Socials user={profile} />,
+						content: profile ? <Socials user={profile} /> : null,
 						icon: <LinkIcon width={24} height={24} />,
+						id: "socials",
 					},
 				]}
 			/>
-			<BottomSheet
-				ref={bottomSheetRef}
-				onChange={handleSheetChanges}
-				snapPoints={["100%"]}
-				enablePanDownToClose
-				index={-1}
-				backgroundStyle={{
-					backgroundColor: "#1f1f1f",
-				}}
-				handleIndicatorStyle={{
-					backgroundColor: "#fff",
-				}}
-			>
-				<BottomSheetView className="flex-1">
-					<BottomSheetScrollView className="bg-[#1f1f1f] w-full">
-						<View className="w-full flex-col gap-4 justify-center items-center py-8 px-4">
-							<View className="w-full items-center rounded-lg bg-[#0E57C1] py-8 px-4">
-								<QRCode
-									size={width * 0.8}
-									color={"white"}
-									value={`https://www.belshoredrive.com/${profile?.pseudo}`}
-									backgroundColor="#0E57C1"
-									logo={{
-										uri: qrCodeLogoBase64,
-									}}
-									logoSize={90}
-								/>
-							</View>
-							<CopyInput
-								value={`https://www.belshoredrive.com/${profile?.pseudo}`}
-							/>
-							<View className="w-full flex flex-col gap-2">
-								<Button
-									variant="primary"
-									label="Télécharger en PDF"
-									className=" !justify-start gap-4"
-									icon={
-										<Ionicons name="download-outline" size={24} color="white" />
-									}
-									onPress={() => {}}
-								/>
-								<Button
-									variant="primary"
-									label="Télécharger en image PNG"
-									className=" !justify-start gap-4"
-									icon={
-										<Ionicons name="image-outline" size={24} color="white" />
-									}
-									onPress={() => {}}
-								/>
-								<Button
-									variant="primary"
-									label="Imprimer"
-									className=" !justify-start gap-4"
-									icon={
-										<Ionicons name="print-outline" size={24} color="white" />
-									}
-									onPress={() => {}}
-								/>
-							</View>
-						</View>
-					</BottomSheetScrollView>
-				</BottomSheetView>
-			</BottomSheet>
 		</ScrollView>
 	);
 };

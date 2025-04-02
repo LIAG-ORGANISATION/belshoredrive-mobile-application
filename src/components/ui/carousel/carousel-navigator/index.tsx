@@ -4,11 +4,13 @@ import { Animated, View } from "react-native";
 type CarouselNavigatorProps = {
 	currentIndex: number;
 	totalItems: number;
+	className?: string;
 };
 
 export const CarouselNavigator = ({
 	currentIndex = 0,
 	totalItems = 3,
+	className = "",
 }: CarouselNavigatorProps) => {
 	const animatedValues = useMemo(
 		() =>
@@ -29,7 +31,9 @@ export const CarouselNavigator = ({
 	}, [currentIndex, animatedValues]);
 
 	return (
-		<View className="w-full flex-row items-center justify-center gap-2">
+		<View
+			className={`w-full flex-row items-center justify-center gap-2 ${className}`}
+		>
 			{animatedValues.map((animValue, index) => (
 				<Animated.View
 					key={`${index}-${Math.random()}`}

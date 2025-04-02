@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Text, View } from "react-native";
 
 import { valibotResolver } from "@hookform/resolvers/valibot";
@@ -20,6 +20,7 @@ import {
 	useUpdateUserProfile,
 } from "@/network/user-profile";
 
+import { useFetchVehicleTypes } from "@/network/vehicles";
 import { v4 as uuidv4 } from "uuid";
 
 export type UpdateBrandsProps = {
@@ -31,12 +32,19 @@ export const UpdateBrands = ({
 	title,
 	onSubmitCallback,
 }: UpdateBrandsProps) => {
+	const [selectedVehicleType, setSelectedVehicleType] = useState<
+		string | undefined
+	>(undefined);
+
+	const { data: vehicleTypes } = useFetchVehicleTypes(setSelectedVehicleType);
+
+	const { data: profile, isLoading: loadingProfile } = useFetchUserProfile();
 	const {
 		data: brands = [],
 		isLoading: loadingBrands,
 		error: brandsError,
-	} = useFetchBrands();
-	const { data: profile, isLoading: loadingProfile } = useFetchUserProfile();
+	} = useFetchBrands(selectedVehicleType);
+
 	const { mutate: updateProfile } = useUpdateUserProfile();
 
 	const {
@@ -82,16 +90,20 @@ export const UpdateBrands = ({
 				</View>
 			) : (
 				<Fragment>
-					<View className="flex-1">
-						<ChipSelector<FavoriteBrandsType, ExtractId<BrandsType, "brand_id">>
-							name="favorite_vehicle_brands"
-							control={control}
-							items={mapToId(brands, "brand_id")}
-							haveSearch={true}
-						/>
-					</View>
+					<ChipSelector<FavoriteBrandsType, ExtractId<BrandsType, "brand_id">>
+						name="favorite_vehicle_brands"
+						control={control}
+						items={mapToId(brands, "brand_id")}
+						haveSearch={true}
+						selectedVehicleType={selectedVehicleType}
+						types={vehicleTypes?.map((type) => ({
+							label: type.label ?? "",
+							id: type.id,
+						}))}
+						toggleType={setSelectedVehicleType}
+					/>
 
-					<View className="absolute bottom-0 w-full px-4 pb-10 pt-4 bg-black z-50 inset-x-0">
+					<View className="bottom-0 w-full px-4 pb-10 pt-4 bg-black z-50">
 						<Button
 							variant="secondary"
 							label="Continuer"

@@ -20,13 +20,15 @@ export const QueryKeys = {
 	USER_VEHICLES: (userId: string) => ["userVehicles", userId] as const,
 	VEHICLE_SEARCH: (query: string) => ["vehicleSearch", query] as const,
 	VEHICLE_RATING: (vehicleId: string) => ["vehicleRating", vehicleId] as const,
+	VEHICLE_RATING_BY_USER: (vehicleId: string) =>
+		["vehicleRatingByUser", vehicleId] as const,
 	VEHICLE_COMMENTS: (vehicleId: string, page?: number) =>
 		["vehicleComments", vehicleId, page] as const,
 	VEHICLE_STATUSES: ["vehicleStatuses"] as const,
 	VEHICLE_TAGS: ["vehicleTags"] as const,
 	MOTORIZATION_TYPES: ["motorizationTypes"] as const,
 	TRANSMISSION_TYPES: ["transmissionTypes"] as const,
-
+	VEHICLE_TYPES: ["vehicleTypes"] as const,
 	// Chat
 	MESSAGES: (conversationId: string) => ["messages", conversationId] as const,
 	CONVERSATIONS: ["conversations"] as const,
@@ -34,6 +36,7 @@ export const QueryKeys = {
 	UNREAD_MESSAGES: ["unreadMessages"] as const,
 	UNREAD_MESSAGES_CONVERSATION: (conversationId: string) =>
 		["unreadMessages", conversationId] as const,
+	TYPES: ["types"] as const,
 
 	// Comments
 	COMMENT_VOTES: (commentId: string) => ["commentVotes", commentId] as const,
@@ -46,4 +49,5 @@ export const QueryKeys = {
 	DEPARTMENTS: ["departments"] as const,
 	USER_DEPARTMENTS: ["userDepartments"] as const,
 	BRANDS: ["brands"] as const,
+	VEHICLE_TAGS_DETAILS: ["vehicleTagsDetails"] as const,
 } as const;

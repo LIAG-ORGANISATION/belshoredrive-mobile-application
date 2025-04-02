@@ -20,7 +20,6 @@ export const Input = <T extends FieldValues>({
 }: InputProps<T>) => {
 	const classes = cx({
 		"text-white text-sm bg-neutral-800 px-4 py-2 border border-neutral-700 rounded-lg focus:border-gray-600 h-12": true,
-		[`${props.classes}`]: !!props.classes,
 		"!border-red-500 !focus:border-red-500": error,
 	});
 	return (
@@ -31,16 +30,14 @@ export const Input = <T extends FieldValues>({
 				</View>
 			)}
 			<TextInput
-				className={classes}
 				{...props}
+				className={`${classes} ${props.classes || ""}`}
 				placeholderTextColor="#ffffff70"
 				onFocus={onFocus}
 				onBlur={onBlur}
 			/>
 			{error && (
-				<Text className="text-red-500 absolute -bottom-6 text-xs">
-					{error.message}
-				</Text>
+				<Text className="text-red-500 text-xs mt-1">{error.message}</Text>
 			)}
 		</View>
 	);

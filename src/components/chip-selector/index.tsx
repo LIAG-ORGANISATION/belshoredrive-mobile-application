@@ -1,21 +1,22 @@
 import { Chip } from "@/components/ui/chip";
 import { SearchIcon } from "@/components/vectors/search";
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import { MasonryFlashList } from "@shopify/flash-list";
+import { useState } from "react";
 import {
 	type Control,
 	type FieldValues,
 	type Path,
 	useController,
 } from "react-hook-form";
-import { FlatList, View } from "react-native";
+import { View } from "react-native";
 import { SkeletonText } from "../ui/skeleton-text";
 import { Input } from "../ui/text-input";
+import { TypesSelector } from "./types-selector";
 
 type DefaultItemType = {
 	id: string;
 	department_number?: string;
 	name: string;
-	type?: string;
 };
 
 type ChipSelectorProps<
@@ -27,6 +28,9 @@ type ChipSelectorProps<
 	items: ItemType[];
 	haveSearch?: boolean;
 	selectingType?: "multiple" | "single";
+	types?: { label: string; id: string }[];
+	toggleType?: (type: string) => void;
+	selectedVehicleType?: string;
 };
 
 export const ChipSelector = <
@@ -38,103 +42,43 @@ export const ChipSelector = <
 	items,
 	haveSearch = false,
 	selectingType = "multiple",
+	types,
+	selectedVehicleType,
+	toggleType,
 }: ChipSelectorProps<T, ItemType>) => {
 	const { field } = useController<T>({
 		name,
 		control,
 	});
-
-	const [types, setTypes] = useState<string[]>([]);
-	const [selectedType, setSelectedType] = useState("all");
-	const [itemsByType, setItemsByType] = useState<Record<string, ItemType[]>>(
-		{},
-	);
 	const [searchQuery, setSearchQuery] = useState("");
 
-	const toggleItem = useCallback(
-		(itemId: string) => {
-			const currentSelection = field.value || ([] as string[]);
-			const newSelection =
-				selectingType === "multiple"
-					? currentSelection.includes(itemId)
-						? currentSelection.filter((id: string) => id !== itemId)
-						: [...currentSelection, itemId]
-					: itemId;
+	const toggleItem = (itemId: string) => {
+		const currentSelection = field.value || ([] as string[]);
+		const newSelection =
+			selectingType === "multiple"
+				? currentSelection.includes(itemId)
+					? currentSelection.filter((id: string) => id !== itemId)
+					: [...currentSelection, itemId]
+				: itemId;
 
-			field.onChange(newSelection);
-		},
-		[field],
-	);
+		field.onChange(newSelection);
+	};
 
-	const toggleType = useCallback((type: string) => {
-		setSelectedType(type.toLowerCase());
-	}, []);
+	const filteredItems = items.filter((item) => {
+		const searchTerm = searchQuery.toLowerCase().trim();
+		if (!searchTerm) return true;
 
-	useEffect(() => {
-		const typeMap: Record<string, ItemType[]> = {};
+		const nameMatch = item.name.toLowerCase().includes(searchTerm);
+		const departmentMatch = item.department_number
+			?.toLowerCase()
+			.includes(searchTerm);
 
-		for (const item of items) {
-			if (item.type) {
-				if (!typeMap[item.type]) {
-					typeMap[item.type] = [];
-				}
-				typeMap[item.type].push(item);
-			}
-		}
-		setItemsByType({ ...typeMap, all: items });
+		return nameMatch || departmentMatch;
+	});
 
-		setTypes([
-			"all",
-			...Object.keys(typeMap).map(
-				(type) => type.charAt(0).toUpperCase() + type.slice(1),
-			),
-		]);
-	}, [items]);
-
-	const TypeFilters = React.memo(() => (
-		<FlatList
-			data={types}
-			contentContainerClassName="h-full flex flex-row flex-nowrap gap-3 mb-6"
-			horizontal
-			numColumns={1}
-			renderItem={({ item }) => (
-				<View key={item as string}>
-					<Chip
-						isFilter
-						label={item.charAt(0).toUpperCase() + item.slice(1)}
-						onPress={() => toggleType(item as string)}
-						isSelected={selectedType === item.toLowerCase()}
-					/>
-				</View>
-			)}
-			keyExtractor={(item) => item as string}
-		/>
-	));
-
-	const filterItems = useCallback(
-		(itemsToFilter: ItemType[] | undefined) => {
-			if (!itemsToFilter) return itemsByType[selectedType];
-
-			return itemsToFilter.filter(
-				(item) =>
-					item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-					(item.department_number?.toLowerCase() || "").includes(
-						searchQuery.toLowerCase(),
-					),
-			);
-		},
-		[itemsByType, selectedType, searchQuery],
-	);
-
-	const filteredData = useMemo(
-		() => filterItems(items[0]?.type ? itemsByType[selectedType] : items),
-		[items, itemsByType, selectedType, filterItems],
-	);
-
-	const renderItem = useCallback(
-		({ item }: { item: ItemType }) => (
+	const renderItem = ({ item }: { item: ItemType }) => (
+		<View className="mb-2 mx-1">
 			<Chip
-				key={item.id}
 				label={
 					item.department_number
 						? `${item.department_number} - ${item.name || "Unnamed department"}`
@@ -143,21 +87,8 @@ export const ChipSelector = <
 				isSelected={(field.value || ([] as string[])).includes(item.id)}
 				onPress={() => toggleItem(item.id)}
 			/>
-		),
-		[field.value, toggleItem],
+		</View>
 	);
-
-	const flatListProps = {
-		removeClippedSubviews: true,
-		maxToRenderPerBatch: 10,
-		windowSize: 5,
-		initialNumToRender: 10,
-		getItemLayout: (data, index) => ({
-			length: 40, // Approximate height of each item
-			offset: 40 * index,
-			index,
-		}),
-	};
 
 	if (items.length === 0) {
 		return (
@@ -168,27 +99,34 @@ export const ChipSelector = <
 	}
 
 	return (
-		<View className="flex-1">
-			{haveSearch && (
-				<Input
-					name="search"
-					classes="mb-4 !h-12"
-					placeholder="Search..."
-					value={searchQuery}
-					onChangeText={setSearchQuery}
-					icon={<SearchIcon />}
+		<View className="flex-1 w-full">
+			{types && types.length > 1 && toggleType && (
+				<TypesSelector
+					types={types}
+					selectedType={selectedVehicleType ?? ""}
+					toggleTypes={toggleType}
 				/>
 			)}
+			{haveSearch && (
+				<View className="mb-4">
+					<Input
+						name="search"
+						classes="!h-12"
+						placeholder="Rechercher une marque..."
+						value={searchQuery}
+						onChangeText={setSearchQuery}
+						icon={<SearchIcon />}
+					/>
+				</View>
+			)}
 
-			{items[0]?.type && <TypeFilters />}
-
-			<FlatList
-				data={filteredData}
+			<MasonryFlashList
+				data={filteredItems}
+				numColumns={3}
 				contentContainerClassName="flex flex-row flex-wrap gap-2 pb-4"
-				numColumns={1}
+				estimatedItemSize={40}
 				renderItem={renderItem}
-				keyExtractor={(item) => item.id}
-				{...flatListProps}
+				extraData={field.value}
 			/>
 		</View>
 	);

@@ -1,8 +1,14 @@
 import { ProfileComponent } from "@/components/user-details/profile";
-import { useLocalSearchParams } from "expo-router";
+import { useFetchUserProfile } from "@/network/user-profile";
 
 export default function ProfileScreen() {
-	const { userId } = useLocalSearchParams();
+	const { data: profile, isLoading: loadingProfile } = useFetchUserProfile();
 
-	return <ProfileComponent userId={userId as string} isCurrentUser={true} />;
+	return (
+		<ProfileComponent
+			userId={profile?.user_id as string}
+			isCurrentUser={true}
+			showDraftVehicles={true}
+		/>
+	);
 }

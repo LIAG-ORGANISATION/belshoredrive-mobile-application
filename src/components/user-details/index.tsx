@@ -1,17 +1,17 @@
 import { useFetchUserDepartments } from "@/network/departments";
-import { useFetchUserInterests } from "@/network/interests";
 import { useFetchUserServices } from "@/network/services";
 import { useGetSession } from "@/network/session";
 import { useFetchUserProfileById } from "@/network/user-profile";
 import dayjs from "dayjs";
 import { router } from "expo-router";
+import { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import { v4 as uuidv4 } from "uuid";
 import { Chip } from "../ui/chip";
 import { SkeletonChip } from "../ui/skeleton-chip";
 import { SkeletonText } from "../ui/skeleton-text";
 
-interface ChipItem {
+export interface ChipItem {
 	name: string;
 	service_id?: string;
 	interest_id?: string;
@@ -19,20 +19,16 @@ interface ChipItem {
 	department_number?: string;
 }
 
-interface ChipProps {
+export interface ChipProps {
 	item: ChipItem;
 	onPress?: () => void;
 }
 
 export const UserDetails = ({ userId }: { userId: string }) => {
+	const [isCurrentUser, setIsCurrentUser] = useState(false);
 	const { data: session } = useGetSession();
 	const { data: user, isLoading: isLoadingUser } =
 		useFetchUserProfileById(userId);
-	const { data: interests, isLoading: isLoadingInterests } =
-		useFetchUserInterests({
-			ids: user?.interests ?? [],
-			enabled: !!user?.interests,
-		});
 
 	const { data: departments, isLoading: isLoadingDepartments } =
 		useFetchUserDepartments({
@@ -47,7 +43,9 @@ export const UserDetails = ({ userId }: { userId: string }) => {
 		},
 	);
 
-	const isCurrentUser = session?.user.id === userId;
+	useEffect(() => {
+		setIsCurrentUser(session?.user.id === userId);
+	}, [session, userId]);
 
 	const renderAddChip = ({ onPress }: { onPress: () => void }) => {
 		return (
@@ -128,20 +126,11 @@ export const UserDetails = ({ userId }: { userId: string }) => {
 					: renderChips(
 							services || [],
 							(item) => item.service_id ?? "",
-							() => router.push("/update-services"),
-						)}
-			</View>
-
-			<View className="flex-col w-full gap-1">
-				<Text className="text-white/70 text-lg font-semibold my-4">
-					CENTRES D'INTÉRÊTS
-				</Text>
-				{isLoadingInterests
-					? renderSkeletonChips({ count: 3 })
-					: renderChips(
-							interests || [],
-							(item) => item.interest_id ?? "",
-							() => router.push("/update-interests"),
+							() =>
+								router.replace({
+									pathname: "/update-services",
+									params: { userId },
+								}),
 						)}
 			</View>
 
@@ -154,7 +143,11 @@ export const UserDetails = ({ userId }: { userId: string }) => {
 					: renderChips(
 							departments || [],
 							(item) => item.department_id ?? "",
-							() => router.push("/update-departments"),
+							() =>
+								router.replace({
+									pathname: "/update-departments",
+									params: { userId },
+								}),
 						)}
 			</View>
 		</View>

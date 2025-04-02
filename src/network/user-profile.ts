@@ -71,8 +71,11 @@ export function useUpdateUserProfile() {
 			if (error) throw error;
 			return data;
 		},
-		onSuccess: () => {
+		onSuccess: (user) => {
 			queryClient.invalidateQueries({ queryKey: QueryKeys.USER_PROFILE });
+			queryClient.invalidateQueries({
+				queryKey: QueryKeys.USER_PROFILE_BY_ID(user.id),
+			});
 		},
 	});
 }

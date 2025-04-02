@@ -39,18 +39,29 @@ export type Database = {
 					brand_id: string;
 					name: string | null;
 					type: string | null;
+					type_id: string | null;
 				};
 				Insert: {
 					brand_id: string;
 					name?: string | null;
 					type?: string | null;
+					type_id?: string | null;
 				};
 				Update: {
 					brand_id?: string;
 					name?: string | null;
 					type?: string | null;
+					type_id?: string | null;
 				};
-				Relationships: [];
+				Relationships: [
+					{
+						foreignKeyName: "fk_vehicle_type";
+						columns: ["type_id"];
+						isOneToOne: false;
+						referencedRelation: "vehicle_types";
+						referencedColumns: ["id"];
+					},
+				];
 			};
 			conversation_participants: {
 				Row: {
@@ -144,25 +155,34 @@ export type Database = {
 			};
 			messages: {
 				Row: {
+					attachment_type: string | null;
+					attachment_url: string | null;
 					content: string;
 					conversation_id: string;
 					created_at: string;
+					has_attachment: boolean | null;
 					id: string;
 					read: boolean;
 					sender_id: string;
 				};
 				Insert: {
+					attachment_type?: string | null;
+					attachment_url?: string | null;
 					content: string;
 					conversation_id: string;
 					created_at?: string;
+					has_attachment?: boolean | null;
 					id?: string;
 					read?: boolean;
 					sender_id: string;
 				};
 				Update: {
+					attachment_type?: string | null;
+					attachment_url?: string | null;
 					content?: string;
 					conversation_id?: string;
 					created_at?: string;
+					has_attachment?: boolean | null;
 					id?: string;
 					read?: boolean;
 					sender_id?: string;
@@ -184,6 +204,65 @@ export type Database = {
 					},
 				];
 			};
+			motorization_types: {
+				Row: {
+					motorization_id: string;
+					name: string;
+					type_id: string | null;
+				};
+				Insert: {
+					motorization_id?: string;
+					name: string;
+					type_id?: string | null;
+				};
+				Update: {
+					motorization_id?: string;
+					name?: string;
+					type_id?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "motorisation_types_type_id_fkey";
+						columns: ["type_id"];
+						isOneToOne: false;
+						referencedRelation: "vehicle_types";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			notifications: {
+				Row: {
+					body: string;
+					created_at: string | null;
+					data: Json | null;
+					id: string;
+					read: boolean | null;
+					title: string;
+					type: string;
+					user_id: string;
+				};
+				Insert: {
+					body: string;
+					created_at?: string | null;
+					data?: Json | null;
+					id?: string;
+					read?: boolean | null;
+					title: string;
+					type: string;
+					user_id: string;
+				};
+				Update: {
+					body?: string;
+					created_at?: string | null;
+					data?: Json | null;
+					id?: string;
+					read?: boolean | null;
+					title?: string;
+					type?: string;
+					user_id?: string;
+				};
+				Relationships: [];
+			};
 			services: {
 				Row: {
 					name: string | null;
@@ -204,26 +283,49 @@ export type Database = {
 					created_at: string;
 					name: string | null;
 					tag_id: string;
-					type: string | null;
 					type_id: string | null;
 				};
 				Insert: {
 					created_at?: string;
 					name?: string | null;
 					tag_id?: string;
-					type?: string | null;
 					type_id?: string | null;
 				};
 				Update: {
 					created_at?: string;
 					name?: string | null;
 					tag_id?: string;
-					type?: string | null;
 					type_id?: string | null;
 				};
 				Relationships: [
 					{
 						foreignKeyName: "fk_vehicle_type";
+						columns: ["type_id"];
+						isOneToOne: false;
+						referencedRelation: "vehicle_types";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			transmission_types: {
+				Row: {
+					name: string;
+					transmission_id: string;
+					type_id: string | null;
+				};
+				Insert: {
+					name: string;
+					transmission_id?: string;
+					type_id?: string | null;
+				};
+				Update: {
+					name?: string;
+					transmission_id?: string;
+					type_id?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "transmission_types_type_id_fkey";
 						columns: ["type_id"];
 						isOneToOne: false;
 						referencedRelation: "vehicle_types";
@@ -247,13 +349,29 @@ export type Database = {
 					followee_id?: string;
 					follower_id?: string;
 				};
-				Relationships: [];
+				Relationships: [
+					{
+						foreignKeyName: "user_follows_followee_id_fkey1";
+						columns: ["followee_id"];
+						isOneToOne: false;
+						referencedRelation: "user_profiles";
+						referencedColumns: ["user_id"];
+					},
+					{
+						foreignKeyName: "user_follows_follower_id_fkey1";
+						columns: ["follower_id"];
+						isOneToOne: false;
+						referencedRelation: "user_profiles";
+						referencedColumns: ["user_id"];
+					},
+				];
 			};
 			user_profiles: {
 				Row: {
 					biography: string | null;
 					birth_year: number | null;
 					created_at: string;
+					expo_push_token: string | null;
 					facebook: string | null;
 					favorite_vehicle_brands: string[] | null;
 					instagram: string | null;
@@ -272,6 +390,7 @@ export type Database = {
 					biography?: string | null;
 					birth_year?: number | null;
 					created_at?: string;
+					expo_push_token?: string | null;
 					facebook?: string | null;
 					favorite_vehicle_brands?: string[] | null;
 					instagram?: string | null;
@@ -290,6 +409,7 @@ export type Database = {
 					biography?: string | null;
 					birth_year?: number | null;
 					created_at?: string;
+					expo_push_token?: string | null;
 					facebook?: string | null;
 					favorite_vehicle_brands?: string[] | null;
 					instagram?: string | null;
@@ -362,6 +482,13 @@ export type Database = {
 				};
 				Relationships: [
 					{
+						foreignKeyName: "vehicle_comments_user_id_fkey1";
+						columns: ["user_id"];
+						isOneToOne: false;
+						referencedRelation: "user_profiles";
+						referencedColumns: ["user_id"];
+					},
+					{
 						foreignKeyName: "vehicle_comments_vehicle_id_fkey";
 						columns: ["vehicle_id"];
 						isOneToOne: false;
@@ -396,6 +523,21 @@ export type Database = {
 					},
 				];
 			};
+			vehicle_statuses: {
+				Row: {
+					name: string;
+					status_id: string;
+				};
+				Insert: {
+					name: string;
+					status_id?: string;
+				};
+				Update: {
+					name?: string;
+					status_id?: string;
+				};
+				Relationships: [];
+			};
 			vehicle_types: {
 				Row: {
 					created_at: string;
@@ -420,20 +562,24 @@ export type Database = {
 					brand_id: string | null;
 					chassis: string | null;
 					created_at: string | null;
+					description: string | null;
 					driving_side: string | null;
 					exterior: string | null;
 					fuel: string | null;
 					gearbox: string | null;
+					is_published: boolean;
 					max_speed: number | null;
 					media: string[] | null;
 					mileage: number | null;
 					model: string | null;
 					motorization: string | null;
+					motorization_id: string | null;
 					nickname: string | null;
 					power: number | null;
 					purchase_date: string | null;
-					status: string | null;
+					status_id: string | null;
 					tags: string[] | null;
+					transmission_id: string | null;
 					type_id: string | null;
 					user_id: string | null;
 					vehicle_id: string;
@@ -444,23 +590,27 @@ export type Database = {
 					brand_id?: string | null;
 					chassis?: string | null;
 					created_at?: string | null;
+					description?: string | null;
 					driving_side?: string | null;
 					exterior?: string | null;
 					fuel?: string | null;
 					gearbox?: string | null;
+					is_published?: boolean;
 					max_speed?: number | null;
 					media?: string[] | null;
 					mileage?: number | null;
 					model?: string | null;
 					motorization?: string | null;
+					motorization_id?: string | null;
 					nickname?: string | null;
 					power?: number | null;
 					purchase_date?: string | null;
-					status?: string | null;
+					status_id?: string | null;
 					tags?: string[] | null;
+					transmission_id?: string | null;
 					type_id?: string | null;
 					user_id?: string | null;
-					vehicle_id: string;
+					vehicle_id?: string;
 					year?: number | null;
 				};
 				Update: {
@@ -468,20 +618,24 @@ export type Database = {
 					brand_id?: string | null;
 					chassis?: string | null;
 					created_at?: string | null;
+					description?: string | null;
 					driving_side?: string | null;
 					exterior?: string | null;
 					fuel?: string | null;
 					gearbox?: string | null;
+					is_published?: boolean;
 					max_speed?: number | null;
 					media?: string[] | null;
 					mileage?: number | null;
 					model?: string | null;
 					motorization?: string | null;
+					motorization_id?: string | null;
 					nickname?: string | null;
 					power?: number | null;
 					purchase_date?: string | null;
-					status?: string | null;
+					status_id?: string | null;
 					tags?: string[] | null;
+					transmission_id?: string | null;
 					type_id?: string | null;
 					user_id?: string | null;
 					vehicle_id?: string;
@@ -494,6 +648,27 @@ export type Database = {
 						isOneToOne: false;
 						referencedRelation: "brands";
 						referencedColumns: ["brand_id"];
+					},
+					{
+						foreignKeyName: "vehicles_motorization_id_fkey";
+						columns: ["motorization_id"];
+						isOneToOne: false;
+						referencedRelation: "motorization_types";
+						referencedColumns: ["motorization_id"];
+					},
+					{
+						foreignKeyName: "vehicles_status_id_fkey";
+						columns: ["status_id"];
+						isOneToOne: false;
+						referencedRelation: "vehicle_statuses";
+						referencedColumns: ["status_id"];
+					},
+					{
+						foreignKeyName: "vehicles_transmission_id_fkey";
+						columns: ["transmission_id"];
+						isOneToOne: false;
+						referencedRelation: "transmission_types";
+						referencedColumns: ["transmission_id"];
 					},
 					{
 						foreignKeyName: "vehicles_type_id_fkey";
@@ -516,18 +691,6 @@ export type Database = {
 			[_ in never]: never;
 		};
 		Functions: {
-			get_tags_for_vehicle: {
-				Args: {
-					_tags: string[];
-				};
-				Returns: {
-					created_at: string;
-					name: string | null;
-					tag_id: string;
-					type: string | null;
-					type_id: string | null;
-				}[];
-			};
 			get_unread_message_counts: {
 				Args: {
 					user_id: string;
@@ -543,7 +706,10 @@ export type Database = {
 			[_ in never]: never;
 		};
 		CompositeTypes: {
-			[_ in never]: never;
+			http_header: {
+				field: unknown | null;
+				value: string | null;
+			};
 		};
 	};
 };

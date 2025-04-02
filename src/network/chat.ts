@@ -1,3 +1,4 @@
+import { uploadFileToConversation } from "@/lib/helpers/upload-file";
 import { QueryKeys } from "@/lib/query-keys";
 import { supabase } from "@/lib/supabase";
 import type { RealtimeChannel } from "@supabase/supabase-js";
@@ -139,7 +140,12 @@ export function useFetchConversations(): UseQueryResult<
 
 			// Create a map of conversation_id to unread count
 			const unreadCountMap = new Map(
-				unreadMessages?.map((msg) => [msg.conversation_id, msg.count]) || [],
+				unreadMessages?.map(
+					(msg: { conversation_id: string; count: number }) => [
+						msg.conversation_id,
+						msg.count,
+					],
+				) || [],
 			);
 
 			// Combine the data including messages
@@ -296,7 +302,48 @@ export function useCreateConversation() {
 			} = await supabase.auth.getUser();
 			if (!user) throw new Error("User not authenticated");
 
-			// Create conversation
+			// Check for existing conversation with the same participants
+			const allParticipants = [...new Set([...participantIds, user.id])];
+
+			// Get all conversations where the current user is a participant
+			const { data: userConversations } = await supabase
+				.from("conversation_participants")
+				.select("conversation_id")
+				.eq("user_id", user.id)
+				.eq("is_archived", false);
+
+			if (!userConversations) return null;
+
+			// For each conversation, check if it has exactly the same participants
+			for (const conv of userConversations) {
+				const { data: participants } = await supabase
+					.from("conversation_participants")
+					.select("user_id")
+					.eq("conversation_id", conv.conversation_id)
+					.eq("is_archived", false);
+
+				if (!participants) continue;
+
+				const participantIds = participants.map((p) => p.user_id);
+
+				// Check if the sets of participants are identical
+				if (
+					participantIds.length === allParticipants.length &&
+					participantIds.every((id) => allParticipants.includes(id)) &&
+					allParticipants.every((id) => participantIds.includes(id))
+				) {
+					// Return existing conversation
+					const { data: existingConversation } = await supabase
+						.from("conversations")
+						.select()
+						.eq("id", conv.conversation_id)
+						.single();
+
+					return existingConversation;
+				}
+			}
+
+			// If no existing conversation found, create a new one
 			const { data: conversation, error: convError } = await supabase
 				.from("conversations")
 				.insert({ title })
@@ -307,8 +354,7 @@ export function useCreateConversation() {
 				throw convError;
 			}
 
-			// Add all participants (including the creator)
-			const allParticipants = [...new Set([...participantIds, user.id])];
+			// Add all participants
 			const { error: partError } = await supabase
 				.from("conversation_participants")
 				.insert(
@@ -338,14 +384,30 @@ export function useSendMessage() {
 		mutationFn: async ({
 			conversationId,
 			content,
+			attachment,
 		}: {
 			conversationId: string;
 			content: string;
+			attachment?: {
+				base64: string;
+				type: "pdf" | "image";
+				fileName: string;
+			};
 		}) => {
 			const {
 				data: { user },
 			} = await supabase.auth.getUser();
 			if (!user) throw new Error("User not authenticated");
+
+			let attachmentUrl = null;
+			if (attachment) {
+				attachmentUrl = await uploadFileToConversation(
+					conversationId,
+					attachment.base64,
+					attachment.type,
+					attachment.fileName,
+				);
+			}
 
 			const { data, error } = await supabase
 				.from("messages")
@@ -353,6 +415,9 @@ export function useSendMessage() {
 					conversation_id: conversationId,
 					sender_id: user.id,
 					content,
+					has_attachment: !!attachment,
+					attachment_type: attachment?.type || null,
+					attachment_url: attachmentUrl,
 				})
 				.select()
 				.single();

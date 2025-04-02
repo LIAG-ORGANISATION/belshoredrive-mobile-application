@@ -2,11 +2,11 @@ import { Input } from "@/components/ui/text-input";
 import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
 import { useFetchConversations } from "@/network/chat";
 import { useFetchUserProfile } from "@/network/user-profile";
+import { FlashList } from "@shopify/flash-list";
 import { Link } from "expo-router";
 import { useMemo, useState } from "react";
 import {
 	ActivityIndicator,
-	FlatList,
 	Image,
 	Text,
 	TouchableOpacity,
@@ -54,6 +54,23 @@ const ChatListComponent = () => {
 		return otherParticipants || "Chat";
 	};
 
+	const getConversationPicture = (conversation: {
+		title: string;
+		participants: {
+			pseudo: string;
+			profile_picture_url: string;
+			user_id: string;
+		}[];
+	}) => {
+		const otherParticipants = conversation.participants
+			.filter(
+				(p: { user_id: string }) => p.user_id !== currentUserProfile?.user_id,
+			)
+			.map((p: { profile_picture_url: string }) => p.profile_picture_url);
+
+		return otherParticipants[0];
+	};
+
 	if (isLoading) {
 		return (
 			<View className="flex-1 bg-black items-center justify-center">
@@ -73,8 +90,9 @@ const ChatListComponent = () => {
 				/>
 			</View>
 
-			<FlatList
+			<FlashList
 				data={filteredConversations}
+				estimatedItemSize={70}
 				renderItem={({ item }) => (
 					<Link href={`/(chats)/details/${item.id}`} asChild>
 						<TouchableOpacity className="p-4 flex flex-row justify-between items-center">
@@ -83,7 +101,7 @@ const ChatListComponent = () => {
 									source={{
 										uri: formatPicturesUri(
 											"profile_pictures",
-											item.participants[1].profile_picture_url,
+											getConversationPicture(item),
 										),
 									}}
 									className="w-10 h-10 rounded-full"
@@ -100,7 +118,6 @@ const ChatListComponent = () => {
 						</TouchableOpacity>
 					</Link>
 				)}
-				keyExtractor={(item) => item.id}
 			/>
 		</View>
 	);

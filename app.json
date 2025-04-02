@@ -15,7 +15,15 @@
 		},
 		"ios": {
 			"supportsTablet": true,
-			"bundleIdentifier": "com.belshoredrive.app"
+			"buildNumber": "1.0.0",
+			"bundleIdentifier": "com.belshoredrive.app",
+			"infoPlist": {
+				"UIBackgroundModes": ["remote-notification"],
+				"ITSAppUsesNonExemptEncryption": false,
+				"NSLocalNotificationUsageDescription": "This app needs access to send notifications to you.",
+				"aps-environment": "development",
+				"UIRequireFullScreen": true
+			}
 		},
 		"android": {
 			"adaptiveIcon": {
@@ -26,11 +34,11 @@
 				"android.permission.READ_CONTACTS",
 				"android.permission.WRITE_CONTACTS",
 				"android.permission.RECORD_AUDIO",
-				"android.permission.READ_CONTACTS",
-				"android.permission.WRITE_CONTACTS",
-				"android.permission.RECORD_AUDIO"
+				"android.permission.CAMERA",
+				"NOTIFICATIONS"
 			],
-			"package": "com.belshoredrive.app"
+			"package": "com.belshoredrive.app",
+			"useNextNotificationsApi": true
 		},
 		"web": {
 			"bundler": "metro",
@@ -39,7 +47,17 @@
 		},
 		"plugins": [
 			"expo-router",
-			"expo-font",
+			[
+				"expo-font",
+				{
+					"fonts": [
+						"./assets/fonts/Poppins-Regular.ttf",
+						"./assets/fonts/Poppins-Bold.ttf",
+						"./assets/fonts/Poppins-Medium.ttf",
+						"./assets/fonts/Poppins-SemiBold.ttf"
+					]
+				}
+			],
 			[
 				"expo-contacts",
 				{
@@ -50,6 +68,23 @@
 				"expo-image-picker",
 				{
 					"photosPermission": "The app needs access to your photos to let you change your profile picture."
+				}
+			],
+			[
+				"expo-camera",
+				{
+					"cameraPermission": "Allow $(PRODUCT_NAME) to access your camera."
+				}
+			],
+			[
+				"expo-notifications",
+				{
+					"icon": "./assets/images/icon.png",
+					"color": "#ffffff",
+					"mode": "production",
+					"androidMode": "default",
+					"androidCollapsedTitle": "#{unread_notifications} new notifications",
+					"iosDisplayInForeground": true
 				}
 			]
 		],
@@ -64,6 +99,13 @@
 				"projectId": "3b24992d-22a3-4074-bb4d-2e3c65d6edb0"
 			}
 		},
-		"owner": "belshoredrive"
+		"owner": "belshoredrive",
+		"notification": {
+			"icon": "./assets/images/icon.png",
+			"color": "#ffffff",
+			"iosDisplayInForeground": true,
+			"androidMode": "default",
+			"androidCollapsedTitle": "#{unread_notifications} new notifications"
+		}
 	}
 }
