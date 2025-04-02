@@ -50,4 +50,5 @@ export const QueryKeys = {
 	USER_DEPARTMENTS: ["userDepartments"] as const,
 	BRANDS: ["brands"] as const,
 	VEHICLE_TAGS_DETAILS: ["vehicleTagsDetails"] as const,
+	NOTIFICATIONS: ["notifications"] as const,
 } as const;

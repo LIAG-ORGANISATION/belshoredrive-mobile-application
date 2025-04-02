@@ -210,7 +210,8 @@ export const VehicleView = ({
 										</View>
 									) : (
 										<Text className="text-gray-400 text-lg text-center">
-											Les commentaires ne sont pas encore disponibles au moment.
+											Aucun commentaire pour le moment, soyez le premier à commenter
+											ce véhicule !
 										</Text>
 									)}
 								</View>

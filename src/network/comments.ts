@@ -6,6 +6,7 @@ import {
 	useQuery,
 	useQueryClient,
 } from "@tanstack/react-query";
+import { notificationHelpers } from "./notifications";
 
 // Fetch comments for a specific vehicle
 export function useVehicleComments(
@@ -62,7 +63,6 @@ export function useCreateComment() {
 				data: { user },
 			} = await supabase.auth.getUser();
 			if (!user) throw new Error("User not authenticated");
-			console.log("user", user.id);
 
 			const { data, error } = await supabase
 				.from("vehicle_comments")
@@ -80,8 +80,18 @@ export function useCreateComment() {
 			}
 			return data;
 		},
-		onSuccess: (_, variables) => {
-			console.log("onSuccess", variables);
+		onSuccess: async (_, variables) => {
+			const {
+				data: { user },
+			} = await supabase.auth.getUser();
+
+			if (!user) throw new Error("User not authenticated");
+
+			await notificationHelpers.createCommentNotification({
+				vehicleId: variables.vehicleId,
+				commenterId: user.id,
+				commentContent: variables.content,
+			});
 			queryClient.invalidateQueries({
 				queryKey: ["vehicleComments", variables.vehicleId],
 			});

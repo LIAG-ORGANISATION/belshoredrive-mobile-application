@@ -10,6 +10,7 @@ import {
 } from "@tanstack/react-query";
 import { decode } from "base64-arraybuffer";
 import { v4 as uuidv4 } from "uuid";
+import { notificationHelpers } from "./notifications";
 // Types
 export type VehicleWithComments = Tables<"vehicles"> & {
 	vehicle_comments: (Tables<"vehicle_comments"> & {
@@ -449,7 +450,18 @@ export function useRateVehicle() {
 			if (error) throw error;
 			return data;
 		},
-		onSuccess: (_, variables) => {
+		onSuccess: async (_, variables) => {
+			const {
+				data: { user },
+			} = await supabase.auth.getUser();
+			if (!user) throw new Error("User not authenticated");
+
+			await notificationHelpers.createRatingNotification({
+				vehicleId: variables.vehicleId,
+				raterId: user.id,
+				rating: variables.rating,
+			});
+
 			queryClient.invalidateQueries({
 				queryKey: QueryKeys.VEHICLE_RATING(variables.vehicleId),
 			});
