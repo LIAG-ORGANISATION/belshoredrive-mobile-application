@@ -245,11 +245,6 @@ export const ProfileComponent = ({
 		return <SkeletonText width="w-full" />;
 	}
 
-	console.log("vehicles", vehicles);
-	console.log("vehicles?.draftsVehicle", vehicles?.draftsVehicle);
-	console.log("vehicles?.publishedVehicles", vehicles?.publishedVehicles);
-	console.log("userId", userId);
-
 	return (
 		<ScrollView className="w-full flex-1 bg-black text-white pt-4">
 			{/* profile details */}
