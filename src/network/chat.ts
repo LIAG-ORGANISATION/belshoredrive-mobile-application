@@ -9,6 +9,7 @@ import {
 	useQueryClient,
 } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { notificationHelpers } from "./notifications";
 
 // Add this at the top level of the file
 let messageChannel: RealtimeChannel | null = null;
@@ -400,6 +401,7 @@ export function useSendMessage() {
 			if (!user) throw new Error("User not authenticated");
 
 			let attachmentUrl = null;
+
 			if (attachment) {
 				attachmentUrl = await uploadFileToConversation(
 					conversationId,
@@ -425,7 +427,19 @@ export function useSendMessage() {
 			if (error) throw error;
 			return data;
 		},
-		onSuccess: (_, variables) => {
+		onSuccess: async (_, variables) => {
+			const {
+				data: { user },
+			} = await supabase.auth.getUser();
+
+			if (!user) throw new Error("User not authenticated");
+
+			await notificationHelpers.createChatNotification({
+				conversationId: variables.conversationId,
+				senderId: user.id,
+				messageContent: variables.content,
+			});
+
 			queryClient.invalidateQueries({
 				queryKey: ["messages", variables.conversationId],
 			});

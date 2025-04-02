@@ -7,6 +7,7 @@ import {
 	useQuery,
 	useQueryClient,
 } from "@tanstack/react-query";
+import { notificationHelpers } from "./notifications";
 
 type FollowerResult = Tables<"user_follows"> & {
 	user_profiles: {
@@ -125,7 +126,17 @@ export function useFollowUser() {
 			if (error) throw error;
 			return data;
 		},
-		onSuccess: (_, targetUserId) => {
+		onSuccess: async (_, targetUserId) => {
+			const {
+				data: { user },
+			} = await supabase.auth.getUser();
+
+			if (!user) throw new Error("User not authenticated");
+
+			await notificationHelpers.createFollowNotification({
+				followerId: user.id,
+				followedId: targetUserId,
+			});
 			queryClient.invalidateQueries({
 				queryKey: QueryKeys.FOLLOWERS(targetUserId),
 			});
