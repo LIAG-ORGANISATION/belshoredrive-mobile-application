@@ -10,7 +10,13 @@ import {
 } from "@/network/vehicles";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+	useCallback,
+	useEffect,
+	useLayoutEffect,
+	useRef,
+	useState,
+} from "react";
 import {
 	KeyboardAvoidingView,
 	Platform,
@@ -55,6 +61,8 @@ export const VehicleView = ({
 	const scrollViewRef = useRef<ScrollView>(null);
 
 	const handleSend = () => {
+		if (message.trim().length < 2) return;
+
 		createComment(
 			{
 				vehicleId: vehicleId,
@@ -210,8 +218,8 @@ export const VehicleView = ({
 										</View>
 									) : (
 										<Text className="text-gray-400 text-lg text-center">
-											Aucun commentaire pour le moment, soyez le premier à commenter
-											ce véhicule !
+											Aucun commentaire pour le moment, soyez le premier à
+											commenter ce véhicule !
 										</Text>
 									)}
 								</View>
@@ -238,7 +246,8 @@ export const VehicleView = ({
 							returnKeyType="send"
 						/>
 						<TouchableOpacity
-							className="w-10 h-10 items-center justify-center"
+							className="w-10 h-10 items-center justify-center disabled:opacity-50"
+							disabled={message.length < 2}
 							onPress={handleSend}
 						>
 							<DirectMessageIcon width={20} height={20} fill="#fff" />

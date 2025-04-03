@@ -69,12 +69,18 @@ export function useMarkNotificationAsRead() {
 
 	return useMutation({
 		mutationFn: async (notificationId: string) => {
-			const { error } = await supabase
+			const { data, error } = await supabase
 				.from("notifications")
 				.update({ read: true })
-				.eq("id", notificationId);
+				.eq("id", notificationId)
+				.select()
+				.single();
 
-			if (error) throw error;
+			if (error) {
+				console.error(error);
+				throw error;
+			}
+			return data;
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: QueryKeys.NOTIFICATIONS });

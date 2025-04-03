@@ -177,7 +177,7 @@ export default function TabLayout() {
 									</Pressable>
 								</Link>
 
-								<Link href="/(onboarding)" asChild>
+								<Link href="/(tabs)/notifications" asChild>
 									<Pressable>
 										{({ pressed }) => (
 											<NotificationIcon
@@ -339,12 +339,21 @@ export default function TabLayout() {
 				<Tabs.Screen
 					name="user"
 					options={{
+						headerShown: true,
 						tabBarShowLabel: false,
 						href: null,
 						title: "Utilisateur",
-						headerShown: true,
-						headerTintColor: "white",
-						headerStyle: { backgroundColor: "#000" },
+						sceneStyle: {
+							paddingHorizontal: 12,
+							backgroundColor: "#000",
+						},
+						headerTitleAlign: "left",
+						headerTitleStyle: {
+							color: "#fff",
+							textAlign: "auto",
+							fontSize: 18,
+							fontWeight: "800",
+						},
 					}}
 				/>
 				<Tabs.Screen
@@ -367,6 +376,42 @@ export default function TabLayout() {
 						headerShown: true,
 						headerTintColor: "white",
 						headerStyle: { backgroundColor: "#000" },
+					}}
+				/>
+				<Tabs.Screen
+					name="notifications"
+					options={{
+						headerShown: true,
+						href: null,
+						title: "Notifications",
+						sceneStyle: {
+							paddingHorizontal: 12,
+							backgroundColor: "#000",
+						},
+						tabBarShowLabel: false,
+						headerTitleAlign: "center",
+						headerTitleStyle: {
+							color: "#fff",
+							textAlign: "auto",
+							fontSize: 18,
+							fontWeight: "800",
+						},
+						headerLeft: () => (
+							<View className="flex-row items-center gap-2">
+								<Pressable
+									onPress={() => {
+										router.replace({
+											pathname: "/(tabs)",
+											params: {
+												previousScreen: "/(tabs)/notifications",
+											},
+										});
+									}}
+								>
+									<Ionicons name="chevron-back" size={24} color="#fff" />
+								</Pressable>
+							</View>
+						),
 					}}
 				/>
 			</Tabs>
