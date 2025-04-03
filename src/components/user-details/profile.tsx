@@ -48,6 +48,10 @@ import { Chip } from "../ui/chip";
 import { SkeletonChip } from "../ui/skeleton-chip";
 import { SkeletonText } from "../ui/skeleton-text";
 
+type QRCodeRef = {
+	toDataURL: (callback: (dataURL: string) => void) => void;
+};
+
 export const ProfileComponent = ({
 	userId,
 	isCurrentUser,
@@ -79,7 +83,7 @@ export const ProfileComponent = ({
 
 	const { registerSheet, showSheet } = useBottomSheet();
 
-	const qrCodeRef = useRef<QRCode>();
+	const qrCodeRef = useRef<QRCodeRef>();
 
 	const handleCreate = () => {
 		createChat(
@@ -141,19 +145,15 @@ export const ProfileComponent = ({
 									<Ionicons name="download-outline" size={24} color="white" />
 								}
 								onPress={async () => {
-									console.log("Starting QR code save process...");
 									try {
 										if (!qrCodeRef.current) {
-											console.log("QR code ref is null");
 											return;
 										}
 
-										console.log("Getting QR code data URL...");
-										qrCodeRef.current.toDataURL(async (dataURL) => {
+										qrCodeRef.current.toDataURL(async (dataURL: string) => {
 											try {
 												// Create a temporary file
 												const tempFile = `${FileSystem.cacheDirectory}${profile?.pseudo || "qrcode"}-${Date.now()}.png`;
-												console.log("Creating temporary file:", tempFile);
 
 												// Write to temp file
 												await FileSystem.writeAsStringAsync(tempFile, dataURL, {
@@ -163,7 +163,6 @@ export const ProfileComponent = ({
 												// Check if sharing is available
 												const isAvailable = await Sharing.isAvailableAsync();
 												if (!isAvailable) {
-													console.log("Sharing is not available");
 													return;
 												}
 
@@ -306,13 +305,7 @@ export const ProfileComponent = ({
 				{isLoadingInterests
 					? renderSkeletonChips({ count: 3 })
 					: renderChips(
-							interests || [],
-							(item) => item.interest_id ?? "",
-							() =>
-								router.replace({
-									pathname: "/update-interests",
-									params: { userId },
-								}),
+							interests || []
 						)}
 
 				<View className="w-full flex flex-row gap-2 my-2">
