@@ -2,6 +2,7 @@ import { QueryKeys } from "@/lib/query-keys";
 import { supabase } from "@/lib/supabase";
 import type { Tables } from "@/types/supabase";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 // Types
 type Notification = Tables<"notifications">;
@@ -251,3 +252,50 @@ export const notificationHelpers = {
 		});
 	},
 };
+
+export function useHasUnreadNotifications(userId: string) {
+	const queryClient = useQueryClient();
+
+	useEffect(() => {
+		const channel = supabase
+			.channel("notifications:read")
+			.on(
+				"postgres_changes",
+				{
+					event: "*", // Listen to all events (INSERT, UPDATE, DELETE)
+					schema: "public",
+					table: "notifications",
+					filter: `user_id=eq.${userId}`,
+				},
+				() => {
+					// Invalidate the query to refresh unread status
+					queryClient.invalidateQueries({
+						queryKey: QueryKeys.UNREAD_NOTIFICATIONS,
+					});
+				},
+			)
+			.subscribe();
+
+		return () => {
+			supabase.removeChannel(channel);
+		};
+	}, [queryClient]);
+
+	return useQuery({
+		queryKey: QueryKeys.UNREAD_NOTIFICATIONS,
+		queryFn: async () => {
+			if (!userId) throw new Error("User not authenticated");
+
+			const { data, error } = await supabase
+				.from("notifications")
+				.select("id")
+				.eq("read", false)
+				.eq("user_id", userId)
+				.not("type", "eq", "chat")
+				.limit(1);
+
+			if (error) throw error;
+			return data.length > 0;
+		},
+	});
+}

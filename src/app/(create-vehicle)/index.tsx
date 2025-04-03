@@ -473,7 +473,7 @@ export default function CreateVehicle() {
 							)}
 						</Pressable>
 					)}
-					extraData={images}
+					extraData={[images, selectedIndex]}
 				/>
 
 				<View className="w-full flex-row gap-4 pb-4">
