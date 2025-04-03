@@ -61,6 +61,8 @@ export const VehicleView = ({
 	const scrollViewRef = useRef<ScrollView>(null);
 
 	const handleSend = () => {
+		if (message.trim().length < 2) return;
+
 		createComment(
 			{
 				vehicleId: vehicleId,
