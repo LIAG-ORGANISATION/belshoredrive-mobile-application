@@ -486,7 +486,8 @@ export default function ChatView() {
 							<Ionicons name="attach" size={20} color="white" />
 						</TouchableOpacity>
 						<TouchableOpacity
-							className="w-10 h-10 items-center justify-center"
+							className="w-10 h-10 items-center justify-center disabled:opacity-50"
+							disabled={message.length === 0}
 							onPress={handleSend}
 						>
 							<DirectMessageIcon width={20} height={20} fill="#fff" />
