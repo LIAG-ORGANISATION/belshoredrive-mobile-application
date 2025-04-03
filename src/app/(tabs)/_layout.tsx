@@ -339,12 +339,21 @@ export default function TabLayout() {
 				<Tabs.Screen
 					name="user"
 					options={{
+						headerShown: true,
 						tabBarShowLabel: false,
 						href: null,
 						title: "Utilisateur",
-						headerShown: true,
-						headerTintColor: "white",
-						headerStyle: { backgroundColor: "#000" },
+						sceneStyle: {
+							paddingHorizontal: 12,
+							backgroundColor: "#000",
+						},
+						headerTitleAlign: "left",
+						headerTitleStyle: {
+							color: "#fff",
+							textAlign: "auto",
+							fontSize: 18,
+							fontWeight: "800",
+						},
 					}}
 				/>
 				<Tabs.Screen
