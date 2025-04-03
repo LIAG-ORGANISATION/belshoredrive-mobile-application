@@ -3,7 +3,7 @@ import { useGetSession } from "@/network/session";
 import type { Tables } from "@/types/supabase";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { Link, router, usePathname } from "expo-router";
+import { Link, router, useNavigation } from "expo-router";
 import { Fragment, useState } from "react";
 import {
 	FlatList,
@@ -31,8 +31,7 @@ export const VehicleCardFullInfos = ({
 	const { data: session } = useGetSession();
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const [screenWidth, setScreenWidth] = useState(0);
-	const pathname = usePathname();
-
+	const navigation = useNavigation();
 	const changeIndex = (
 		value: ViewToken<{
 			image: number;
@@ -129,7 +128,10 @@ export const VehicleCardFullInfos = ({
 							if (!isCurrentUser) {
 								router.push({
 									pathname: "/(tabs)/user",
-									params: { userId: item.user_id, previousScreen: pathname },
+									params: {
+										userId: item.user_id,
+										previousScreen: `/(vehicle)/${item.vehicle_id}?previousScreen=${navigation.getState()?.routes[0].params?.previousScreen}`,
+									},
 								});
 							}
 						}}
