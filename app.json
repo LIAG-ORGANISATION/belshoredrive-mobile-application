@@ -15,6 +15,7 @@
 		},
 		"ios": {
 			"supportsTablet": true,
+			"deploymentTarget": "16.0",
 			"buildNumber": "1.0.2",
 			"bundleIdentifier": "com.belshoredrive.app",
 			"infoPlist": {
@@ -85,6 +86,15 @@
 					"androidMode": "default",
 					"androidCollapsedTitle": "#{unread_notifications} new notifications",
 					"iosDisplayInForeground": true
+				}
+			],
+			[
+				"expo-build-properties",
+				{
+					"ios": {
+						"useFrameworks": "static",
+						"deploymentTarget": "16.0"
+					}
 				}
 			]
 		],
