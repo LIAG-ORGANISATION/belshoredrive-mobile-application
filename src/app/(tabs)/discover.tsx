@@ -257,9 +257,7 @@ export default function SearchScreen() {
 		</TouchableOpacity>
 	);
 
-	// Function to open a specific bottom sheet and close others
 	const openBottomSheet = (sheetId: string) => {
-		// Hide all other sheets first
 		for (const id of [
 			"brandFilterSheet",
 			"departmentFilterSheet",
@@ -269,14 +267,7 @@ export default function SearchScreen() {
 				hideSheet(id);
 			}
 		}
-		// Show the requested sheet
-		// ["brandFilterSheet", "departmentFilterSheet", "typeFilterSheet"].forEach(
-		// 	(id) => {
-		// 		if (id !== sheetId) {
-		// 			hideSheet(id);
-		// 		}
-		// 	},
-		// );
+
 		showSheet(sheetId);
 	};
 
@@ -324,6 +315,18 @@ export default function SearchScreen() {
 					className={
 						"w-fit h-10 border flex flex-row gap-1 items-center justify-between border-white/20  bg-white/15 rounded-lg px-4 mr-2"
 					}
+					onPress={() => openBottomSheet("typeFilterSheet")}
+				>
+					<Text className="text-white">
+						{filters.types.length ? `Types (${filters.types.length})` : "Types"}
+					</Text>
+					<Ionicons name="chevron-down" color="white" />
+				</TouchableOpacity>
+
+				<TouchableOpacity
+					className={
+						"w-fit h-10 border flex flex-row gap-1 items-center justify-between border-white/20  bg-white/15 rounded-lg px-4 mr-2"
+					}
 					onPress={() => openBottomSheet("brandFilterSheet")}
 				>
 					<Text className="text-white">
@@ -344,18 +347,6 @@ export default function SearchScreen() {
 						{filters.departments.length
 							? `Départements (${filters.departments.length})`
 							: "Départements"}
-					</Text>
-					<Ionicons name="chevron-down" color="white" />
-				</TouchableOpacity>
-
-				<TouchableOpacity
-					className={
-						"w-fit h-10 border flex flex-row gap-1 items-center justify-between border-white/20  bg-white/15 rounded-lg px-4 mr-2"
-					}
-					onPress={() => openBottomSheet("typeFilterSheet")}
-				>
-					<Text className="text-white">
-						{filters.types.length ? `Types (${filters.types.length})` : "Types"}
 					</Text>
 					<Ionicons name="chevron-down" color="white" />
 				</TouchableOpacity>
