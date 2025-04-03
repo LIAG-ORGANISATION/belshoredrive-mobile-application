@@ -12,6 +12,7 @@ import {
 	handleNotificationResponse,
 } from "@/lib/notifications";
 import { useHasUnreadMessages } from "@/network/chat";
+import { useHasUnreadNotifications } from "@/network/notifications";
 import { useGetSession } from "@/network/session";
 import { useFetchUserProfile } from "@/network/user-profile";
 import { Ionicons } from "@expo/vector-icons";
@@ -36,6 +37,9 @@ export default function TabLayout() {
 	const { data: profile, isLoading: loadingProfile } = useFetchUserProfile();
 
 	const { data: session } = useGetSession();
+	const { data: hasUnreadNotifications } = useHasUnreadNotifications(
+		session?.user.id as string,
+	);
 
 	useEffect(() => {
 		debugLog("=== NOTIFICATION SETUP START ===");
@@ -180,10 +184,18 @@ export default function TabLayout() {
 								<Link href="/(tabs)/notifications" asChild>
 									<Pressable>
 										{({ pressed }) => (
-											<NotificationIcon
-												fill="#fff"
-												style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-											/>
+											<View className="relative">
+												<NotificationIcon
+													fill="#fff"
+													style={{
+														marginRight: 15,
+														opacity: pressed ? 0.5 : 1,
+													}}
+												/>
+												{hasUnreadNotifications && (
+													<View className="absolute top-1 right-2 w-2 h-2 bg-red-500 rounded-full" />
+												)}
+											</View>
 										)}
 									</Pressable>
 								</Link>

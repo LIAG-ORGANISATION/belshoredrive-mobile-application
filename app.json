@@ -22,7 +22,11 @@
 				"ITSAppUsesNonExemptEncryption": false,
 				"NSLocalNotificationUsageDescription": "This app needs access to send notifications to you.",
 				"aps-environment": "development",
-				"UIRequireFullScreen": true
+				"UIRequireFullScreen": true,
+				"NSPhotoLibraryAddUsageDescription": "$(PRODUCT_NAME) needs photo library permissions",
+				"NSPhotoLibraryUsageDescription": "$(PRODUCT_NAME) needs photo library permissions",
+				"NSCameraUsageDescription": "$(PRODUCT_NAME) needs to access your Camera",
+				"NSMicrophoneUsageDescription": "$(PRODUCT_NAME) needs to access your microphone so that you can record audio"
 			}
 		},
 		"android": {
@@ -85,6 +89,14 @@
 					"androidMode": "default",
 					"androidCollapsedTitle": "#{unread_notifications} new notifications",
 					"iosDisplayInForeground": true
+				}
+			],
+			[
+				"expo-build-properties",
+				{
+					"ios": {
+						"deploymentTarget": "16.0"
+					}
 				}
 			]
 		],

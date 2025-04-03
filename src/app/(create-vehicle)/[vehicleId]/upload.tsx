@@ -450,7 +450,7 @@ export default function UploadVehicleMedia() {
 					<View className="w-full relative aspect-square rounded-lg overflow-hidden">
 						{images[selectedIndex] && (
 							<GestureDetector gesture={composed}>
-								<Animated.View className="w-full h-full bg-red-100">
+								<Animated.View className="w-full h-full">
 									<Animated.Image
 										source={{
 											uri: !images[selectedIndex].uri.includes("file://")
@@ -533,7 +533,7 @@ export default function UploadVehicleMedia() {
 							)}
 						</Pressable>
 					)}
-					extraData={images}
+					extraData={[images, selectedIndex]}
 				/>
 
 				<View className="w-full flex-row gap-4 pb-4">

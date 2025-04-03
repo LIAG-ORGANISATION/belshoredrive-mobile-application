@@ -80,6 +80,7 @@ export default function ChatView() {
 			const { data, error } = await supabase
 				.from("conversations")
 				.select(`
+					id,
           title,
           conversation_participants!inner(
             user_id
@@ -101,6 +102,17 @@ export default function ChatView() {
 
 			if (profilesError) {
 				throw profilesError;
+			}
+
+			const { error: unreadNotificationsError } = await supabase
+				.from("notifications")
+				.update({ read: true })
+				.eq("data->>conversationId", data.id)
+				.eq("user_id", profile?.user_id)
+				.eq("type", "chat");
+
+			if (unreadNotificationsError) {
+				throw unreadNotificationsError;
 			}
 
 			// Combine the data
