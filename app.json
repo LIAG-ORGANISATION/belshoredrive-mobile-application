@@ -22,7 +22,6 @@
 				"UIBackgroundModes": ["remote-notification"],
 				"ITSAppUsesNonExemptEncryption": false,
 				"NSLocalNotificationUsageDescription": "This app needs access to send notifications to you.",
-				"aps-environment": "development",
 				"UIRequireFullScreen": true,
 				"NSPhotoLibraryAddUsageDescription": "$(PRODUCT_NAME) needs photo library permissions",
 				"NSPhotoLibraryUsageDescription": "$(PRODUCT_NAME) needs photo library permissions",
