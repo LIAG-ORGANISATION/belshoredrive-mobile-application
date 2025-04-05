@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Animated, Dimensions, Pressable, View } from "react-native";
 
 export type TabsProps = {
@@ -26,6 +26,10 @@ export const Tabs = ({ tabs, initialTab = 0, onChange }: TabsProps) => {
 			useNativeDriver: true,
 		}).start();
 	};
+
+	useEffect(() => {
+		animateBorder(activeTab);
+	}, [activeTab]);
 
 	return (
 		<View className="flex-1 mt-2 flex flex-col pb-10">
