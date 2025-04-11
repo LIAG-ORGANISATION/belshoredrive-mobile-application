@@ -169,6 +169,12 @@ export default function CreateVehicle() {
 		}
 	};
 
+	const handleDeletePress = (index: number) => {
+		const newImages = [...images];
+		newImages[index] = { path: "", width: 0, height: 0, base64: "" };
+		setImages(newImages);
+	};
+
 	const cropAndSaveImage = async () => {
 		if (images.length === 0) return;
 
@@ -236,6 +242,15 @@ export default function CreateVehicle() {
 							<Ionicons name="crop" size={24} color="white" />
 						</TouchableOpacity>
 					)}
+					{images[selectedIndex].path &&
+						images[selectedIndex].path.length > 0 && (
+							<TouchableOpacity
+								onPress={() => handleDeletePress(selectedIndex)}
+								className="absolute w-10 h-10 items-center justify-center rounded-full bg-white/10 top-[5%] right-[5%] z-20"
+							>
+								<Ionicons name="trash" size={24} color="white" />
+							</TouchableOpacity>
+						)}
 					<View className="absolute left-0 right-0 w-full h-full translate-x-1/2 pointer-events-none z-10">
 						<CropView onPress={handleCropPress} />
 					</View>

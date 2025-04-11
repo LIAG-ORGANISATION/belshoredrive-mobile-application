@@ -1,4 +1,5 @@
 export const formatPicturesUri = (bucketName: string, uri: string) => {
+	if (!uri) return "";
 	if (uri.includes("file://")) {
 		return uri;
 	}

@@ -4,6 +4,7 @@ import { CropView } from "@/components/vectors/crop-view";
 import { GalleryIcon } from "@/components/vectors/gallery-icon";
 import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
 import {
+	useDeleteVehicleMedia,
 	useFetchVehicleById,
 	useUpdateVehicle,
 	useUploadVehicleMedia,
@@ -24,6 +25,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useLayoutEffect, useState } from "react";
 import {
 	ActivityIndicator,
+	Alert,
 	Image,
 	Pressable,
 	Text,
@@ -90,6 +92,7 @@ export default function UploadVehicleMedia() {
 	const [selectedIndex, setSelectedIndex] = useState<number>(0);
 	const [isLoading, setIsLoading] = useState(false);
 	const { mutate: uploadMedia } = useUploadVehicleMedia();
+	const { mutate: deleteMedia } = useDeleteVehicleMedia();
 	const { mutate: updateVehicle } = useUpdateVehicle();
 	const [images, setImages] = useState<
 		(Partial<PickerResult> & { add?: boolean; base64?: string })[]
@@ -237,6 +240,55 @@ export default function UploadVehicleMedia() {
 		);
 	};
 
+	const handleDeletePress = (index: number) => {
+		if (
+			images[index].path &&
+			images[index].path.length > 0 &&
+			!images[index].path.includes("file://")
+		) {
+			Alert.alert(
+				"Confirmation",
+				"Êtes-vous sûr de vouloir supprimer cette image?",
+				[
+					{
+						text: "Annuler",
+						style: "cancel",
+					},
+					{
+						text: "Supprimer",
+						onPress: () => {
+							if (images[index].path) {
+								deleteMedia(
+									{
+										mediaUUID: images[index].path,
+										vehicleId: vehicleId as string,
+									},
+									{
+										onSuccess: () => {
+											const newImages = [...images];
+											newImages[index] = {
+												path: "",
+												width: 0,
+												height: 0,
+												base64: "",
+											};
+											setImages(newImages);
+										},
+									},
+								);
+							}
+						},
+						style: "destructive",
+					},
+				],
+			);
+		} else {
+			const newImages = [...images];
+			newImages[index] = { path: "", width: 0, height: 0, base64: "" };
+			setImages(newImages);
+		}
+	};
+
 	useLayoutEffect(() => {
 		if (vehicle?.media?.length && vehicle?.media?.length > 0) {
 			const loadedImages: (Partial<PickerResult> & {
@@ -303,6 +355,15 @@ export default function UploadVehicleMedia() {
 							<Ionicons name="crop" size={24} color="white" />
 						</TouchableOpacity>
 					)}
+					{images[selectedIndex].path &&
+						images[selectedIndex].path.length > 0 && (
+							<TouchableOpacity
+								onPress={() => handleDeletePress(selectedIndex)}
+								className="absolute w-10 h-10 items-center justify-center rounded-full bg-white/10 top-[5%] right-[5%] z-20"
+							>
+								<Ionicons name="trash" size={24} color="white" />
+							</TouchableOpacity>
+						)}
 
 					<View className="absolute left-0 right-0 w-full h-full translate-x-1/2 pointer-events-none z-10">
 						<CropView onPress={handleCropPress} />
