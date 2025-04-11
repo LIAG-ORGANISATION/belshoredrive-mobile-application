@@ -549,12 +549,35 @@ export function useDeleteVehicleMedia() {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: async (mediaUUID: string) => {
+		mutationFn: async ({
+			mediaUUID,
+			vehicleId,
+		}: { mediaUUID: string; vehicleId: string }) => {
 			const { error } = await supabase.storage
 				.from("vehicles")
-				.remove([`vehicle-media/${mediaUUID}`]);
+				.remove([`${mediaUUID}`]);
 
 			if (error) throw error;
+			const { data: vehicle } = await supabase
+				.from("vehicles")
+				.select("media")
+				.eq("vehicle_id", vehicleId)
+				.single();
+
+			if (vehicle?.media) {
+				const updatedMedia = vehicle.media.filter(
+					(media: string) => media !== mediaUUID,
+				);
+
+				const { error: updateError } = await supabase
+					.from("vehicles")
+					.update({ media: updatedMedia })
+					.eq("vehicle_id", vehicleId);
+
+				if (updateError) throw updateError;
+			}
+
+			return { success: true };
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: QueryKeys.VEHICLES });
