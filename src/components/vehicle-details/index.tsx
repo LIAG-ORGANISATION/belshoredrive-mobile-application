@@ -198,7 +198,7 @@ export const VehicleProfile = ({
 								render={({ field: { onChange, onBlur, value } }) => (
 									<Fragment>
 										<Pressable
-											className="w-full h-12 border border-white/20  bg-white/15 rounded-lg justify-center px-4"
+											className="w-full h-12 flex-row justify-between items-center gap-2 border border-white/20  bg-white/15 rounded-lg px-4"
 											onPress={() => setShowPicker(true)}
 										>
 											<Text
@@ -208,6 +208,12 @@ export const VehicleProfile = ({
 											>
 												{value ? String(value) : "Année"}
 											</Text>
+											<Ionicons
+												name="chevron-down-outline"
+												size={24}
+												color="white"
+												onPress={() => setShowPicker(true)}
+											/>
 										</Pressable>
 
 										<Modal
@@ -315,7 +321,7 @@ export const VehicleProfile = ({
 								render={({ field: { onChange, onBlur, value } }) => (
 									<Fragment>
 										<Pressable
-											className="w-full h-12 border border-white/20  bg-white/15 rounded-lg justify-center px-4"
+											className="w-full h-12 flex-row justify-between items-center gap-2 border border-white/20  bg-white/15 rounded-lg px-4"
 											onPress={() => setShowStatusPicker(true)}
 										>
 											<Text
@@ -327,6 +333,12 @@ export const VehicleProfile = ({
 													(status) => status.status_id === value,
 												)?.name || "Statut"}
 											</Text>
+											<Ionicons
+												name="chevron-down-outline"
+												size={24}
+												color="white"
+												onPress={() => setShowStatusPicker(true)}
+											/>
 										</Pressable>
 
 										<Modal

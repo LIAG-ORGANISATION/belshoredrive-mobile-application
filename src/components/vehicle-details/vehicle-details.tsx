@@ -214,7 +214,12 @@ export const VehicleDetails = ({
 													)?.name
 												: "Type de boite"}
 										</Text>
-										<Ionicons name="chevron-down" size={24} color="white" />
+										<Ionicons
+											name="chevron-down-outline"
+											size={24}
+											color="white"
+											onPress={() => setShowTransmissionPicker(true)}
+										/>
 									</Pressable>
 
 									<Modal
@@ -294,7 +299,12 @@ export const VehicleDetails = ({
 													motorization.motorization_id === value,
 											)?.name || "Motorisation"}
 										</Text>
-										<Ionicons name="chevron-down" size={24} color="white" />
+										<Ionicons
+											name="chevron-down-outline"
+											size={24}
+											color="white"
+											onPress={() => setShowMotorizationPicker(true)}
+										/>
 									</Pressable>
 
 									<Modal
@@ -399,7 +409,12 @@ export const VehicleDetails = ({
 											{drivingSides?.find((side) => side.value === value)
 												?.label || "Côté de conduite"}
 										</Text>
-										<Ionicons name="chevron-down" size={24} color="white" />
+										<Ionicons
+											name="chevron-down-outline"
+											size={24}
+											color="white"
+											onPress={() => setShowDriveSidePicker(true)}
+										/>
 									</Pressable>
 
 									<Modal
@@ -475,7 +490,12 @@ export const VehicleDetails = ({
 														? "Date d'achat"
 														: new Date(value as string).getFullYear()}
 												</Text>
-												<Ionicons name="chevron-down" size={24} color="white" />
+												<Ionicons
+													name="chevron-down-outline"
+													size={24}
+													color="white"
+													onPress={() => setShowPurchaseDatePicker(true)}
+												/>
 											</Pressable>
 											<Modal
 												visible={showPurchaseDatePicker}
