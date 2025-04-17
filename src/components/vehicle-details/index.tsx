@@ -89,9 +89,9 @@ export const VehicleProfile = ({
 						brand_id: data.brand_id,
 						model: data.model,
 						year: data.year,
-						nickname: data.nickname,
-						description: data.description,
-						status_id: data.status_id,
+						nickname: data.nickname || undefined,
+						description: data.description || undefined,
+						status_id: data.status_id || undefined,
 					},
 				},
 				{
@@ -104,7 +104,7 @@ export const VehicleProfile = ({
 				},
 			);
 		} catch (error) {
-			console.error("Failed to update profile:", error);
+			console.error("Failed to update vehicle:", error);
 		}
 	};
 
