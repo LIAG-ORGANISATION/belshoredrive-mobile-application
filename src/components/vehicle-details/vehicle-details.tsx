@@ -228,7 +228,9 @@ export const VehicleDetails = ({
 															}
 														}}
 													>
-														<Text className="text-white font-bold">Fermer</Text>
+														<Text className="text-white font-bold">
+															Valider
+														</Text>
 													</Pressable>
 												</View>
 												<Picker
@@ -306,7 +308,9 @@ export const VehicleDetails = ({
 															}
 														}}
 													>
-														<Text className="text-white font-bold">Fermer</Text>
+														<Text className="text-white font-bold">
+															Valider
+														</Text>
 													</Pressable>
 												</View>
 												<Picker
@@ -408,7 +412,7 @@ export const VehicleDetails = ({
 																}}
 															>
 																<Text className="text-white font-bold">
-																	Fermer
+																	Valider
 																</Text>
 															</Pressable>
 														</View>

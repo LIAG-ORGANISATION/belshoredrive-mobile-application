@@ -129,7 +129,7 @@ export const VehicleProfile = ({
 						)}
 					</View>
 
-					<View 
+					<View
 						className="flex-1"
 						style={{
 							gap: 16,
@@ -219,7 +219,9 @@ export const VehicleProfile = ({
 												<View className="bg-zinc-900 w-full">
 													<View className="flex-row justify-end p-4 border-b border-white/20">
 														<Pressable onPress={() => setShowPicker(false)}>
-															<Text className="text-white font-bold">Fermer</Text>
+															<Text className="text-white font-bold">
+																Valider
+															</Text>
 														</Pressable>
 													</View>
 													<Picker
@@ -330,8 +332,12 @@ export const VehicleProfile = ({
 											<View className="flex-1 justify-end bg-black/50">
 												<View className="bg-zinc-900 w-full">
 													<View className="flex-row justify-end p-4 border-b border-white/20">
-														<Pressable onPress={() => setShowStatusPicker(false)}>
-															<Text className="text-white font-bold">Fermer</Text>
+														<Pressable
+															onPress={() => setShowStatusPicker(false)}
+														>
+															<Text className="text-white font-bold">
+																Valider
+															</Text>
 														</Pressable>
 													</View>
 													<Picker
