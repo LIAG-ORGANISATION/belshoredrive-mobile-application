@@ -46,16 +46,20 @@ export default function VehicleProfileLayout() {
 								size={24}
 								style={{ color: "white", paddingRight: 10 }}
 								onPress={() => {
-									router.push({
-										pathname: previousScreen as string,
-										params: {
-											userId,
-										},
-									});
+									if (previousScreen) {
+										router.push({
+											pathname: previousScreen as string,
+											params: {
+												userId,
+											},
+										});
+									} else {
+										router.back();
+									}
 								}}
 							/>
 						),
-						headerRight: () => (
+						headerRight: () =>
 							vehicle?.user_id === session?.user.id && (
 								<Ionicons
 									name="trash-outline"
@@ -63,8 +67,7 @@ export default function VehicleProfileLayout() {
 									color="white"
 									onPress={handleDeleteVehicle}
 								/>
-							)
-						),
+							),
 					}}
 				/>
 				<Stack.Screen

@@ -77,11 +77,10 @@ export default function TabOneScreen() {
 						<Pressable
 							className="rounded-2xl mb-4 relative h-[500px] w-[100%]"
 							onPress={() => {
-								router.replace({
+								router.push({
 									pathname: "/(vehicle)/[vehicleId]",
 									params: {
 										vehicleId: item.vehicle_id,
-										previousScreen: "/(tabs)",
 									},
 								});
 							}}
