@@ -320,7 +320,7 @@ export default function TabLayout() {
 												profile?.profile_picture_url as string,
 											),
 										}}
-										className={`w-6 h-6 rounded-full bg-slate-500 bg-cover ${
+										className={`w-7 h-7 rounded-full bg-slate-500 bg-cover ${
 											focused ? "border-2 border-white" : ""
 										}`}
 									/>
