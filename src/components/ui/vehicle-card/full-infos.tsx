@@ -44,26 +44,11 @@ export const VehicleCardFullInfos = ({
 	};
 	return (
 		<View key={item.vehicle_id} className="relative rounded-2xl mb-4 h-[500px]">
-			{!item.is_published && (
-				<View className="absolute top-0 left-0 w-full px-2 py-3 bg-primary z-10 rounded-t-2xl flex-row justify-between">
-					<Text className="text-white font-semibold">Brouillon</Text>
-					<Pressable
-						onPress={() => {
-							router.replace({
-								pathname: "/(create-vehicle)/[vehicleId]",
-								params: { vehicleId: item.vehicle_id },
-							});
-						}}
-					>
-						<Text className="text-white font-semibold">Modifier</Text>
-					</Pressable>
-				</View>
-			)}
 			{item.media && item.media.length > 0 && (
 				<Fragment>
 					<LinearGradient
-						colors={["rgba(0,0,0,0.8)", "transparent"]}
-						className="absolute top-0 left-0 right-0 h-32 w-full z-10 rounded-b-2xl"
+						colors={["rgba(0,0,0,0.3)", "transparent"]}
+						className="absolute top-0 left-0 right-0 h-10 w-full z-10"
 					/>
 					<View className="h-9 w-full absolute mx-auto  left-0 right-0 flex-row justify-center items-center z-10">
 						<CarouselNavigator
@@ -72,7 +57,6 @@ export const VehicleCardFullInfos = ({
 							className="w-11/12 px-4"
 						/>
 					</View>
-
 					<FlatList
 						data={item.media.length > 8 ? item.media.slice(0, 8) : item.media}
 						className="w-full h-full rounded-2xl"
