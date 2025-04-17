@@ -43,7 +43,8 @@ export default function SearchScreen() {
 	const { data: types = [], isLoading: isLoadingTypes } = useFetchTypes();
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isSearchActive, setIsSearchActive] = useState(false);
-	const { registerSheet, showSheet, hideSheet } = useBottomSheet();
+	const { registerSheet, showSheet, hideSheet, updateSheet, state } =
+		useBottomSheet();
 
 	const { data: searchResults, isLoading: isLoadingSearchResults } = useQuery({
 		queryKey: ["userSearch", searchQuery],
@@ -109,17 +110,22 @@ export default function SearchScreen() {
 				</BottomSheetContent>
 			);
 
-			// Register all bottom sheets
-			registerSheet("brandFilterSheet", {
-				id: "brandFilterSheet",
-				component: brandFilterContent,
-				snapPoints: [200, "70%"],
-				enablePanDownToClose: true,
-				backgroundStyle: { backgroundColor: "#1c1c1e" },
-				handleIndicatorStyle: { backgroundColor: "#777" },
-			});
+			if (state.sheets["brandFilterSheet"]) {
+				updateSheet("brandFilterSheet", {
+					component: brandFilterContent,
+				});
+			} else {
+				registerSheet("brandFilterSheet", {
+					id: "brandFilterSheet",
+					component: brandFilterContent,
+					snapPoints: [200, "70%"],
+					enablePanDownToClose: true,
+					backgroundStyle: { backgroundColor: "#1c1c1e" },
+					handleIndicatorStyle: { backgroundColor: "#777" },
+				});
+			}
 		}
-	}, [brands, filters]);
+	}, [brands, filters.brands]);
 
 	useLayoutEffect(() => {
 		if (types.length > 0) {
@@ -138,15 +144,6 @@ export default function SearchScreen() {
 								className="flex-row items-center py-3"
 								onPress={() => {
 									toggleFilter("types", type.id);
-									// Force re-registration of the sheet with updated UI
-									registerSheet("typeFilterSheet", {
-										id: "typeFilterSheet",
-										component: typeFilterContent,
-										snapPoints: [200, "70%"],
-										enablePanDownToClose: true,
-										backgroundStyle: { backgroundColor: "#1c1c1e" },
-										handleIndicatorStyle: { backgroundColor: "#777" },
-									});
 								}}
 							>
 								<View
@@ -167,14 +164,20 @@ export default function SearchScreen() {
 				</BottomSheetContent>
 			);
 
-			registerSheet("typeFilterSheet", {
-				id: "typeFilterSheet",
-				component: typeFilterContent,
-				snapPoints: [200, "70%"],
-				enablePanDownToClose: true,
-				backgroundStyle: { backgroundColor: "#1c1c1e" },
-				handleIndicatorStyle: { backgroundColor: "#777" },
-			});
+			if (state.sheets["typeFilterSheet"]) {
+				updateSheet("typeFilterSheet", {
+					component: typeFilterContent,
+				});
+			} else {
+				registerSheet("typeFilterSheet", {
+					id: "typeFilterSheet",
+					component: typeFilterContent,
+					snapPoints: [200, "70%"],
+					enablePanDownToClose: true,
+					backgroundStyle: { backgroundColor: "#1c1c1e" },
+					handleIndicatorStyle: { backgroundColor: "#777" },
+				});
+			}
 		}
 	}, [types, filters]);
 
@@ -214,14 +217,20 @@ export default function SearchScreen() {
 				</BottomSheetContent>
 			);
 
-			registerSheet("departmentFilterSheet", {
-				id: "departmentFilterSheet",
-				component: departmentFilterContent,
-				snapPoints: [200, "70%"],
-				enablePanDownToClose: true,
-				backgroundStyle: { backgroundColor: "#1c1c1e" },
-				handleIndicatorStyle: { backgroundColor: "#777" },
-			});
+			if (state.sheets["departmentFilterSheet"]) {
+				updateSheet("departmentFilterSheet", {
+					component: departmentFilterContent,
+				});
+			} else {
+				registerSheet("departmentFilterSheet", {
+					id: "departmentFilterSheet",
+					component: departmentFilterContent,
+					snapPoints: [200, "70%"],
+					enablePanDownToClose: true,
+					backgroundStyle: { backgroundColor: "#1c1c1e" },
+					handleIndicatorStyle: { backgroundColor: "#777" },
+				});
+			}
 		}
 	}, [departments, filters]);
 
@@ -426,7 +435,6 @@ export default function SearchScreen() {
 					contentContainerStyle={{ paddingBottom: 20 }}
 				/>
 			)}
-			{/* BottomSheets are now rendered by the BottomSheetProvider */}
 		</View>
 	);
 }
