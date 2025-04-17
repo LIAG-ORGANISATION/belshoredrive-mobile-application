@@ -130,7 +130,10 @@ export function useVehicles() {
           user_profiles!user_id (
             pseudo,
             profile_picture_url
-          )
+          ),
+			vehicle_ratings (
+				rating
+			)
         `)
 				.eq("is_published", true)
 				.range(pageParam * 10, (pageParam + 1) * 10 - 1)
@@ -139,6 +142,19 @@ export function useVehicles() {
 			if (error) {
 				console.error(JSON.stringify(error, null, 2));
 				throw error;
+			}
+			if (data.length > 0) {
+				for (const vehicle of data) {
+					if (vehicle.vehicle_ratings.length > 0) {
+						const ratings = vehicle.vehicle_ratings
+							.map((r) => r.rating)
+							.filter((r): r is number => r !== null);
+						const average = ratings.length
+							? ratings.reduce((a, b) => a + b, 0) / ratings.length
+							: 0;
+						vehicle.rating = average;
+					}
+				}
 			}
 			return data;
 		},

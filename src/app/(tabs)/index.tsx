@@ -1,6 +1,6 @@
-
 import { CompleteProfileCta } from "@/components/ui/complete-profile-cta";
 import { SkeletonVehicleCard } from "@/components/ui/skeleton-vehicle-card";
+import { FireWheelIcon } from "@/components/vectors/fire-wheel-icon";
 import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
 import { useVehicles } from "@/network/vehicles";
 import { FlashList } from "@shopify/flash-list";
@@ -79,7 +79,10 @@ export default function TabOneScreen() {
 							onPress={() => {
 								router.replace({
 									pathname: "/(vehicle)/[vehicleId]",
-									params: { vehicleId: item.vehicle_id, previousScreen: "/(tabs)" },
+									params: {
+										vehicleId: item.vehicle_id,
+										previousScreen: "/(tabs)",
+									},
 								});
 							}}
 						>
@@ -108,22 +111,35 @@ export default function TabOneScreen() {
 									{item.year} {item.brands?.name} {item.model}
 								</Text>
 
-								{/* Add owner information */}
-								<View className="flex-row items-center mt-4">
-									{item.user_profiles?.profile_picture_url && (
-										<Image
-											source={{
-												uri: formatPicturesUri(
-													"profile_pictures",
-													item.user_profiles.profile_picture_url,
-												),
-											}}
-											className="w-6 h-6 rounded-full mr-2"
-										/>
+								<View className="flex-row items-center justify-between">
+									{/* Add owner information */}
+									<View className="flex-row items-center mt-4">
+										{item.user_profiles?.profile_picture_url && (
+											<Image
+												source={{
+													uri: formatPicturesUri(
+														"profile_pictures",
+														item.user_profiles.profile_picture_url,
+													),
+												}}
+												className="w-6 h-6 rounded-full mr-2"
+											/>
+										)}
+										<Text className="text-white text-sm">
+											{item.user_profiles?.pseudo || "Unknown User"}
+										</Text>
+									</View>
+									{/* Rating */}
+									{item.rating && (
+										<View className="px-3 py-2 flex flex-row items-center justify-center gap-2 bg-black/30 rounded-lg">
+											<FireWheelIcon />
+
+											<Text className="text-white text-lg">
+												<Text className="font-bold">{item.rating}</Text>
+												&nbsp;sur 10
+											</Text>
+										</View>
 									)}
-									<Text className="text-white text-sm">
-										{item.user_profiles?.pseudo || "Unknown User"}
-									</Text>
 								</View>
 							</View>
 						</Pressable>
