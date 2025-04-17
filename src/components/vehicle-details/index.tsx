@@ -218,7 +218,14 @@ export const VehicleProfile = ({
 											<View className="flex-1 justify-end bg-black/50">
 												<View className="bg-zinc-900 w-full">
 													<View className="flex-row justify-end p-4 border-b border-white/20">
-														<Pressable onPress={() => setShowPicker(false)}>
+														<Pressable
+															onPress={() => {
+																setShowPicker(false);
+																if (value === 0) {
+																	onChange(new Date().getFullYear());
+																}
+															}}
+														>
 															<Text className="text-white font-bold">
 																Valider
 															</Text>
@@ -313,9 +320,7 @@ export const VehicleProfile = ({
 										>
 											<Text
 												className={`text-sm ${
-													!vehicle?.vehicle_statuses?.name
-														? "text-white/50"
-														: "text-white"
+													!value ? "text-white/50" : "text-white"
 												}`}
 											>
 												{vehicleStatuses?.find(
@@ -333,7 +338,14 @@ export const VehicleProfile = ({
 												<View className="bg-zinc-900 w-full">
 													<View className="flex-row justify-end p-4 border-b border-white/20">
 														<Pressable
-															onPress={() => setShowStatusPicker(false)}
+															onPress={() => {
+																setShowStatusPicker(false);
+																if (value === "") {
+																	onChange(
+																		vehicleStatuses?.[0].status_id || "",
+																	);
+																}
+															}}
 														>
 															<Text className="text-white font-bold">
 																Valider
