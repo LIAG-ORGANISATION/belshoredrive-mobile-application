@@ -74,7 +74,16 @@ export const VehicleCardFullInfos = ({
 						}
 						renderItem={({ item: mediaItem }) => {
 							return (
-								<View style={{ width: screenWidth }} className="h-full">
+								<Pressable
+									style={{ width: screenWidth }}
+									className="h-full"
+									onPress={() => {
+										router.push({
+											pathname: "/(vehicle)/[vehicleId]/gallery",
+											params: { vehicleId: item.vehicle_id },
+										});
+									}}
+								>
 									<Image
 										source={{ uri: formatPicturesUri("vehicles", mediaItem) }}
 										className="w-full h-full "
@@ -82,7 +91,7 @@ export const VehicleCardFullInfos = ({
 										style={{ width: screenWidth }}
 										defaultSource={require("../../../../assets/images/vehicle-placeholder.webp")}
 									/>
-								</View>
+								</Pressable>
 							);
 						}}
 						keyExtractor={(item) => item.toString()}
