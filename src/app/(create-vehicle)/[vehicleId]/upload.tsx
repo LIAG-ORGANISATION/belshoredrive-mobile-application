@@ -32,7 +32,6 @@ import {
 	TouchableOpacity,
 	View,
 } from "react-native";
-import {} from "react-native-gesture-handler";
 
 const MAX_IMAGES = 15;
 
@@ -95,14 +94,18 @@ export default function UploadVehicleMedia() {
 	const { mutate: deleteMedia } = useDeleteVehicleMedia();
 	const { mutate: updateVehicle } = useUpdateVehicle();
 	const [images, setImages] = useState<
-		(Partial<PickerResult> & { add?: boolean; base64?: string })[]
+		(Partial<PickerResult> & {
+			add?: boolean;
+			base64?: string;
+			isLoaded: boolean;
+		})[]
 	>([
-		{ path: "", width: 0, height: 0, base64: "" },
-		{ path: "", width: 0, height: 0, base64: "" },
-		{ path: "", width: 0, height: 0, base64: "" },
-		{ path: "", width: 0, height: 0, base64: "" },
-		{ path: "", width: 0, height: 0, base64: "" },
-		{ path: "", width: 0, height: 0, base64: "", add: true },
+		{ path: "", width: 0, height: 0, base64: "", isLoaded: false },
+		{ path: "", width: 0, height: 0, base64: "", isLoaded: false },
+		{ path: "", width: 0, height: 0, base64: "", isLoaded: false },
+		{ path: "", width: 0, height: 0, base64: "", isLoaded: false },
+		{ path: "", width: 0, height: 0, base64: "", isLoaded: false },
+		{ path: "", width: 0, height: 0, base64: "", isLoaded: false, add: true },
 	]);
 
 	useEffect(() => {
@@ -128,6 +131,7 @@ export default function UploadVehicleMedia() {
 			height: 0,
 			base64: "",
 			add: images.length < MAX_IMAGES,
+			isLoaded: false,
 		});
 		setImages(newImages);
 	};
@@ -147,6 +151,7 @@ export default function UploadVehicleMedia() {
 					height: item.height,
 					base64: "",
 					add: index < MAX_IMAGES,
+					isLoaded: false,
 				};
 			}
 			setImages(newImages);
@@ -166,6 +171,7 @@ export default function UploadVehicleMedia() {
 			width: croppedImage.width,
 			height: croppedImage.height,
 			base64: "",
+			isLoaded: false,
 		};
 		setImages(newImages);
 	};
@@ -182,6 +188,7 @@ export default function UploadVehicleMedia() {
 				width: response.width,
 				height: response.height,
 				base64: "",
+				isLoaded: false,
 			};
 			setImages(newImages);
 		} catch (e) {
@@ -271,6 +278,7 @@ export default function UploadVehicleMedia() {
 												width: 0,
 												height: 0,
 												base64: "",
+												isLoaded: false,
 											};
 											setImages(newImages);
 										},
@@ -284,7 +292,13 @@ export default function UploadVehicleMedia() {
 			);
 		} else {
 			const newImages = [...images];
-			newImages[index] = { path: "", width: 0, height: 0, base64: "" };
+			newImages[index] = {
+				path: "",
+				width: 0,
+				height: 0,
+				base64: "",
+				isLoaded: false,
+			};
 			setImages(newImages);
 		}
 	};
@@ -294,6 +308,7 @@ export default function UploadVehicleMedia() {
 			const loadedImages: (Partial<PickerResult> & {
 				add?: boolean;
 				base64?: string;
+				isLoaded: boolean;
 			})[] = images;
 			vehicle.media.map((media, index) => {
 				loadedImages[index] = {
@@ -302,6 +317,7 @@ export default function UploadVehicleMedia() {
 					height: 0,
 					base64: "",
 					add: false,
+					isLoaded: false,
 				};
 			});
 			if (
@@ -313,6 +329,7 @@ export default function UploadVehicleMedia() {
 					width: 0,
 					height: 0,
 					base64: "",
+					isLoaded: false,
 					add: true,
 				});
 			}
@@ -340,11 +357,19 @@ export default function UploadVehicleMedia() {
 				<View className="w-full relative aspect-square rounded-lg overflow-hidden">
 					{images[selectedIndex]?.path && (
 						<Image
+							src={formatPicturesUri("vehicles", images[selectedIndex].path)}
 							source={{
 								uri: formatPicturesUri("vehicles", images[selectedIndex].path),
 							}}
-							className="w-full h-full z-0"
+							className={`w-full h-full z-0 ${
+								images[selectedIndex].isLoaded ? "opacity-100" : "opacity-0"
+							}`}
 							resizeMode="contain"
+							onLoad={() => {
+								const newImages = [...images];
+								newImages[selectedIndex].isLoaded = true;
+								setImages(newImages);
+							}}
 						/>
 					)}
 					{images[selectedIndex].path?.includes("file://") && (
@@ -381,6 +406,9 @@ export default function UploadVehicleMedia() {
 								if (index <= MAX_IMAGES) {
 									setSelectedIndex(index);
 								}
+								const newImages = [...images];
+								newImages[index].isLoaded = false;
+								setImages(newImages);
 							}}
 							className={`h-32 aspect-[10/16] mr-2 rounded-lg overflow-hidden ${
 								selectedIndex === index
@@ -389,13 +417,15 @@ export default function UploadVehicleMedia() {
 							}`}
 						>
 							{item.path && item.path.length > 0 ? (
-								<Image
-									source={{
-										uri: formatPicturesUri("vehicles", item.path),
-									}}
-									className="w-full h-full"
-									resizeMode="cover"
-								/>
+								<View className="w-full h-full">
+									<Image
+										source={{
+											uri: formatPicturesUri("vehicles", item.path),
+										}}
+										className={`w-full h-full `}
+										resizeMode="cover"
+									/>
+								</View>
 							) : (
 								<View className="w-full h-full items-center justify-center bg-white/10">
 									{item.add ? (
