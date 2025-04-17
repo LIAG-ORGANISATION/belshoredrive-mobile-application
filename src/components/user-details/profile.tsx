@@ -15,6 +15,7 @@ import { ShareIcon } from "@/components/vectors/share-icon";
 import { WheelIcon } from "@/components/vectors/wheel-icon";
 import { useBottomSheet } from "@/context/BottomSheetContext";
 import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
+import { QueryKeys } from "@/lib/query-keys";
 import { useCreateConversation } from "@/network/chat";
 import {
 	useFollowUser,
@@ -28,6 +29,7 @@ import { useFetchUserProfileById } from "@/network/user-profile";
 import { useUserVehicles } from "@/network/vehicles";
 import { Ionicons } from "@expo/vector-icons";
 import { FlashList } from "@shopify/flash-list";
+import { useQueryClient } from "@tanstack/react-query";
 import * as FileSystem from "expo-file-system";
 import { router, useLocalSearchParams } from "expo-router";
 import * as Sharing from "expo-sharing";
@@ -59,6 +61,8 @@ export const ProfileComponent = ({
 }: { userId: string; isCurrentUser: boolean; showDraftVehicles: boolean }) => {
 	const { initialTab } = useLocalSearchParams();
 
+	const queryClient = useQueryClient();
+
 	const { data: profile, isLoading: isProfileLoading } =
 		useFetchUserProfileById(userId as string);
 	const { data: vehicles, isLoading: isLoadingVehicles } =
@@ -76,8 +80,9 @@ export const ProfileComponent = ({
 			enabled: !!profile?.interests,
 		});
 	const { mutate: createChat } = useCreateConversation();
-	const { mutate: followUser } = useFollowUser();
-	const { mutate: unfollowUser } = useUnfollowUser();
+	const { mutate: followUser, isPending: isFollowingPending } = useFollowUser();
+	const { mutate: unfollowUser, isPending: isUnfollowingPending } =
+		useUnfollowUser();
 
 	const { width } = Dimensions.get("window");
 
@@ -304,9 +309,7 @@ export const ProfileComponent = ({
 
 				{isLoadingInterests
 					? renderSkeletonChips({ count: 3 })
-					: renderChips(
-							interests || []
-						)}
+					: renderChips(interests || [])}
 
 				<View className="w-full flex flex-row gap-2 my-2">
 					<View className="flex-1 ">
@@ -327,11 +330,24 @@ export const ProfileComponent = ({
 							<Button
 								variant="secondary"
 								label={isFollowing ? "Unfollow" : "Follow"}
+								disabled={isFollowingPending || isUnfollowingPending}
 								onPress={() => {
 									if (isFollowing) {
-										unfollowUser(userId as string);
+										unfollowUser(userId as string, {
+											onSuccess: () => {
+												queryClient.invalidateQueries({
+													queryKey: QueryKeys.FOLLOWERS_COUNT(userId),
+												});
+											},
+										});
 									} else {
-										followUser(userId as string);
+										followUser(userId as string, {
+											onSuccess: () => {
+												queryClient.invalidateQueries({
+													queryKey: QueryKeys.FOLLOWERS_COUNT(userId),
+												});
+											},
+										});
 									}
 								}}
 								className="gap-2"

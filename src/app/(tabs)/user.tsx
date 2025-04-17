@@ -20,12 +20,22 @@ export default function UserScreen() {
 					return (
 						<Pressable
 							onPress={() =>
-								router.push({
+								router.replace({
 									pathname: previousScreen as RelativePathString,
 									params: { userId },
 								})
 							}
 						>
+							<Ionicons name="chevron-back" size={24} color="white" />
+						</Pressable>
+					);
+				},
+			});
+		} else {
+			navigation.setOptions({
+				headerLeft: () => {
+					return (
+						<Pressable onPress={() => router.back()}>
 							<Ionicons name="chevron-back" size={24} color="white" />
 						</Pressable>
 					);
