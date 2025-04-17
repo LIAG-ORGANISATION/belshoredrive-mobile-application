@@ -139,7 +139,9 @@ export const VehicleProfile = ({
 							<Text className="text-white text-lg font-semibold my-4">
 								Décrivez le véhicule
 							</Text>
-							<Text className="text-white text-base font-semibold">Marque</Text>
+							<Text className="text-white text-base font-semibold">
+								Marque *
+							</Text>
 
 							<Pressable
 								className="w-full h-12 border flex flex-row border-white/20  bg-white/15 rounded-lg justify-between items-center px-4"
@@ -172,7 +174,9 @@ export const VehicleProfile = ({
 						</View>
 
 						<View className="flex-col w-full gap-1">
-							<Text className="text-white text-base font-semibold">Modèle</Text>
+							<Text className="text-white text-base font-semibold">
+								Modèle *
+							</Text>
 							<Controller<CreateVehicleType>
 								control={control}
 								name="model"
@@ -191,7 +195,9 @@ export const VehicleProfile = ({
 						</View>
 
 						<View className="flex-col w-full gap-1">
-							<Text className="text-white text-base font-semibold">Année</Text>
+							<Text className="text-white text-base font-semibold">
+								Année *
+							</Text>
 							<Controller<CreateVehicleType>
 								control={control}
 								name="year"
