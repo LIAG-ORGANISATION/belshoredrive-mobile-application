@@ -4,11 +4,11 @@ import { useFetchUserProfile } from "@/network/user-profile";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { Alert, Pressable, Text, View } from "react-native";
+import { SkeletonText } from "../ui/skeleton-text";
 import { NotificationIcon } from "../vectors/notification-icon";
-
 export const SettingsComponent = () => {
-	const { data: session } = useGetSession();
-	const { data: profile } = useFetchUserProfile();
+	const { data: session, isLoading: isSessionLoading } = useGetSession();
+	const { data: profile, isLoading: isProfileLoading } = useFetchUserProfile();
 
 	const handleLogout = async () => {
 		try {
@@ -35,20 +35,28 @@ export const SettingsComponent = () => {
 		]);
 	};
 
+	if (isSessionLoading || isProfileLoading) {
+		return <SkeletonText width="w-full" />;
+	}
+
 	return (
 		<View className="flex-1 bg-black text-white py-2 px-safe-offset-4">
 			<View className="flex items-start gap-4 h-fit py-2 border-b border-zinc-800">
 				<Text className="text-xl text-white font-bold">
 					Informaiton de Profil
 				</Text>
-				<View className="flex items-center gap-3 py-2">
+				<View className="flex items-start gap-3 py-2 w-full">
 					<View className="flex gap-1">
 						<Text className="text-white text-xl">Coordonnées</Text>
-						<Text className="text-zinc-400">{session?.user.email}</Text>
+						<Text className="text-zinc-400">
+							{session?.user.email || "Aucune adresse email"}
+						</Text>
 					</View>
 					<View className="flex gap-1">
 						<Text className="text-white text-xl">Année de naissance</Text>
-						<Text className="text-zinc-400">{profile?.birth_year}</Text>
+						<Text className="text-zinc-400">
+							{profile?.birth_year || "Aucune année de naissance"}
+						</Text>
 					</View>
 				</View>
 			</View>
