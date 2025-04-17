@@ -533,6 +533,7 @@ export const VehicleDetails = ({
 							variant="secondary"
 							label="Continuer"
 							onPress={handleSubmit(onSubmit)}
+							disabled={!isValid || isSubmitting}
 						/>
 					</View>
 				</ScrollView>
