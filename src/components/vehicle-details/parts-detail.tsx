@@ -219,7 +219,7 @@ export const PartsDetails = ({
 								onPress={handleSubmit(onSubmit)}
 							/>
 
-							<Link href="/(tabs)" asChild>
+							<Link href={`/(create-vehicle)/${vehicleId}/view`} asChild>
 								<Text className="text-white text-sm text-center font-semibold">
 									Passer cette étape
 								</Text>
