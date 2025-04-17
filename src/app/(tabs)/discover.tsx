@@ -85,9 +85,14 @@ export default function SearchScreen() {
 				<BottomSheetContent>
 					<View className="flex-row justify-between items-center mb-4">
 						<Text className="text-white text-xl font-semibold">Marques</Text>
-						<TouchableOpacity onPress={() => clearFilter("brands")}>
-							<Text className="text-primary">Effacer</Text>
-						</TouchableOpacity>
+						<View className="flex-row gap-4">
+							<TouchableOpacity onPress={() => clearFilter("brands")}>
+								<Text className="text-gray-400">Effacer</Text>
+							</TouchableOpacity>
+							<TouchableOpacity onPress={() => hideSheet("brandFilterSheet")}>
+								<Text className="text-primary">Confirmer</Text>
+							</TouchableOpacity>
+						</View>
 					</View>
 					<ScrollView className="flex-1 max-h-[500px]">
 						{brands.map((brand) => (
@@ -133,9 +138,14 @@ export default function SearchScreen() {
 				<BottomSheetContent>
 					<View className="flex-row justify-between items-center mb-4">
 						<Text className="text-white text-xl font-semibold">Types</Text>
-						<TouchableOpacity onPress={() => clearFilter("types")}>
-							<Text className="text-primary">Effacer</Text>
-						</TouchableOpacity>
+						<View className="flex-row gap-4">
+							<TouchableOpacity onPress={() => clearFilter("types")}>
+								<Text className="text-gray-400">Effacer</Text>
+							</TouchableOpacity>
+							<TouchableOpacity onPress={() => hideSheet("typeFilterSheet")}>
+								<Text className="text-primary">Confirmer</Text>
+							</TouchableOpacity>
+						</View>
 					</View>
 					<ScrollView className="flex-1 max-h-[500px]">
 						{types?.map((type) => (
@@ -190,9 +200,16 @@ export default function SearchScreen() {
 						<Text className="text-white text-xl font-semibold">
 							Départements
 						</Text>
-						<TouchableOpacity onPress={() => clearFilter("departments")}>
-							<Text className="text-primary">Effacer</Text>
-						</TouchableOpacity>
+						<View className="flex-row gap-2">
+							<TouchableOpacity onPress={() => clearFilter("departments")}>
+								<Text className="text-gray-400">Effacer</Text>
+							</TouchableOpacity>
+							<TouchableOpacity
+								onPress={() => hideSheet("departmentFilterSheet")}
+							>
+								<Text className="text-primary">Confirmer</Text>
+							</TouchableOpacity>
+						</View>
 					</View>
 					<ScrollView className="flex-1 max-h-[500px]">
 						{departments.map((department) => (
