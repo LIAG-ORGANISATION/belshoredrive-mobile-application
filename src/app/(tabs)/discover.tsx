@@ -337,6 +337,18 @@ export default function SearchScreen() {
 				showsHorizontalScrollIndicator={false}
 				className="py-3 max-h-14"
 			>
+				{(filters.brands.length > 0 ||
+					filters.departments.length > 0 ||
+					filters.types.length > 0) && (
+					<TouchableOpacity
+						className="w-fit h-10 border flex flex-row gap-1 items-center justify-between rounded-lg px-4 mr-2 bg-red-400"
+						onPress={() =>
+							setFilters({ brands: [], departments: [], types: [] })
+						}
+					>
+						<Text className="text-white">Effacer tout</Text>
+					</TouchableOpacity>
+				)}
 				<TouchableOpacity
 					className={
 						"w-fit h-10 border flex flex-row gap-1 items-center justify-between border-white/20  bg-white/15 rounded-lg px-4 mr-2"
@@ -376,19 +388,6 @@ export default function SearchScreen() {
 					</Text>
 					<Ionicons name="chevron-down" color="white" />
 				</TouchableOpacity>
-
-				{(filters.brands.length > 0 ||
-					filters.departments.length > 0 ||
-					filters.types.length > 0) && (
-					<TouchableOpacity
-						className="w-fit h-10 border flex flex-row gap-1 items-center justify-between rounded-lg px-4 mr-2 bg-red-400"
-						onPress={() =>
-							setFilters({ brands: [], departments: [], types: [] })
-						}
-					>
-						<Text className="text-white">Effacer tout</Text>
-					</TouchableOpacity>
-				)}
 			</ScrollView>
 
 			{isSearchActive && (
