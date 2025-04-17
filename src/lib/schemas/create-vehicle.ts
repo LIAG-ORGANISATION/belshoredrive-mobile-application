@@ -72,11 +72,11 @@ export const vehicleDetailsSchema = object({
 export type VehicleDetailsType = InferOutput<typeof vehicleDetailsSchema>;
 
 export const partsDetailsSchema = object({
-	motorization: optional(pipe(string(), maxLength(200))),
-	chassis: optional(pipe(string(), maxLength(200))),
-	braking: optional(pipe(string(), maxLength(200))),
-	exterior: optional(pipe(string(), maxLength(200))),
-	technical_document: optional(pipe(string(), maxLength(200))),
+	motorization: optional(pipe(string(), minLength(1), maxLength(200))),
+	chassis: optional(pipe(string(), minLength(1), maxLength(200))),
+	braking: optional(pipe(string(), minLength(1), maxLength(200))),
+	exterior: optional(pipe(string(), minLength(1), maxLength(200))),
+	technical_document: optional(pipe(string(), minLength(1), maxLength(200))),
 });
 
 export type PartsDetailsType = InferOutput<typeof partsDetailsSchema>;
