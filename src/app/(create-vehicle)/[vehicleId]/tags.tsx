@@ -11,7 +11,7 @@ export default function CreateVehicleDetails() {
 				subtitle="Les tags permettent aux passionnés de trouver votre véhicule plus facilement en fonction de ces caractéristiques"
 				vehicleId={vehicleId as string}
 				onSubmitCallback={() => {
-					router.replace({
+					router.push({
 						pathname: "/(create-vehicle)/[vehicleId]/vehicle-details",
 						params: { vehicleId: vehicleId as string },
 					});
