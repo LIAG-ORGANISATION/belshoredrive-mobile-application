@@ -138,27 +138,25 @@ export const VehicleDetails = ({
 							Kilométrage
 						</Text>
 						<View className="w-full h-fit flex flex-row justify-between items-center gap-2">
-							<View className="flex-1">
-								<Controller<VehicleDetailsType>
-									control={control}
-									name="mileage"
-									render={({ field: { onChange, onBlur, value } }) => (
-										<Input
-											placeholder="Kilométrage"
-											name="mileage"
-											keyboardType="numeric"
-											value={value as string}
-											onChangeText={(value) =>
-												onChange(Number(value.replace(/[^0-9]/g, "")))
-											}
-											onBlur={onBlur}
-											placeholderTextColor="white"
-											error={errors.mileage}
-										/>
-									)}
-								/>
-							</View>
-							<Text className="text-white text-lg">km</Text>
+							<Controller<VehicleDetailsType>
+								control={control}
+								name="mileage"
+								render={({ field: { onChange, onBlur, value } }) => (
+									<Input
+										placeholder="Kilométrage"
+										name="mileage"
+										keyboardType="numeric"
+										value={value as string}
+										onChangeText={(value) =>
+											onChange(Number(value.replace(/[^0-9]/g, "")))
+										}
+										onBlur={onBlur}
+										placeholderTextColor="white"
+										error={errors.mileage}
+										suffix="km"
+									/>
+								)}
+							/>
 						</View>
 					</View>
 					<View className="flex-col w-full gap-1 ">
@@ -166,27 +164,25 @@ export const VehicleDetails = ({
 							Puissance
 						</Text>
 						<View className="w-full h-fit flex flex-row justify-between items-center gap-2">
-							<View className="flex-1">
-								<Controller<VehicleDetailsType>
-									control={control}
-									name="power"
-									render={({ field: { onChange, onBlur, value } }) => (
-										<Input
-											placeholder="Puissance"
-											name="power"
-											keyboardType="numeric"
-											value={value as string}
-											onChangeText={(value) =>
-												onChange(Number(value.replace(/[^0-9]/g, "")))
-											}
-											onBlur={onBlur}
-											placeholderTextColor="white"
-											error={errors.power}
-										/>
-									)}
-								/>
-							</View>
-							<Text className="text-white text-lg">ch</Text>
+							<Controller<VehicleDetailsType>
+								control={control}
+								name="power"
+								render={({ field: { onChange, onBlur, value } }) => (
+									<Input
+										placeholder="Puissance"
+										name="power"
+										keyboardType="numeric"
+										value={value as string}
+										onChangeText={(value) =>
+											onChange(Number(value.replace(/[^0-9]/g, "")))
+										}
+										onBlur={onBlur}
+										placeholderTextColor="white"
+										error={errors.power}
+										suffix="cv"
+									/>
+								)}
+							/>
 						</View>
 					</View>
 					<View className="flex-col w-full gap-1 ">
@@ -360,27 +356,25 @@ export const VehicleDetails = ({
 							Vitesse max
 						</Text>
 						<View className="w-full h-fit flex flex-row justify-between items-center gap-2">
-							<View className="flex-1">
-								<Controller<VehicleDetailsType>
-									control={control}
-									name="max_speed"
-									render={({ field: { onChange, onBlur, value } }) => (
-										<Input
-											placeholder="Vitesse max"
-											name="max_speed"
-											keyboardType="numeric"
-											value={value as string}
-											onChangeText={(value) =>
-												onChange(Number(value.replace(/[^0-9]/g, "")))
-											}
-											onBlur={onBlur}
-											placeholderTextColor="white"
-											error={errors.max_speed}
-										/>
-									)}
-								/>
-							</View>
-							<Text className="text-white text-lg">km/h</Text>
+							<Controller<VehicleDetailsType>
+								control={control}
+								name="max_speed"
+								render={({ field: { onChange, onBlur, value } }) => (
+									<Input
+										suffix="km/h"
+										placeholder="Vitesse max"
+										name="max_speed"
+										keyboardType="numeric"
+										value={value as string}
+										onChangeText={(value) =>
+											onChange(Number(value.replace(/[^0-9]/g, "")))
+										}
+										onBlur={onBlur}
+										placeholderTextColor="white"
+										error={errors.max_speed}
+									/>
+								)}
+							/>
 						</View>
 					</View>
 
