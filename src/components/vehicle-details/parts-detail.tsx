@@ -217,9 +217,10 @@ export const PartsDetails = ({
 								variant="secondary"
 								label="Continuer"
 								onPress={handleSubmit(onSubmit)}
+								disabled={!isValid || isSubmitting}
 							/>
 
-							<Link href="/(tabs)" asChild>
+							<Link href={`/(create-vehicle)/${vehicleId}/view`} asChild>
 								<Text className="text-white text-sm text-center font-semibold">
 									Passer cette étape
 								</Text>

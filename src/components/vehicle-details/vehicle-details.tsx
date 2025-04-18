@@ -39,6 +39,11 @@ export const VehicleDetails = ({
 		vehicle?.type_id,
 	);
 
+	const drivingSides = [
+		{ label: "Conduite à droite", value: "right" },
+		{ label: "Conduite à gauche", value: "left" },
+	];
+
 	const {
 		control,
 		handleSubmit,
@@ -133,27 +138,25 @@ export const VehicleDetails = ({
 							Kilométrage
 						</Text>
 						<View className="w-full h-fit flex flex-row justify-between items-center gap-2">
-							<View className="flex-1">
-								<Controller<VehicleDetailsType>
-									control={control}
-									name="mileage"
-									render={({ field: { onChange, onBlur, value } }) => (
-										<Input
-											placeholder="Kilométrage"
-											name="mileage"
-											keyboardType="numeric"
-											value={value as string}
-											onChangeText={(value) =>
-												onChange(Number(value.replace(/[^0-9]/g, "")))
-											}
-											onBlur={onBlur}
-											placeholderTextColor="white"
-											error={errors.mileage}
-										/>
-									)}
-								/>
-							</View>
-							<Text className="text-white text-lg">km</Text>
+							<Controller<VehicleDetailsType>
+								control={control}
+								name="mileage"
+								render={({ field: { onChange, onBlur, value } }) => (
+									<Input
+										placeholder="Kilométrage"
+										name="mileage"
+										keyboardType="numeric"
+										value={value as string}
+										onChangeText={(value) =>
+											onChange(Number(value.replace(/[^0-9]/g, "")))
+										}
+										onBlur={onBlur}
+										placeholderTextColor="white"
+										error={errors.mileage}
+										suffix="km"
+									/>
+								)}
+							/>
 						</View>
 					</View>
 					<View className="flex-col w-full gap-1 ">
@@ -161,27 +164,25 @@ export const VehicleDetails = ({
 							Puissance
 						</Text>
 						<View className="w-full h-fit flex flex-row justify-between items-center gap-2">
-							<View className="flex-1">
-								<Controller<VehicleDetailsType>
-									control={control}
-									name="power"
-									render={({ field: { onChange, onBlur, value } }) => (
-										<Input
-											placeholder="Puissance"
-											name="power"
-											keyboardType="numeric"
-											value={value as string}
-											onChangeText={(value) =>
-												onChange(Number(value.replace(/[^0-9]/g, "")))
-											}
-											onBlur={onBlur}
-											placeholderTextColor="white"
-											error={errors.power}
-										/>
-									)}
-								/>
-							</View>
-							<Text className="text-white text-lg">ch</Text>
+							<Controller<VehicleDetailsType>
+								control={control}
+								name="power"
+								render={({ field: { onChange, onBlur, value } }) => (
+									<Input
+										placeholder="Puissance"
+										name="power"
+										keyboardType="numeric"
+										value={value as string}
+										onChangeText={(value) =>
+											onChange(Number(value.replace(/[^0-9]/g, "")))
+										}
+										onBlur={onBlur}
+										placeholderTextColor="white"
+										error={errors.power}
+										suffix="cv"
+									/>
+								)}
+							/>
 						</View>
 					</View>
 					<View className="flex-col w-full gap-1 ">
@@ -209,7 +210,12 @@ export const VehicleDetails = ({
 													)?.name
 												: "Type de boite"}
 										</Text>
-										<Ionicons name="chevron-down" size={24} color="white" />
+										<Ionicons
+											name="chevron-down-outline"
+											size={24}
+											color="white"
+											onPress={() => setShowTransmissionPicker(true)}
+										/>
 									</Pressable>
 
 									<Modal
@@ -228,7 +234,9 @@ export const VehicleDetails = ({
 															}
 														}}
 													>
-														<Text className="text-white font-bold">Fermer</Text>
+														<Text className="text-white font-bold">
+															Valider
+														</Text>
 													</Pressable>
 												</View>
 												<Picker
@@ -287,7 +295,12 @@ export const VehicleDetails = ({
 													motorization.motorization_id === value,
 											)?.name || "Motorisation"}
 										</Text>
-										<Ionicons name="chevron-down" size={24} color="white" />
+										<Ionicons
+											name="chevron-down-outline"
+											size={24}
+											color="white"
+											onPress={() => setShowMotorizationPicker(true)}
+										/>
 									</Pressable>
 
 									<Modal
@@ -306,7 +319,9 @@ export const VehicleDetails = ({
 															}
 														}}
 													>
-														<Text className="text-white font-bold">Fermer</Text>
+														<Text className="text-white font-bold">
+															Valider
+														</Text>
 													</Pressable>
 												</View>
 												<Picker
@@ -341,105 +356,108 @@ export const VehicleDetails = ({
 							Vitesse max
 						</Text>
 						<View className="w-full h-fit flex flex-row justify-between items-center gap-2">
-							<View className="flex-1">
-								<Controller<VehicleDetailsType>
-									control={control}
-									name="max_speed"
-									render={({ field: { onChange, onBlur, value } }) => (
-										<Input
-											placeholder="Vitesse max"
-											name="max_speed"
-											keyboardType="numeric"
-											value={value as string}
-											onChangeText={(value) =>
-												onChange(Number(value.replace(/[^0-9]/g, "")))
-											}
-											onBlur={onBlur}
-											placeholderTextColor="white"
-											error={errors.max_speed}
-										/>
-									)}
-								/>
-							</View>
-							<Text className="text-white text-lg">km/h</Text>
+							<Controller<VehicleDetailsType>
+								control={control}
+								name="max_speed"
+								render={({ field: { onChange, onBlur, value } }) => (
+									<Input
+										suffix="km/h"
+										placeholder="Vitesse max"
+										name="max_speed"
+										keyboardType="numeric"
+										value={value as string}
+										onChangeText={(value) =>
+											onChange(Number(value.replace(/[^0-9]/g, "")))
+										}
+										onBlur={onBlur}
+										placeholderTextColor="white"
+										error={errors.max_speed}
+									/>
+								)}
+							/>
 						</View>
 					</View>
+
 					<View className="flex-col w-full gap-1 ">
 						<Text className="text-white text-base font-semibold">
 							Côté de conduite
 						</Text>
-						<View className="w-full h-fit flex flex-row justify-between items-center gap-2">
-							<View className="flex-1">
-								<Controller<VehicleDetailsType>
-									control={control}
-									name="driving_side"
-									render={({ field: { onChange, value } }) => (
-										<Fragment>
-											<Pressable
-												onPress={() => setShowDriveSidePicker(true)}
-												className="w-full h-12 px-4 rounded-lg bg-neutral-800 flex flex-row items-center justify-between"
-											>
-												<Text
-													className={`text-sm ${
-														!value ? "text-white/50" : "text-white"
-													}`}
-												>
-													{(value as string) || "Côté de conduite"}
-												</Text>
-												<Ionicons name="chevron-down" size={24} color="white" />
-											</Pressable>
-											<Modal
-												visible={showDriveSidePicker}
-												transparent={true}
-												animationType="slide"
-											>
-												<View className="flex-1 justify-end bg-black/50">
-													<View className="w-full bg-neutral-800 rounded-t-lg">
-														<View className="flex-row justify-between items-center p-4 border-b border-neutral-700">
-															<Text className="text-white text-lg font-semibold">
-																Côté de conduite
-															</Text>
-															<Pressable
-																onPress={() => {
-																	setShowDriveSidePicker(false);
-																	if (value === "") {
-																		onChange("right");
-																	}
-																}}
-															>
-																<Text className="text-white font-bold">
-																	Fermer
-																</Text>
-															</Pressable>
-														</View>
-														<Picker
-															itemStyle={{
-																color: "white",
-																fontSize: 16,
-																fontWeight: "bold",
-															}}
-															selectedValue={value}
-															onValueChange={(itemValue) => {
-																onChange(itemValue);
-															}}
-														>
-															<Picker.Item
-																label="Conduite à droite"
-																value="right"
-															/>
-															<Picker.Item
-																label="Conduite à gauche"
-																value="left"
-															/>
-														</Picker>
-													</View>
+
+						<Controller<VehicleDetailsType>
+							control={control}
+							name="driving_side"
+							render={({ field: { onChange, onBlur, value } }) => (
+								<Fragment>
+									<Pressable
+										className="w-full h-12 border flex flex-row items-center justify-between border-white/20  bg-white/15 rounded-lg  px-4"
+										onPress={() => setShowDriveSidePicker(true)}
+									>
+										<Text
+											className={`text-sm ${
+												!drivingSides?.find((side) => side.value === value)
+													?.label
+													? "text-white/50"
+													: "text-white"
+											}`}
+										>
+											{drivingSides?.find((side) => side.value === value)
+												?.label || "Côté de conduite"}
+										</Text>
+										<Ionicons
+											name="chevron-down-outline"
+											size={24}
+											color="white"
+											onPress={() => setShowDriveSidePicker(true)}
+										/>
+									</Pressable>
+
+									<Modal
+										visible={showDriveSidePicker}
+										transparent={true}
+										animationType="slide"
+									>
+										<View className="flex-1 justify-end bg-black/50">
+											<View className="bg-zinc-900 w-full">
+												<View className="flex-row justify-end p-4 border-b border-white/20">
+													<Pressable
+														onPress={() => {
+															setShowDriveSidePicker(false);
+															if (value === "") {
+																onChange(drivingSides[0].value);
+															}
+														}}
+													>
+														<Text className="text-white font-bold">
+															Valider
+														</Text>
+													</Pressable>
 												</View>
-											</Modal>
-										</Fragment>
-									)}
-								/>
-							</View>
-						</View>
+												<Picker
+													mode="dropdown"
+													itemStyle={{
+														color: "white",
+														fontSize: 16,
+														fontWeight: "bold",
+													}}
+													selectedValue={value}
+													onValueChange={(itemValue) => {
+														onChange(itemValue);
+													}}
+												>
+													{drivingSides.map((side) => (
+														<Picker.Item
+															key={side.value}
+															label={side.label}
+															value={side.value}
+														/>
+													))}
+												</Picker>
+											</View>
+										</View>
+									</Modal>
+								</Fragment>
+							)}
+						/>
 					</View>
 
 					<View className="flex-col w-full gap-1">
@@ -466,7 +484,12 @@ export const VehicleDetails = ({
 														? "Date d'achat"
 														: new Date(value as string).getFullYear()}
 												</Text>
-												<Ionicons name="chevron-down" size={24} color="white" />
+												<Ionicons
+													name="chevron-down-outline"
+													size={24}
+													color="white"
+													onPress={() => setShowPurchaseDatePicker(true)}
+												/>
 											</Pressable>
 											<Modal
 												visible={showPurchaseDatePicker}
@@ -524,6 +547,7 @@ export const VehicleDetails = ({
 							variant="secondary"
 							label="Continuer"
 							onPress={handleSubmit(onSubmit)}
+							disabled={!isValid || isSubmitting}
 						/>
 					</View>
 				</ScrollView>

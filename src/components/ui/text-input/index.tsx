@@ -7,6 +7,7 @@ interface InputProps<T> extends TextInputProps {
 	name: Path<T>;
 	classes?: string;
 	icon?: React.ReactNode;
+	suffix?: string;
 	onFocus?: () => void;
 	onBlur?: () => void;
 }
@@ -14,6 +15,7 @@ interface InputProps<T> extends TextInputProps {
 export const Input = <T extends FieldValues>({
 	error,
 	icon,
+	suffix = undefined,
 	onFocus,
 	onBlur,
 	...props
@@ -28,6 +30,11 @@ export const Input = <T extends FieldValues>({
 				<View className="absolute w-6 h-6 right-4 top-1/3 -translate-y-1/2 z-10">
 					{icon}
 				</View>
+			)}
+			{suffix && (
+				<Text className="absolute right-4 top-1/2 -translate-y-1/2 z-10 text-white text-lg">
+					{suffix}
+				</Text>
 			)}
 			<TextInput
 				{...props}

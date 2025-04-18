@@ -2,17 +2,26 @@ import { SkeletonGrid } from "@/components/ui/skeleton-grid";
 import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
 import { useFetchVehicleById } from "@/network/vehicles";
 import { FlashList } from "@shopify/flash-list";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 
 export default function Gallery() {
 	const { vehicleId } = useLocalSearchParams();
-	const { data: vehicle, isLoading } = useFetchVehicleById(vehicleId as string);
+	const { data: vehicle, isLoading } = useFetchVehicleById(
+		vehicleId as string,
+		"full",
+	);
 	const renderVehicle = ({ item }: { item: string }) => (
 		<TouchableOpacity
 			className="w-full aspect-square p-0.5"
 			onPress={() => {
-				// Navigate to vehicle detail
+				router.push({
+					pathname: "/(vehicle)/[vehicleId]/[imageId]",
+					params: {
+						vehicleId: vehicleId as string,
+						imageId: item as string,
+					},
+				});
 			}}
 		>
 			<View className="w-full h-full overflow-hidden bg-gray-800">

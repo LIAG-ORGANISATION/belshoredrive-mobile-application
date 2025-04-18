@@ -1,4 +1,4 @@
-import BottomSheet from "@gorhom/bottom-sheet";
+import BottomSheet, { BottomSheetBackdrop } from "@gorhom/bottom-sheet";
 import React, {
 	createContext,
 	useContext,
@@ -36,7 +36,11 @@ type BottomSheetAction =
 	| { type: "HIDE_SHEET"; payload: { id: string } }
 	| {
 			type: "UPDATE_SHEET";
-			payload: { id: string; config: Partial<BottomSheetConfig> };
+			payload: {
+				id: string;
+				config: Partial<BottomSheetConfig>;
+				component?: ReactNode;
+			};
 	  };
 
 // Initial state
@@ -106,7 +110,11 @@ type BottomSheetContextType = {
 	registerSheet: (id: string, config: BottomSheetConfig) => void;
 	showSheet: (id: string) => void;
 	hideSheet: (id: string) => void;
-	updateSheet: (id: string, config: Partial<BottomSheetConfig>) => void;
+	updateSheet: (
+		id: string,
+		config: Partial<BottomSheetConfig>,
+		component?: ReactNode,
+	) => void;
 };
 
 const BottomSheetContext = createContext<BottomSheetContextType | undefined>(
@@ -145,8 +153,12 @@ export const BottomSheetProvider: React.FC<{ children: ReactNode }> = ({
 		}
 	};
 
-	const updateSheet = (id: string, config: Partial<BottomSheetConfig>) => {
-		dispatch({ type: "UPDATE_SHEET", payload: { id, config } });
+	const updateSheet = (
+		id: string,
+		config: Partial<BottomSheetConfig>,
+		component?: ReactNode,
+	) => {
+		dispatch({ type: "UPDATE_SHEET", payload: { id, config, component } });
 	};
 
 	const value = {
@@ -175,6 +187,14 @@ export const BottomSheetProvider: React.FC<{ children: ReactNode }> = ({
 					}
 					onChange={sheet.onChange ?? (() => {})}
 					index={-1}
+					backdropComponent={(props) => (
+						<BottomSheetBackdrop
+							{...props}
+							disappearsOnIndex={-1}
+							appearsOnIndex={0}
+							onPress={() => hideSheet(id)}
+						/>
+					)}
 				>
 					{sheet.component}
 				</BottomSheet>

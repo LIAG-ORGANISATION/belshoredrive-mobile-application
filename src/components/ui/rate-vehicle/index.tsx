@@ -67,6 +67,7 @@ export const RateVehicle = ({
 
 	useLayoutEffect(() => {
 		setRating(initialRating);
+		position.set(initialRating * 10);
 	}, [initialRating]);
 
 	return (

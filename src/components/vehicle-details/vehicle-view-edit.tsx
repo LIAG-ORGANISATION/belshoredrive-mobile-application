@@ -54,22 +54,24 @@ export const VehicleViewEdit = ({
 							{
 								icon: <EngineIcon />,
 								label: "Motorization",
-								value: vehicle.motorization ?? "",
+								value:
+									vehicle.motorization ||
+									"Pas d'information sur la motorisation",
 							},
 							{
 								icon: <ChassisIcon />,
 								label: "Chassis",
-								value: vehicle.chassis ?? "",
+								value: vehicle.chassis || "Pas d'information sur le chassis",
 							},
 							{
 								icon: <BrakeIcon />,
 								label: "Freinage",
-								value: vehicle.braking ?? "",
+								value: vehicle.braking || "Pas d'information sur le freinage",
 							},
 							{
 								icon: <WheelIcon />,
 								label: "Extérieur",
-								value: vehicle.exterior ?? "",
+								value: vehicle.exterior ?? "Pas d'information sur l'extérieur",
 							},
 						]}
 						className="rounded-lg border-2 border-white/20"

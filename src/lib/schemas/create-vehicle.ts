@@ -51,38 +51,32 @@ const checksForNumericValue = (value: unknown) => {
 };
 
 export const vehicleDetailsSchema = object({
-	mileage: optional(
-		custom<string | number>(
-			checksForNumericValue,
-			"Kilométrage doit être un nombre",
-		),
+	mileage: custom<string | number>(
+		checksForNumericValue,
+		"Kilométrage doit être un nombre",
 	),
-	power: optional(
-		custom<string | number>(
-			checksForNumericValue,
-			"Puissance doit être un nombre",
-		),
+	power: custom<string | number>(
+		checksForNumericValue,
+		"Puissance doit être un nombre",
 	),
-	transmission_id: optional(pipe(string(), minLength(1), maxLength(100))),
-	motorization_id: optional(pipe(string(), minLength(1), maxLength(100))),
-	max_speed: optional(
-		custom<string | number>(
-			checksForNumericValue,
-			"Vitesse max doit être un nombre",
-		),
+	transmission_id: pipe(string(), minLength(1), maxLength(100)),
+	motorization_id: pipe(string(), minLength(1), maxLength(100)),
+	max_speed: custom<string | number>(
+		checksForNumericValue,
+		"Vitesse max doit être un nombre",
 	),
-	purchase_date: optional(pipe(string(), maxLength(100))),
-	driving_side: optional(pipe(string(), maxLength(100))),
+	purchase_date: pipe(string(), minLength(1), maxLength(100)),
+	driving_side: pipe(string(), minLength(1), maxLength(100)),
 });
 
 export type VehicleDetailsType = InferOutput<typeof vehicleDetailsSchema>;
 
 export const partsDetailsSchema = object({
-	motorization: optional(pipe(string(), maxLength(200))),
-	chassis: optional(pipe(string(), maxLength(200))),
-	braking: optional(pipe(string(), maxLength(200))),
-	exterior: optional(pipe(string(), maxLength(200))),
-	technical_document: optional(pipe(string(), maxLength(200))),
+	motorization: optional(pipe(string(), minLength(1), maxLength(200))),
+	chassis: optional(pipe(string(), minLength(1), maxLength(200))),
+	braking: optional(pipe(string(), minLength(1), maxLength(200))),
+	exterior: optional(pipe(string(), minLength(1), maxLength(200))),
+	technical_document: optional(pipe(string(), minLength(1), maxLength(200))),
 });
 
 export type PartsDetailsType = InferOutput<typeof partsDetailsSchema>;

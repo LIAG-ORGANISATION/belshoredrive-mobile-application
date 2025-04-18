@@ -3,7 +3,6 @@ import { DirectMessageIcon } from "@/components/vectors/direct-message-icon";
 import { IconCalendar } from "@/components/vectors/icon-calendar";
 import { IconHome } from "@/components/vectors/icon-home";
 import { NotificationIcon } from "@/components/vectors/notification-icon";
-import { OptionsIcon } from "@/components/vectors/options-icon";
 import { SearchIcon } from "@/components/vectors/search";
 import { checkIfProfileComplete } from "@/lib/helpers/check-if-profile-complete";
 import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
@@ -170,17 +169,6 @@ export default function TabLayout() {
 						),
 						headerRight: () => (
 							<View className="flex-row items-center gap-2">
-								<Link href="/(onboarding)" asChild>
-									<Pressable>
-										{({ pressed }) => (
-											<OptionsIcon
-												fill="#fff"
-												style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-											/>
-										)}
-									</Pressable>
-								</Link>
-
 								<Link href="/(tabs)/notifications" asChild>
 									<Pressable>
 										{({ pressed }) => (
@@ -332,7 +320,7 @@ export default function TabLayout() {
 												profile?.profile_picture_url as string,
 											),
 										}}
-										className={`w-6 h-6 rounded-full bg-slate-500 bg-cover ${
+										className={`w-7 h-7 rounded-full bg-slate-500 bg-cover ${
 											focused ? "border-2 border-white" : ""
 										}`}
 									/>

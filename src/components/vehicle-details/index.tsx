@@ -89,9 +89,9 @@ export const VehicleProfile = ({
 						brand_id: data.brand_id,
 						model: data.model,
 						year: data.year,
-						nickname: data.nickname,
-						description: data.description,
-						status_id: data.status_id,
+						nickname: data.nickname || undefined,
+						description: data.description || undefined,
+						status_id: data.status_id || undefined,
 					},
 				},
 				{
@@ -104,7 +104,7 @@ export const VehicleProfile = ({
 				},
 			);
 		} catch (error) {
-			console.error("Failed to update profile:", error);
+			console.error("Failed to update vehicle:", error);
 		}
 	};
 
@@ -129,7 +129,7 @@ export const VehicleProfile = ({
 						)}
 					</View>
 
-					<View 
+					<View
 						className="flex-1"
 						style={{
 							gap: 16,
@@ -139,7 +139,9 @@ export const VehicleProfile = ({
 							<Text className="text-white text-lg font-semibold my-4">
 								Décrivez le véhicule
 							</Text>
-							<Text className="text-white text-base font-semibold">Marque</Text>
+							<Text className="text-white text-base font-semibold">
+								Marque *
+							</Text>
 
 							<Pressable
 								className="w-full h-12 border flex flex-row border-white/20  bg-white/15 rounded-lg justify-between items-center px-4"
@@ -172,7 +174,9 @@ export const VehicleProfile = ({
 						</View>
 
 						<View className="flex-col w-full gap-1">
-							<Text className="text-white text-base font-semibold">Modèle</Text>
+							<Text className="text-white text-base font-semibold">
+								Modèle *
+							</Text>
 							<Controller<CreateVehicleType>
 								control={control}
 								name="model"
@@ -191,14 +195,16 @@ export const VehicleProfile = ({
 						</View>
 
 						<View className="flex-col w-full gap-1">
-							<Text className="text-white text-base font-semibold">Année</Text>
+							<Text className="text-white text-base font-semibold">
+								Année *
+							</Text>
 							<Controller<CreateVehicleType>
 								control={control}
 								name="year"
 								render={({ field: { onChange, onBlur, value } }) => (
 									<Fragment>
 										<Pressable
-											className="w-full h-12 border border-white/20  bg-white/15 rounded-lg justify-center px-4"
+											className="w-full h-12 flex-row justify-between items-center gap-2 border border-white/20  bg-white/15 rounded-lg px-4"
 											onPress={() => setShowPicker(true)}
 										>
 											<Text
@@ -208,6 +214,12 @@ export const VehicleProfile = ({
 											>
 												{value ? String(value) : "Année"}
 											</Text>
+											<Ionicons
+												name="chevron-down-outline"
+												size={24}
+												color="white"
+												onPress={() => setShowPicker(true)}
+											/>
 										</Pressable>
 
 										<Modal
@@ -218,8 +230,17 @@ export const VehicleProfile = ({
 											<View className="flex-1 justify-end bg-black/50">
 												<View className="bg-zinc-900 w-full">
 													<View className="flex-row justify-end p-4 border-b border-white/20">
-														<Pressable onPress={() => setShowPicker(false)}>
-															<Text className="text-white font-bold">Fermer</Text>
+														<Pressable
+															onPress={() => {
+																setShowPicker(false);
+																if (value === 0) {
+																	onChange(new Date().getFullYear());
+																}
+															}}
+														>
+															<Text className="text-white font-bold">
+																Valider
+															</Text>
 														</Pressable>
 													</View>
 													<Picker
@@ -306,20 +327,24 @@ export const VehicleProfile = ({
 								render={({ field: { onChange, onBlur, value } }) => (
 									<Fragment>
 										<Pressable
-											className="w-full h-12 border border-white/20  bg-white/15 rounded-lg justify-center px-4"
+											className="w-full h-12 flex-row justify-between items-center gap-2 border border-white/20  bg-white/15 rounded-lg px-4"
 											onPress={() => setShowStatusPicker(true)}
 										>
 											<Text
 												className={`text-sm ${
-													!vehicle?.vehicle_statuses?.name
-														? "text-white/50"
-														: "text-white"
+													!value ? "text-white/50" : "text-white"
 												}`}
 											>
 												{vehicleStatuses?.find(
 													(status) => status.status_id === value,
 												)?.name || "Statut"}
 											</Text>
+											<Ionicons
+												name="chevron-down-outline"
+												size={24}
+												color="white"
+												onPress={() => setShowStatusPicker(true)}
+											/>
 										</Pressable>
 
 										<Modal
@@ -330,8 +355,19 @@ export const VehicleProfile = ({
 											<View className="flex-1 justify-end bg-black/50">
 												<View className="bg-zinc-900 w-full">
 													<View className="flex-row justify-end p-4 border-b border-white/20">
-														<Pressable onPress={() => setShowStatusPicker(false)}>
-															<Text className="text-white font-bold">Fermer</Text>
+														<Pressable
+															onPress={() => {
+																setShowStatusPicker(false);
+																if (value === "") {
+																	onChange(
+																		vehicleStatuses?.[0].status_id || "",
+																	);
+																}
+															}}
+														>
+															<Text className="text-white font-bold">
+																Valider
+															</Text>
 														</Pressable>
 													</View>
 													<Picker

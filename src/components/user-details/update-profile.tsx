@@ -15,10 +15,18 @@ import { valibotResolver } from "@hookform/resolvers/valibot";
 import { Picker } from "@react-native-picker/picker";
 import { Fragment, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { KeyboardAvoidingView, Modal, Platform, Pressable, Text, View } from "react-native";
+import {
+	KeyboardAvoidingView,
+	Modal,
+	Platform,
+	Pressable,
+	Text,
+	View,
+} from "react-native";
 import { ScrollView } from "react-native";
 
 import { Button } from "@/components/ui/button";
+import { Ionicons } from "@expo/vector-icons";
 
 export const UpdateProfile = ({
 	onSuccess,
@@ -84,7 +92,7 @@ export const UpdateProfile = ({
 	};
 
 	return (
-		<KeyboardAvoidingView 
+		<KeyboardAvoidingView
 			behavior={Platform.OS === "ios" ? "padding" : "height"}
 			className="flex-1"
 			keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
@@ -108,7 +116,9 @@ export const UpdateProfile = ({
 						<Text className="text-white text-lg font-semibold my-4">
 							INFORMARTIONS DU PROFIL
 						</Text>
-						<Text className="text-white text-base font-semibold">Biographie</Text>
+						<Text className="text-white text-base font-semibold">
+							Biographie
+						</Text>
 						<Controller<CompleteProfileType>
 							control={control}
 							name="biography"
@@ -138,7 +148,7 @@ export const UpdateProfile = ({
 							render={({ field: { onChange, onBlur, value } }) => (
 								<Fragment>
 									<Pressable
-										className="w-full h-12 border border-white/20  bg-white/15 rounded-lg justify-center px-4"
+										className="w-full h-12 flex-row justify-between items-center gap-2 border border-white/20  bg-white/15 rounded-lg px-4"
 										onPress={() => setShowPicker(true)}
 									>
 										<Text
@@ -146,8 +156,16 @@ export const UpdateProfile = ({
 												!value ? "text-white/50" : "text-white"
 											}`}
 										>
-											{value ? String(value) : "Année de naissance (Obligatoire)"}
+											{value
+												? String(value)
+												: "Année de naissance (Obligatoire)"}
 										</Text>
+										<Ionicons
+											name="chevron-down-outline"
+											size={24}
+											color="white"
+											onPress={() => setShowPicker(true)}
+										/>
 									</Pressable>
 
 									<Modal
@@ -158,8 +176,17 @@ export const UpdateProfile = ({
 										<View className="flex-1 justify-end bg-black/50">
 											<View className="bg-zinc-900 w-full">
 												<View className="flex-row justify-end p-4 border-b border-white/20">
-													<Pressable onPress={() => setShowPicker(false)}>
-														<Text className="text-white font-bold">Fermer</Text>
+													<Pressable
+														onPress={() => {
+															setShowPicker(false);
+															if (value === 0) {
+																onChange(new Date().getFullYear());
+															}
+														}}
+													>
+														<Text className="text-white font-bold">
+															Valider
+														</Text>
 													</Pressable>
 												</View>
 												<Picker

@@ -22,8 +22,6 @@ export default function VehicleProfileLayout() {
 		setTitle(`${vehicle.year} ${vehicle.brands?.name} ${vehicle.model}`);
 	}, [vehicle]);
 
-	console.log(previousScreen);
-
 	return (
 		<View className="flex-1 bg-black">
 			<Stack
@@ -46,16 +44,20 @@ export default function VehicleProfileLayout() {
 								size={24}
 								style={{ color: "white", paddingRight: 10 }}
 								onPress={() => {
-									router.push({
-										pathname: previousScreen as string,
-										params: {
-											userId,
-										},
-									});
+									if (previousScreen) {
+										router.push({
+											pathname: previousScreen as string,
+											params: {
+												userId,
+											},
+										});
+									} else {
+										router.back();
+									}
 								}}
 							/>
 						),
-						headerRight: () => (
+						headerRight: () =>
 							vehicle?.user_id === session?.user.id && (
 								<Ionicons
 									name="trash-outline"
@@ -63,12 +65,26 @@ export default function VehicleProfileLayout() {
 									color="white"
 									onPress={handleDeleteVehicle}
 								/>
-							)
-						),
+							),
 					}}
 				/>
 				<Stack.Screen
 					name="[vehicleId]/gallery"
+					options={{
+						headerShown: true,
+						headerTitle: () => <Text className="text-white">{title}</Text>,
+						headerLeft: () => (
+							<Ionicons
+								name="chevron-back"
+								size={24}
+								style={{ color: "white", paddingRight: 10 }}
+								onPress={() => router.back()}
+							/>
+						),
+					}}
+				/>
+				<Stack.Screen
+					name="[vehicleId]/[imageId]/index"
 					options={{
 						headerShown: true,
 						headerTitle: () => <Text className="text-white">{title}</Text>,

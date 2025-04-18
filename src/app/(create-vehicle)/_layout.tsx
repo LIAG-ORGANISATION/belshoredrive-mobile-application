@@ -202,6 +202,22 @@ export default function CreateVehicleLayout() {
 					),
 				}}
 			/>
+			<Stack.Screen
+				name="[vehicleId]/[imageId]/index"
+				options={{
+					headerShown: true,
+					headerStyle: { backgroundColor: "#000" },
+					headerTitle: () => <ProgressBar currentStep={5} totalSteps={5} />,
+					headerLeft: () => (
+						<Ionicons
+							name="arrow-back"
+							size={24}
+							color="white"
+							onPress={() => router.back()}
+						/>
+					),
+				}}
+			/>
 		</Stack>
 	);
 }
