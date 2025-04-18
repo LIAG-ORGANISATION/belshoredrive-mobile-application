@@ -20,7 +20,6 @@ export const Input = <T extends FieldValues>({
 	onBlur,
 	...props
 }: InputProps<T>) => {
-	console.log(suffix);
 	const classes = cx({
 		"text-white text-sm bg-neutral-800 px-4 py-2 border border-neutral-700 rounded-lg focus:border-gray-600 h-12": true,
 		"!border-red-500 !focus:border-red-500": error,
