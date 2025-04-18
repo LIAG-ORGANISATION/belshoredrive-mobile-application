@@ -1,9 +1,5 @@
 import { formatPicturesUri } from "@/lib/helpers/format-pictures-uri";
-import {
-	useCommentVotes,
-	useVehicleComments,
-	useVoteComment,
-} from "@/network/comments";
+import { useVehicleComments } from "@/network/comments";
 import { useGetSession } from "@/network/session";
 import type { PaginatedComments } from "@/network/vehicles";
 import type { Tables } from "@/types/supabase";
@@ -12,7 +8,6 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { Link, router, usePathname } from "expo-router";
 import { useMemo, useState } from "react";
 import { Image, Pressable, Text, View } from "react-native";
-import { VoteIcon } from "../vectors/vote-icon";
 
 dayjs.extend(relativeTime);
 
@@ -64,32 +59,32 @@ const CommentItem = ({
 		>;
 	};
 }) => {
-	const { data: votes } = useCommentVotes(comment.id);
+	// const { data: votes } = useCommentVotes(comment.id);
 	const { data: session } = useGetSession();
-	const voteComment = useVoteComment();
+	// const voteComment = useVoteComment();
 	const pathname = usePathname();
 
-	const upvotes =
-		votes?.filter((vote) => vote.vote_type === "upvote").length || 0;
-	const downvotes =
-		votes?.filter((vote) => vote.vote_type === "downvote").length || 0;
-	const voteScore = upvotes - downvotes;
+	// const upvotes =
+	// 	votes?.filter((vote) => vote.vote_type === "upvote").length || 0;
+	// const downvotes =
+	// 	votes?.filter((vote) => vote.vote_type === "downvote").length || 0;
+	// const voteScore = upvotes - downvotes;
 
-	const userUpvoted = votes?.some(
-		(vote) => vote.vote_type === "upvote" && vote.user_id === session?.user.id,
-	);
+	// const userUpvoted = votes?.some(
+	// 	(vote) => vote.vote_type === "upvote" && vote.user_id === session?.user.id,
+	// );
 
-	const userDownvoted = votes?.some(
-		(vote) =>
-			vote.vote_type === "downvote" && vote.user_id === session?.user.id,
-	);
+	// const userDownvoted = votes?.some(
+	// 	(vote) =>
+	// 		vote.vote_type === "downvote" && vote.user_id === session?.user.id,
+	// );
 
 	const handleVote = (voteType: "upvote" | "downvote") => {
 		if (!session) return; // Don't allow voting if not logged in
-		voteComment.mutate({
-			commentId: comment.id,
-			voteType,
-		});
+		// voteComment.mutate({
+		// 	commentId: comment.id,
+		// 	voteType,
+		// });
 	};
 
 	return (
@@ -134,7 +129,7 @@ const CommentItem = ({
 				</View>
 
 				<View className="flex-row items-center mt-1 gap-2">
-					<Pressable
+					{/* <Pressable
 						className="rounded-full p-1"
 						onPress={() => handleVote("upvote")}
 					>
@@ -146,7 +141,7 @@ const CommentItem = ({
 						onPress={() => handleVote("downvote")}
 					>
 						<VoteIcon fill={userDownvoted ? "white" : "gray"} />
-					</Pressable>
+					</Pressable>*/}
 
 					<Text className="text-gray-400 text-xs">
 						{dayjs(comment.created_at).fromNow()}
