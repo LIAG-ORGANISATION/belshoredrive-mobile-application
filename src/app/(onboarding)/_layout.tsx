@@ -25,7 +25,7 @@ export default function OnboardingLayout() {
 					options={{
 						headerShown: true,
 						headerStyle: { backgroundColor: "#000" },
-						headerTitle: () => <ProgressBar currentStep={2} totalSteps={4} />,
+						headerTitle: () => <ProgressBar currentStep={2} totalSteps={5} />,
 						headerLeft: () => (
 							<Ionicons
 								name="chevron-back"
@@ -42,7 +42,7 @@ export default function OnboardingLayout() {
 					options={{
 						headerShown: true,
 						headerStyle: { backgroundColor: "#000" },
-						headerTitle: () => <ProgressBar currentStep={3} totalSteps={4} />,
+						headerTitle: () => <ProgressBar currentStep={3} totalSteps={5} />,
 						headerLeft: () => (
 							<Ionicons
 								name="chevron-back"
@@ -59,7 +59,24 @@ export default function OnboardingLayout() {
 					options={{
 						headerShown: true,
 						headerStyle: { backgroundColor: "#000" },
-						headerTitle: () => <ProgressBar currentStep={4} totalSteps={4} />,
+						headerTitle: () => <ProgressBar currentStep={4} totalSteps={5} />,
+						headerLeft: () => (
+							<Ionicons
+								name="chevron-back"
+								size={24}
+								color="white"
+								onPress={() => router.back()}
+							/>
+						),
+					}}
+				/>
+
+				<Stack.Screen
+					name="recommendations"
+					options={{
+						headerShown: true,
+						headerStyle: { backgroundColor: "#000" },
+						headerTitle: () => <ProgressBar currentStep={5} totalSteps={5} />,
 						headerLeft: () => (
 							<Ionicons
 								name="chevron-back"

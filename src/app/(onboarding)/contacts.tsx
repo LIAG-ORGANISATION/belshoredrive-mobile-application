@@ -88,7 +88,7 @@ export default function Contact() {
 					label="Continuer"
 					onPress={handleContactPermission}
 				/>
-				<Link href="/(tabs)" className="w-full text-center">
+				<Link href="/recommendations" className="w-full text-center">
 					<Text className="text-white text-sm">Passer cette étape</Text>
 				</Link>
 			</View>
